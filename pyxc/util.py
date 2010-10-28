@@ -90,27 +90,27 @@ class DirectedGraph:
     
     @property
     def topologicalOrdering(self):
+        
+        def topologicalOrderingDestructive(d):
+            
+            if len(d) == 0:
+                return []
+            
+            possibleInitialNodes = set(d.keys())
+            for k, v in d.items():
+                if len(v) > 0:
+                    possibleInitialNodes.discard(k)
+            if len(possibleInitialNodes) == 0:
+                raise Exception('possibleInitialNodes is empty. Dict: ' + repr(d))
+            initialNode = possibleInitialNodes.pop()
+            
+            for k, v in d.items():
+                v.discard(initialNode)
+            del d[initialNode]
+            
+            return [initialNode] + topologicalOrderingDestructive(d)
+        
         return topologicalOrderingDestructive(copy.deepcopy(self._graph))
-
-
-def topologicalOrderingDestructive(d):
-    
-    if len(d) == 0:
-        return []
-    
-    possibleInitialNodes = set(d.keys())
-    for k, v in d.items():
-        if len(v) > 0:
-            possibleInitialNodes.discard(k)
-    if len(possibleInitialNodes) == 0:
-        raise Exception('possibleInitialNodes is empty. Dict: ' + repr(d))
-    initialNode = possibleInitialNodes.pop()
-    
-    for k, v in d.items():
-        v.discard(initialNode)
-    del d[initialNode]
-    
-    return [initialNode] + topologicalOrderingDestructive(d)
 
 
 def rfilter(r, it, propFilter={}, invert=False):
