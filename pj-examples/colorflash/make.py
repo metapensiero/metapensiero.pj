@@ -30,7 +30,7 @@ def main():
         start = time.time()
         
         if not js:
-            js = pj.api.buildBundle('colorflash.main', path=PATH)
+            js = pj.api.buildBundle('colorflash.colorflash', path=PATH)
         
         with open(path, 'wb') as f:
             f.write(pj.api.closureCompile(js, closureMode))

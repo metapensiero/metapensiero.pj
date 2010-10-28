@@ -10,6 +10,6 @@ urlpatterns = patterns('colorflash.views',
 urlpatterns += patterns('pj.django',
     url(r'^static/js/colorflash\.js$',
             'jsView',
-            {'main': 'colorflash.main'},
+            {'main': 'colorflash.colorflash'},
             name='colorflash_js'),
 )
