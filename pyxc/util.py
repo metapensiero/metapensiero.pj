@@ -76,6 +76,9 @@ def randomToken(n):
             return token
 
 
+class CyclicGraphError(Exception): pass
+
+
 class DirectedGraph:
     
     def __init__(self):
@@ -101,7 +104,7 @@ class DirectedGraph:
                 if len(v) > 0:
                     possibleInitialNodes.discard(k)
             if len(possibleInitialNodes) == 0:
-                raise Exception('possibleInitialNodes is empty. Dict: ' + repr(d))
+                raise CyclicGraphError(repr(d))
             initialNode = possibleInitialNodes.pop()
             
             for k, v in d.items():
