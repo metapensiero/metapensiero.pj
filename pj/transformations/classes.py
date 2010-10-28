@@ -2,7 +2,7 @@
 import ast
 from pj.js_ast import *
 
-from pyxc.analysis import localNamesInBody
+from pyxc.util import localNamesInBody
 
 
 #### ClassDef

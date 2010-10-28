@@ -3,7 +3,7 @@ import ast
 
 from pyxc.importing import SourcePath, orderedModules
 from pyxc.transforming import Transformer
-from pyxc.analysis import topLevelNamesInBody
+from pyxc.util import topLevelNamesInBody
 
 import pj.js_ast
 import pj.transformations

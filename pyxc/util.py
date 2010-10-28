@@ -1,7 +1,7 @@
 # Most of these items also appear in
 # [github.com/andrewschaaf/util](http://github.com/andrewschaaf/util)
 
-import json, sys, traceback, re, random, copy
+import json, sys, traceback, re, random, copy, ast
 import os, subprocess
 from subprocess import check_call, call
 
@@ -12,6 +12,37 @@ def usingPython3():
 
 def parentOf(path):
     return '/'.join(path.rstrip('/').split('/')[:-1])
+
+
+
+def topLevelNamesInBody(body):
+    names = set()
+    for x in body:
+        names |= namesInNode(x)
+    return names
+
+
+def localNamesInBody(body):
+    names = set()
+    for node in body:
+        names |= namesInNode(node)
+        for x in ast.walk(node):
+            names |= namesInNode(x)
+    return names
+
+
+def namesInNode(x):
+    names = set()
+    if isinstance(x, ast.Assign):
+        for target in x.targets:
+            if isinstance(target, ast.Name):
+                names.add(target.id)
+    elif (
+            isinstance(x, ast.FunctionDef) or
+            isinstance(x, ast.ClassDef)):
+        names.add(x.name)
+    return names
+
 
 
 def exceptionRepr(exc_info=None):
