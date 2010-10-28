@@ -19,12 +19,15 @@ def main():
     
     js = None
     
-    for closureMode in ['', 'pretty', 'simple', 'advanced']:
+    for closureMode in ['', 'pretty', 'simple']:
         
-        if closureMode:
-            path = 'build/colorflash.%s.js' % closureMode
-        else:
-            path = 'build/colorflash.raw.js'
+        filename = {
+            '': 'colorflash.raw.js',
+            'pretty': 'colorflash.pretty.js',
+            'simple': 'colorflash.min.simple.js',
+        }[closureMode]
+        
+        path = 'build/%s' % filename
         
         sys.stderr.write('%s... ' % path)
         start = time.time()
