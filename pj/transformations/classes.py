@@ -223,7 +223,7 @@ def FunctionDef(t, x):
                                 JSThis())]
         
         return JSFunction(
-                            str(NAME),
+                            None,
                             ARGS,
                             BODY)
     
@@ -233,7 +233,7 @@ def FunctionDef(t, x):
                     JSAssignmentExpression(
                         str(NAME),
                         JSFunction(
-                                        str(NAME),
+                                        None,
                                         ARGS,
                                         BODY)))
 
