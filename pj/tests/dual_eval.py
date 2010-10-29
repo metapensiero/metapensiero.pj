@@ -137,6 +137,14 @@ def getJsonCode():
 def getFragments():
     s = '''1729
 
+x = [
+    1 in [10, 11],
+    2 in [10, 11],
+    11 in [10, 11],
+]
+# Expected value: [true, false, false]
+x
+
 y = [x + 1 for x in [1, 2, 3, 100]]
 y
 

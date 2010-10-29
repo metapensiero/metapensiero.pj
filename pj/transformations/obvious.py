@@ -155,6 +155,10 @@ def Name_default(t, x):
 
 #### Ops
 
+# <code>in</code>
+def In(t, x):
+  return JSOpIn()
+
 # <code>+</code>
 def Add(t, x):
     return JSOpAdd()

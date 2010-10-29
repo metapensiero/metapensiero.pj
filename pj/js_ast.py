@@ -199,6 +199,10 @@ class JSNull(JSNode):
 
 #### Ops
 
+class JSOpIn(JSNode):
+    def emit(self):
+        return 'in'
+
 class JSOpAnd(JSNode):
     def emit(self):
         return '&&'
