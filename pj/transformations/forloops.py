@@ -44,7 +44,7 @@ def For_range(t, x):
 #    ...</pre>
 # to
 #<pre>var __dict = EXPR;
-#for (var NAME in __dict):
+#for (var NAME in __dict) {
 #    if (__dict.hasOwnProperty(NAME)) {
 #       ...
 #    }
