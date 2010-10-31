@@ -137,6 +137,9 @@ def getJsonCode():
 def getFragments():
     s = '''1729
 
+x = y = 2
+x + y
+
 x = [
     1 in [10, 11],
     2 in [10, 11],
