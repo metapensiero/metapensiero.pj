@@ -33,14 +33,20 @@ def buildBundle(mainModule, path=None):
         with open(codePath, 'rb') as f:
             py = f.read()
             
-            # Load the top-level names and confirm they're distinct
-            for name in topLevelNamesInBody(ast.parse(py).body):
-                assert name not in topLevelNames
-                topLevelNames.add(name)
+            if codePath.endswith('.js'):
+                js = py
             
-            # py &rarr; js
-            jsAst = t.transformCode(py)
-            js = str(jsAst)
+            else:
+                
+                # Load the top-level names and confirm they're distinct
+                for name in topLevelNamesInBody(ast.parse(py).body):
+                    assert name not in topLevelNames
+                    topLevelNames.add(name)
+                
+                # py &rarr; js
+                jsAst = t.transformCode(py)
+                js = str(jsAst)
+            
             jsArr.append(js)
     
     if len(topLevelNames) > 0:
