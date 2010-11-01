@@ -22,6 +22,8 @@ def dependencyGraph(sourcePath, firstModule):
         module = todo.pop()
         done.add(module)
         
+        digraph.addNode(module)
+        
         # Load the code
         path = sourcePath.pathForModule(module)
         with open(path, 'r') as f:

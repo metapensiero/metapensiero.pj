@@ -84,11 +84,13 @@ class DirectedGraph:
     def __init__(self):
         self._graph = {}
     
-    def addArc(self, x, y):
+    def addNode(self, x):
         if x not in self._graph:
             self._graph[x] = set()
-        if y not in self._graph:
-            self._graph[y] = set()
+    
+    def addArc(self, x, y):
+        self.addNode(x)
+        self.addNode(y)
         self._graph[x].add(y)
     
     @property
