@@ -38,6 +38,11 @@ def jsView(request, **kwargs):
     if kwargs.get('jsPrefix', None):
       js = kwargs['jsPrefix'] + '\n\n' + js
     
+    if kwargs.get('renderTemplate', True):
+      js = Template(js).render(Context({
+        'DEBUG': settings.DEBUG,
+      }))
+    
     if closureMode:
         js = pj.api.closureCompile(js, closureMode)
     
