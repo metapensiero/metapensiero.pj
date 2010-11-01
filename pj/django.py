@@ -35,6 +35,9 @@ def jsView(request, **kwargs):
     
     js = pj.api.buildBundle(main, path=path)
     
+    if kwargs.get('jsPrefix', None):
+      js = kwargs['jsPrefix'] + '\n\n' + js
+    
     if closureMode:
         js = pj.api.closureCompile(js, closureMode)
     
