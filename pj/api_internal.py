@@ -11,9 +11,17 @@ import pj.transformations
 
 #### Code to Code
 def codeToCode(py):
+    
     t = Transformer(pj.transformations, pj.js_ast.JSStatements)
     jsAst = t.transformCode(py)
     js = '%s\n%s' % ('\n'.join(t.snippets), str(jsAst))
+    
+    names = set(topLevelNamesInBody(ast.parse(py).body))
+    if len(names) > 0:
+        js = 'var %s;\n\n%s' % (
+            ', '.join(names),
+            js)
+    
     return js
 
 
