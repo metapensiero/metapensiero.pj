@@ -2,7 +2,7 @@
 # [github.com/andrewschaaf/util](http://github.com/andrewschaaf/util)
 
 import json, sys, traceback, re, random, copy, ast
-import os, subprocess
+import os, subprocess, tempfile
 from subprocess import check_call, call
 
 
@@ -200,4 +200,15 @@ def check_communicate(cmd, input='', **Popen_kwargs):
         raise SubprocessError(out, err, returncode)
     return (out, err)
 
+
+class TempDir:
+    
+    def __init__(self):
+        self.path = tempfile.mkdtemp()
+    
+    def __enter__(self):
+        return self
+    
+    def __exit__(self, *args):
+        subprocess.check_call(['rm', '-rf', self.path])
 

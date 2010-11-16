@@ -1,9 +1,9 @@
 #!/usr/bin/env python3.1
 
-import optparse, sys, json
+import optparse, sys, os, json, subprocess
 
 # Require Python 3
-from pyxc.util import usingPython3, writeExceptionJsonAndDie
+from pyxc.util import usingPython3, writeExceptionJsonAndDie, TempDir, parentOf
 if not usingPython3():
     sys.stderr.write('Python 3 required.')
     sys.exit(1)
@@ -21,11 +21,19 @@ def main():
     
     options, args = parser.parse_args()
     
+    if options.path is not None:
+        codepath = options.path.split(':')
+    else:
+        codepath = None
+    
     if options.codeToCode:
         codeToCode()
     
     elif options.buildBundle:
-        buildBundle(options, args)
+        buildBundle(args[0], codepath)
+    
+    elif len(args) == 1:
+        runNodeJs(args[0], codepath)
     
     else:
         sys.stderr.write('Invalid args -- see http://pyxc.org/pj for usage.\n')
@@ -43,13 +51,36 @@ def codeToCode():
         writeExceptionJsonAndDie(e)
 
 
+#### runNodeJs
+def runNodeJs(path, codepath):
+    
+    path = os.path.abspath(path)
+    if not os.path.isfile(path):
+        raise Exception('File not found: ' + repr(path))
+    filename = path.split('/')[-1]
+    module = filename.split('.')[-2]
+    codepath = (codepath or []) + [parentOf(path)]
+    
+    js = pj.api_internal.buildBundle(
+                            module,
+                            path=codepath)
+    
+    with TempDir() as td:
+        
+        jsPath = '%s/%s.js' % (td.path, filename)
+        with open(jsPath, 'wb') as f:
+            f.write(js.encode('utf-8'))
+        
+        subprocess.check_call(['node', jsPath])
+
+
 #### Build Bundle
 # See [pj.api_internal.buildBundle](api_internal.py)
-def buildBundle(options, args):
+def buildBundle(mainModule, codepath):
     try:
         jsCode = pj.api_internal.buildBundle(
-                            args[0],
-                            path=options.path.split(':'))
+                            mainModule,
+                            path=codepath)
         sys.stdout.write(jsCode)
     except Exception as e:
         writeExceptionJsonAndDie(e)
