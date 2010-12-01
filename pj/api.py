@@ -57,6 +57,9 @@ def _runViaSubprocessIfNeeded(name, args, kwargs, input, subprocessArgs):
         return f(*args, **kwargs)
     else:
         
+        if isinstance(input, unicode):
+            input = input.encode('utf-8')
+        
         pythonPath = parentOf(parentOf(os.path.abspath(__file__)))
         if os.environ.get('PYTHONPATH'):
             pythonPath += ':' + os.environ.get('PYTHONPATH')
