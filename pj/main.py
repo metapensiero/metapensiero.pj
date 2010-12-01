@@ -21,10 +21,11 @@ def main():
     
     options, args = parser.parse_args()
     
+    codepath = None
     if options.path is not None:
         codepath = options.path.split(':')
-    else:
-        codepath = None
+    elif os.environ.get('PYXC_PJ_PATH'):
+        codepath = os.environ['PYXC_PJ_PATH'].strip(':').split(':')
     
     if options.codeToCode:
         codeToCode()
