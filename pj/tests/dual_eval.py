@@ -221,6 +221,12 @@ except Exception as e:
     pass
 5
 
+try:
+    raise Exception
+except Exception as e:
+    pass
+5
+
 class Foo:
     def __init__(self):
         self.msg = 'foo'

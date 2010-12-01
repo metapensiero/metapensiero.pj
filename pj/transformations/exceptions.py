@@ -38,19 +38,18 @@ def Raise(t, x):
     
     if isinstance(x.exc, ast.Name):
         name = x.exc.id
-        message = ''
+        arg = JSStr('')
     else:
         assert isinstance(x.exc, ast.Call)
         assert isinstance(x.exc.func, ast.Name)
         assert len(x.exc.args) == 1
-        assert isinstance(x.exc.args[0], ast.Str)
         assert all((not x) for x in (
             x.exc.keywords, x.exc.starargs, x.exc.kwargs))
         name = x.exc.func.id
-        message = x.exc.args[0].s
+        arg = x.exc.args[0]
     
     return JSThrowStatement(
                 JSDict(
                     [JSStr('name'), JSStr('message')],
-                    [JSStr(name), JSStr(message)]))
+                    [JSStr(name), arg]))
 
