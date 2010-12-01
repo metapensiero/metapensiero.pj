@@ -243,6 +243,30 @@ class JSOpMod(JSNode):
     def emit(self):
         return '%'
 
+class JSOpRShift(JSNode):
+    def emit(self):
+        return '>>'
+
+class JSOpLShift(JSNode):
+    def emit(self):
+        return '<<'
+
+class JSOpBitXor(JSNode):
+    def emit(self):
+        return '^'
+
+class JSOpBitAnd(JSNode):
+    def emit(self):
+        return '&'
+
+class JSOpBitOr(JSNode):
+    def emit(self):
+        return '|'
+
+class JSOpInvert(JSLeftSideUnaryOp):
+    def emit(self):
+        return '~'
+
 class JSOpStrongEq(JSNode):
     def emit(self):
         return '==='

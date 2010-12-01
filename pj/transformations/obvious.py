@@ -179,6 +179,26 @@ def Div(t, x):
 def Mod(t, x):
     return JSOpMod()
 
+# <code>&gt;&gt;</code>
+def RShift(t, x):
+    return JSOpRShift()
+
+# <code>&lt;&lt;</code>
+def LShift(t, x):
+    return JSOpLShift()
+
+def BitXor(t, x):
+    return JSOpBitXor()
+
+def BitAnd(t, x):
+    return JSOpBitAnd()
+
+def BitOr(t, x):
+    return JSOpBitOr()
+
+def Invert(t, x):
+    return JSOpInvert()
+
 # <code>and</code>
 def And(t, x):
     return JSOpAnd()
