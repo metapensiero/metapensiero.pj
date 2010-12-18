@@ -33,7 +33,7 @@ def jsView(request, **kwargs):
     path = settings.PJ_PATH
     closureMode = getattr(settings, 'PJ_CLOJURE_MODE', None) or request.GET.get('mode')
     
-    js = pj.api.buildBundle(main, path=path)
+    js = pj.api.buildBundle(main, path=path)['js']
     
     if kwargs.get('jsPrefix', None):
       js = kwargs['jsPrefix'] + '\n\n' + js

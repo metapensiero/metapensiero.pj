@@ -26,7 +26,7 @@ def codeToCode(py):
 
 
 #### Build Bundle
-def buildBundle(mainModule, path=None):
+def buildBundle(mainModule, path=None, includeSource=False, prependJs=None):
     
     assert path
     
@@ -36,10 +36,20 @@ def buildBundle(mainModule, path=None):
     
     jsArr = []
     topLevelNames = set()
+    
+    sourceDict = {}
+    
     for module in modules:
         codePath = sourcePath.pathForModule(module)
         with open(codePath, 'rb') as f:
-            py = f.read()
+            
+            py = str(f.read(), 'utf-8')
+            
+            sourceDict[module] = {
+                'path': codePath,
+                'code': py,
+                'module': module,
+            }
             
             if codePath.endswith('.js'):
                 js = py
@@ -62,15 +72,24 @@ def buildBundle(mainModule, path=None):
     else:
         varJs = ''
     
-    js = '''(function(){
-  %s
-  %s
-  %s
-})();''' % (
-                '\n'.join(t.snippets),
-                varJs,
-                '\n'.join(jsArr))
+    jsPrefix = ''.join([
+                    (prependJs + '\n\n') if prependJs is not None else '',
+                    '(function(){\n\n',
+                    '\n'.join(t.snippets), '\n\n',
+                    varJs, '\n\n'])
     
-    return js
+    js = ''.join([
+                    jsPrefix,
+                    ''.join(jsArr),
+                    '\n\n})();'])
+    
+    info = {
+        'js': js,
+    }
+    
+    if includeSource:
+        info['sourceDict'] = sourceDict
+    
+    return info
 
 

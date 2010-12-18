@@ -46,10 +46,11 @@ def buildBundle(mainModule, path=None):
                     },
                     # input, args &mdash; for the Python 3 subprocess
                     None,
-                    args)
+                    args,
+                    parseJson=True)
 
 
-def _runViaSubprocessIfNeeded(name, args, kwargs, input, subprocessArgs):
+def _runViaSubprocessIfNeeded(name, args, kwargs, input, subprocessArgs, parseJson=False):
     
     if usingPython3():
         import pj.api_internal
@@ -78,7 +79,10 @@ def _runViaSubprocessIfNeeded(name, args, kwargs, input, subprocessArgs):
             out, err = p.communicate(input=input)
         
         if p.returncode == 0:
-            return unicode(out, 'utf-8')
+            result = unicode(out, 'utf-8')
+            if parseJson:
+                result = json.loads(result)
+            return result
         else:
             try:
                 errInfo = json.loads(err)

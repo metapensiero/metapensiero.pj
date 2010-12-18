@@ -79,10 +79,10 @@ def runNodeJs(path, codepath):
 # See [pj.api_internal.buildBundle](api_internal.py)
 def buildBundle(mainModule, codepath):
     try:
-        jsCode = pj.api_internal.buildBundle(
+        info = pj.api_internal.buildBundle(
                             mainModule,
                             path=codepath)
-        sys.stdout.write(jsCode)
+        sys.stdout.write(json.dumps(info))
     except Exception as e:
         writeExceptionJsonAndDie(e)
 
