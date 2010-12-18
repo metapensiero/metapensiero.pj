@@ -2,7 +2,7 @@
 from pyxc.util import usingPython3
 assert usingPython3()
 
-import sys, os, ast
+import sys, os, ast, json, hashlib
 from pyxc.util import rfilter, parentOf, randomToken
 
 from pyxc.pyxc_exceptions import NoTransformationForNode
@@ -18,6 +18,99 @@ class TargetNode:
         return ''.join(
                     str(x) for x in
                         self.emit(*self.transformedArgs))
+
+
+#### SourceMap
+
+class SourceMap:
+    
+    def __init__(self, fileString, nextMappingId=0):
+        
+        self.fileString = fileString
+        
+        self.nextMappingId = nextMappingId
+        self.node_mappingId_map = {}
+        self.mappings = []
+        
+        self.linemaps = [[]]
+        self.strings = []
+    
+    def getCode(self):
+        return ''.join(self.strings)
+    
+    def handleNode(self, node, parentMappingId=0):
+        
+        mappingId = self.mappingIdForNode(node)
+        if mappingId is None:
+            mappingId = parentMappingId
+        
+        arr = node.emit(*node.transformedArgs)
+        for x in arr:
+            if isinstance(x, str):
+                if x:
+                    # Store the string
+                    self.strings.append(x)
+                    
+                    # Update self.linemaps
+                    linemap = self.linemaps[-1]
+                    for c in x:
+                        linemap.append(mappingId)
+                        if c == '\n':
+                            linemap = []
+                            self.linemaps.append(linemap)
+            else:
+                assert isinstance(x, TargetNode)
+                self.handleNode(x, parentMappingId=mappingId)
+    
+    def mappingIdForNode(self, node):
+        if node in self.node_mappingId_map:
+            return self.node_mappingId_map[node]
+        else:
+            lineno = getattr(node.pyNode, 'lineno', None)
+            col_offset = getattr(node.pyNode, 'col_offset', None)
+            if (lineno is None) or (col_offset is None):
+                return None
+            else:
+                mappingId = self.nextMappingId
+                self.nextMappingId += 1
+                self.node_mappingId_map[node] = mappingId
+                self.mappings.append([self.fileString, lineno, col_offset])
+                return mappingId
+
+
+def exportSourceMap(linemaps, mappings, sourceDict):
+    
+    # Get filekeys from mappings
+    filekeys = []
+    filekeysSet = set()
+    for tup in mappings:
+        k = tup[0]
+        if k not in filekeysSet:
+            filekeysSet.add(k)
+            filekeys.append(k)
+    
+    arr = ['/** Begin line maps. **/{ "file" : "", "count": %d }\n' % len(filekeys)]
+    
+    for linemap in linemaps:
+        arr.append(json.dumps(linemap, separators=(',', ':')) + '\n')
+    
+    arr.append('/** Begin file information. **/\n')
+    for k in filekeys:
+        sourceInfo = sourceDict[k]
+        arr.append('%s\n' % json.dumps([{
+            'module': sourceInfo['module'],
+            'sha1': hashlib.sha1(sourceInfo['code'].encode('utf-8')).hexdigest(),
+            'path': sourceInfo['path'],
+            'name': sourceInfo['path'].split('/')[-1],
+            'k': k,
+        }]))
+    arr.append('/** Begin mapping definitions. **/\n')
+    
+    for mapping in mappings:
+        arr.append(json.dumps(mapping, separators=(',', ':')) + '\n')
+    
+    return ''.join(arr)
+
 
 #### Transformer
 

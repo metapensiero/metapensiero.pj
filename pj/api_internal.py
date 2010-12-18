@@ -2,7 +2,7 @@
 import ast
 
 from pyxc.importing import SourcePath, orderedModules
-from pyxc.transforming import Transformer
+from pyxc.transforming import Transformer, SourceMap, exportSourceMap
 from pyxc.util import topLevelNamesInBody
 
 import pj.js_ast
@@ -26,7 +26,7 @@ def codeToCode(py):
 
 
 #### Build Bundle
-def buildBundle(mainModule, path=None, includeSource=False, prependJs=None):
+def buildBundle(mainModule, path=None, createSourceMap=False, includeSource=False, prependJs=None):
     
     assert path
     
@@ -37,15 +37,21 @@ def buildBundle(mainModule, path=None, includeSource=False, prependJs=None):
     jsArr = []
     topLevelNames = set()
     
+    linemaps = []
+    mappings = []
+    
     sourceDict = {}
     
+    i = 0
     for module in modules:
+        fileKey = str(i)
+        i += 1
         codePath = sourcePath.pathForModule(module)
         with open(codePath, 'rb') as f:
             
             py = str(f.read(), 'utf-8')
             
-            sourceDict[module] = {
+            sourceDict[fileKey] = {
                 'path': codePath,
                 'code': py,
                 'module': module,
@@ -63,7 +69,20 @@ def buildBundle(mainModule, path=None, includeSource=False, prependJs=None):
                 
                 # py &rarr; js
                 jsAst = t.transformCode(py)
-                js = str(jsAst)
+                if createSourceMap:
+                    
+                    sm = SourceMap(fileKey, nextMappingId=len(mappings))
+                    sm.handleNode(jsAst)
+                    
+                    js = sm.getCode() + '\n'
+                    
+                    assert len(sm.linemaps) == len(js.split('\n')) - 1
+                    
+                    linemaps += sm.linemaps
+                    mappings += sm.mappings
+                    
+                else:
+                    js = str(jsAst)
             
             jsArr.append(js)
     
@@ -78,6 +97,10 @@ def buildBundle(mainModule, path=None, includeSource=False, prependJs=None):
                     '\n'.join(t.snippets), '\n\n',
                     varJs, '\n\n'])
     
+    linemaps = (
+                    ([[]] * (len(jsPrefix.split('\n')) - 1)) +
+                    linemaps)
+    
     js = ''.join([
                     jsPrefix,
                     ''.join(jsArr),
@@ -87,8 +110,15 @@ def buildBundle(mainModule, path=None, includeSource=False, prependJs=None):
         'js': js,
     }
     
+    if createSourceMap:
+        info['sourceMap'] = exportSourceMap(linemaps, mappings, sourceDict)
+    
     if includeSource:
-        info['sourceDict'] = sourceDict
+        info['sourceDict'] = dict(
+                                    (
+                                        sourceDict[k]['module'],
+                                        sourceDict[k])
+                                    for k in sourceDict)
     
     return info
 
