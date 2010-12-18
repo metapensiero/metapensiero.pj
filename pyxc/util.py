@@ -1,9 +1,20 @@
-# Most of these items also appear in
-# [github.com/andrewschaaf/util](http://github.com/andrewschaaf/util)
 
 import json, sys, traceback, re, random, copy, ast
 import os, subprocess, tempfile
 from subprocess import check_call, call
+
+
+def delimitedList(item, arr, dest=None, delimAtEnd=False):
+    if dest is None:
+        dest = []
+    if arr:
+        dest.append(arr[0])
+    for i in range(1, len(arr)):
+        dest.append(item)
+        dest.append(arr[i])
+    if delimAtEnd:
+        dest.append(item)
+    return dest
 
 
 def usingPython3():

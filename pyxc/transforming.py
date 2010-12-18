@@ -15,13 +15,9 @@ class TargetNode:
         self.args = args
     
     def __str__(self):
-        args = []
-        for y in self.transformedArgs:
-            if isinstance(y, list) or isinstance(y, tuple):
-                args.append([str(child) for child in y])
-            else:
-                args.append(str(y))
-        return self.emit(*args)
+        return ''.join(
+                    str(x) for x in
+                        self.emit(*self.transformedArgs))
 
 #### Transformer
 

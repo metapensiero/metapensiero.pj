@@ -6,6 +6,8 @@ import ast, json, re
 from functools import reduce
 
 from pyxc.transforming import TargetNode
+from pyxc.util import delimitedList
+
 
 JS_KEYWORDS = set([
     'break', 'case', 'catch', 'continue', 'default', 'delete', 'do', 'else',
@@ -31,22 +33,22 @@ class JSLeftSideUnaryOp(JSNode):
 
 class JSStatements(JSNode):
     def emit(self, statements):
-        return ''.join((x + ';\n') for x in statements)
+        return delimitedList(';\n', statements, delimAtEnd=True)
 
 class JSPass(JSNode):
     def emit(self):
-        return ''
+        return ['']
 
 class JSCommentBlock(JSNode):
     def emit(self, text):
         assert text.find('*/') == -1
-        return '/* %s */' % text
+        return ['/* ', text, ' */']
 
 #### Statements
 
 class JSExpressionStatement(JSStatement):
     def emit(self, value):
-        return value
+        return [value]
 
 class JSVarStatement(JSStatement):
     def emit(self, keys, values):
@@ -54,240 +56,286 @@ class JSVarStatement(JSStatement):
             assert key not in JS_KEYWORDS, key
         assert len(keys) > 0
         assert len(keys) == len(values)
-        return 'var %s' % ', '.join(
-                    ('%s = %s' % (keys[i], values[i])) if self.transformedArgs[1][i] is not None else ('%s' % (keys[i]))
-                    for i in range(len(keys)))
+        
+        arr = ['var ']
+        for i in range(len(keys)):
+            if i > 0:
+                arr.append(', ')
+            arr.append(keys[i])
+            if values[i] is not None:
+                arr.append(' = ')
+                arr.append(values[i])
+        return arr
 
 class JSAugAssignStatement(JSStatement):
     def emit(self, target, op, value):
-        return '%s %s= %s' % (target, op, value)
+        return [target, ' ', op, '= ', value]
 
 class JSIfStatement(JSStatement):
     def emit(self, test, body, orelse):
-        if self.transformedArgs[2]:
-            return 'if (%s) {%s} else {%s}' % (
-                        test, ';'.join(body), ';'.join(orelse))
-        else:
-            return 'if (%s) {%s}' % (test, ';'.join(body))
+        
+        arr = ['if (', test, ') {']
+        delimitedList(';', body, dest=arr)
+        arr.append('}')
+        
+        if orelse:
+            arr.append('else {')
+            delimitedList(';', orelse, dest=arr)
+            arr.append('}')
+        
+        return arr
 
 class JSWhileStatement(JSStatement):
     def emit(self, test, body):
-        return 'while (%s) {%s}' % (test, ';'.join(body))
+        arr = ['while (', test, ') {']
+        delimitedList(';', body, dest=arr)
+        arr.append('}')
+        return arr
 
 class JSForStatement(JSStatement):
     def emit(self, left, test, right, body):
-        return 'for (%s; %s; %s) {%s}' % (left, test, right, ';\n'.join(body))
+        arr = ['for (', left, '; ', test, '; ', right, ') {']
+        delimitedList(';', body, dest=arr)
+        arr.append('}')
+        return arr
 
 class JSForeachStatement(JSStatement):
     def emit(self, target, source, body):
-        return 'for (var %s in %s) {%s}' % (target, source, ';\n'.join(body))
+        arr = ['for (var ', target, ' in ', source, ') {']
+        delimitedList(';', body, dest=arr)
+        arr.append('}')
+        return arr
 
 class JSReturnStatement(JSStatement):
     def emit(self, value):
-        if self.transformedArgs[0]:
-            return 'return %s' % value
+        if value:
+            return ['return ', value]
         else:
-            return 'return'
+            return ['return']
 
 class JSBreakStatement(JSStatement):
     def emit(self):
-        return 'break'
+        return ['break']
 
 class JSContinueStatement(JSStatement):
     def emit(self):
-        return 'continue'
+        return ['continue']
 
 class JSDeleteStatement(JSStatement):
     def emit(self, obj, key):
-        return 'delete %s[%s]' % (obj, key)
+        return ['delete ', obj, '[', key, ']']
 
 class JSTryCatchStatement(JSStatement):
     def emit(self, tryBody, target, catchBody):
-        return 'try {%s} catch(%s) {%s}' % (
-                    ';\n'.join(tryBody),
-                    target,
-                    ';\n'.join(catchBody))
+        arr = ['try {']
+        delimitedList(';', tryBody, dest=arr)
+        arr.append('} catch(')
+        arr.append(target)
+        arr.append(') {')
+        delimitedList(';', catchBody, dest=arr)
+        arr.append('}')
+        return arr
 
 class JSThrowStatement(JSStatement):
-    def emit(self, exceptionObject):
-        return 'throw %s' % exceptionObject
+    def emit(self, obj):
+        return ['throw ', obj]
 
 #### Expressions
 
 class JSList(JSNode):
     def emit(self, elts):
-        return '[%s]' % ', '.join(elts)
+        arr = ['[']
+        delimitedList(', ', elts, dest=arr)
+        arr.append(']')
+        return arr
 
 class JSDict(JSNode):
     def emit(self, keys, values):
-        return '{%s}' % ', '.join(
-                ('%s: %s' % (k, v))
-                for k, v in zip(keys, values))
+        arr = ['{']
+        for i in range(len(keys)):
+            if i > 0:
+                arr.append(', ')
+            arr.append(keys[i])
+            arr.append(': ')
+            arr.append(values[i])
+        arr.append('}')
+        return arr
 
 class JSFunction(JSNode):
     def emit(self, name, args, body):
-        return '(function %s(%s){%s})' % (
-                        '' if self.transformedArgs[0] is None else name,
-                        ', '.join(args),
-                        ';\n'.join(body))
+        arr = ['(function ']
+        if name is not None:
+            arr.append(name)
+        arr.append('(')
+        delimitedList(', ', args, dest=arr)
+        arr.append('){')
+        delimitedList(';\n', body, dest=arr)
+        arr.append('})')
+        return arr
 
 class JSAssignmentExpression(JSNode):
     def emit(self, left, right):
-        return '(%s = %s)' % (left, right)
+        return ['(', left, ' = ', right, ')']
 
 class JSIfExp(JSNode):
     def emit(self, test, body, orelse):
-        return '(%s ? %s : %s)' % (test, body, orelse)
+        return ['(', test, ' ? ', body, ' : ', orelse, ')']
 
 class JSCall(JSNode):
     def emit(self, func, args):
-        return '(%s(%s))' % (func, ', '.join(args))
+        arr = ['(', func, '(']
+        delimitedList(', ', args, dest=arr)
+        arr.append('))')
+        return arr
 
 class JSNewCall(JSNode):
     def emit(self, func, args):
-        return '(new %s(%s))' % (func, ', '.join(args))
+        arr = ['(new ', func, '(']
+        delimitedList(', ', args, dest=arr)
+        arr.append('))')
+        return arr
 
 class JSAttribute(JSNode):
     def emit(self, obj, s):
         assert re.search(r'^[a-zA-Z_][a-zA-Z_0-9]*$', s)
         assert s not in JS_KEYWORDS
-        return '%s.%s' % (obj, s)
+        return [obj, '.', s]
 
 class JSSubscript(JSNode):
     def emit(self, obj, key):
-        return '%s[%s]' % (obj, key)
+        return [obj, '[', key, ']']
 
 class JSBinOp(JSNode):
     def emit(self, left, op, right):
-        return '(%s %s %s)' % (left, op, right)
+        return ['(', left, ' ', op, ' ', right, ')']
 
 class JSUnaryOp(JSNode):
     def emit(self, op, right):
-        assert isinstance(self.transformedArgs[0], JSLeftSideUnaryOp)
-        return '(%s %s)' % (op, right)
+        assert isinstance(op, JSLeftSideUnaryOp)
+        return ['(', op, ' ', right, ')']
 
 #### Atoms
 
 class JSNum(JSNode):
     def emit(self, x):
-        return str(x)
+        return [str(x)]
 
 class JSStr(JSNode):
     def emit(self, s):
-        return json.dumps(s)
+        return [json.dumps(s)]
 
 class JSName(JSNode):
     def emit(self, name):
         assert name not in JS_KEYWORDS, name
-        return '%s' % name
+        return [name]
 
 class JSThis(JSNode):
     def emit(self):
-        return 'this'
+        return ['this']
 
 class JSTrue(JSNode):
     def emit(self):
-        return 'true'
+        return ['true']
 
 class JSFalse(JSNode):
     def emit(self):
-        return 'false'
+        return ['false']
 
 class JSNull(JSNode):
     def emit(self):
-        return 'null'
+        return ['null']
 
 #### Ops
 
 class JSOpIn(JSNode):
     def emit(self):
-        return 'in'
+        return ['in']
 
 class JSOpAnd(JSNode):
     def emit(self):
-        return '&&'
+        return ['&&']
 
 class JSOpOr(JSNode):
     def emit(self):
-        return '||'
+        return ['||']
 
 class JSOpNot(JSLeftSideUnaryOp):
     def emit(self):
-        return '!'
+        return ['!']
 
 class JSOpInstanceof(JSNode):
     def emit(self):
-        return 'instanceof'
+        return ['instanceof']
 
 class JSOpTypeof(JSLeftSideUnaryOp):
     def emit(self):
-        return 'typeof'
+        return ['typeof']
 
 class JSOpAdd(JSNode):
     def emit(self):
-        return '+'
+        return ['+']
 
 class JSOpSub(JSNode):
     def emit(self):
-        return '-'
+        return ['-']
 
 class JSOpMult(JSNode):
     def emit(self):
-        return '*'
+        return ['*']
 
 class JSOpDiv(JSNode):
     def emit(self):
-        return '/'
+        return ['/']
 
 class JSOpMod(JSNode):
     def emit(self):
-        return '%'
+        return ['%']
 
 class JSOpRShift(JSNode):
     def emit(self):
-        return '>>'
+        return ['>>']
 
 class JSOpLShift(JSNode):
     def emit(self):
-        return '<<'
+        return ['<<']
 
 class JSOpBitXor(JSNode):
     def emit(self):
-        return '^'
+        return ['^']
 
 class JSOpBitAnd(JSNode):
     def emit(self):
-        return '&'
+        return ['&']
 
 class JSOpBitOr(JSNode):
     def emit(self):
-        return '|'
+        return ['|']
 
 class JSOpInvert(JSLeftSideUnaryOp):
     def emit(self):
-        return '~'
+        return ['~']
 
 class JSOpStrongEq(JSNode):
     def emit(self):
-        return '==='
+        return ['===']
 
 class JSOpStrongNotEq(JSNode):
     def emit(self):
-        return '!=='
+        return ['!==']
 
 class JSOpLt(JSNode):
     def emit(self):
-        return '<'
+        return ['<']
 
 class JSOpLtE(JSNode):
     def emit(self):
-        return '<='
+        return ['<=']
 
 class JSOpGt(JSNode):
     def emit(self):
-        return '>'
+        return ['>']
 
 class JSOpGtE(JSNode):
     def emit(self):
-        return '>='
+        return ['>=']
 
