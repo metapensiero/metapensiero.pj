@@ -4,6 +4,17 @@ import os, subprocess, tempfile
 from subprocess import check_call, call
 
 
+def simplePost(url, POST={}):
+    try:
+        import urllib.parse, urllib.request
+        data = urllib.parse.urlencode(POST)
+        return urllib.request.urlopen(url, data).read()
+    except ImportError:
+        import urllib, urllib2
+        data = urllib.urlencode(POST)
+        return urllib2.urlopen(urllib2.Request(url, data)).read()
+
+
 def delimitedList(item, arr, dest=None, delimAtEnd=False):
     if dest is None:
         dest = []
