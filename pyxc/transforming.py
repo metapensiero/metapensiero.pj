@@ -163,7 +163,7 @@ class Transformer:
             for t in self.transformationsDict.get(x.__class__.__name__, []):
                 y = t(self, x)
                 if y is not None:
-                    self._finalizeTargetNode(y)
+                    self._finalizeTargetNode(y, pyNode=x)
                     return y
             raise NoTransformationForNode(repr(x))
         
@@ -175,7 +175,8 @@ class Transformer:
             # e.g. an integer
             return x
     
-    def _finalizeTargetNode(self, y):
+    def _finalizeTargetNode(self, y, pyNode=None):
+        y.pyNode = pyNode
         y.transformedArgs = [self._transformNode(arg) for arg in y.args]
         y.transformer = self
 
