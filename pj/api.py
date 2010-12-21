@@ -29,21 +29,25 @@ def codeToCode(pythonCode):
                     ['--code-to-code'])
 
 #### Build Bundle
-def buildBundle(mainModule, path=None):
-    
+def buildBundle(mainModule, **kwargs):
+    '''
+    kwargs:
+        path=None, createSourceMap=False, includeSource=False, prependJs=None
+    '''
+    path = kwargs.get('path')
     assert path is not None
     
     args = ['--build-bundle', mainModule]
     if path is not None:
         args.append('--path=%s' % ':'.join(path))
+    if kwargs.get('createSourceMap'):
+        args.append('--create-source-map')
     
     return _runViaSubprocessIfNeeded(
                     # name, args, kwargs &mdash; if we're running Python 3
                     'buildBundle',
                     [mainModule],
-                    {
-                        'path': path,
-                    },
+                    kwargs,
                     # input, args &mdash; for the Python 3 subprocess
                     None,
                     args,

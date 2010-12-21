@@ -16,7 +16,10 @@ from pj.nodejs import runViaNode
 def main():
     
     parser = optparse.OptionParser()
+    
     parser.add_option('-p', '--path', dest='path', default=None)
+    parser.add_option('-M', '--create-source-map', dest='createSourceMap', default=False, action='store_true')
+    
     parser.add_option('-C', '--code-to-code', dest='codeToCode', default=False, action='store_true')
     parser.add_option('-B', '--build-bundle', dest='buildBundle', default=False, action='store_true')
     parser.add_option('-E', '--run-exception-server',
@@ -38,7 +41,7 @@ def main():
     
     # Build bundle
     elif options.buildBundle:
-        buildBundle(args[0], codepath)
+        buildBundle(args[0], codepath, options.createSourceMap)
     
     # Run via node
     elif len(args) == 1:
@@ -69,11 +72,12 @@ def codeToCode():
 
 #### Build Bundle
 # See [pj.api_internal.buildBundle](api_internal.py)
-def buildBundle(mainModule, codepath):
+def buildBundle(mainModule, codepath, createSourceMap):
     try:
         info = pj.api_internal.buildBundle(
                             mainModule,
-                            path=codepath)
+                            path=codepath,
+                            createSourceMap=createSourceMap)
         sys.stdout.write(json.dumps(info))
     except Exception as e:
         writeExceptionJsonAndDie(e)
