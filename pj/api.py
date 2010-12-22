@@ -107,6 +107,11 @@ def closureCompile(js, closureMode):
     if not closureMode:
         return js
     
+    if isinstance(closureMode, list) or isinstance(closureMode, tuple):
+        for mode in closureMode:
+            js = closureCompile(js, mode)
+        return js
+    
     modeArgs = {
         'pretty': [
                         '--compilation_level', 'WHITESPACE_ONLY',
