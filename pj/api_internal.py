@@ -97,14 +97,17 @@ def buildBundle(mainModule, path=None, createSourceMap=False, includeSource=Fals
                     '\n'.join(t.snippets), '\n\n',
                     varJs, '\n\n'])
     
+    jsSuffix = '\n\n})();'
+    
     linemaps = (
-                    ([[]] * (len(jsPrefix.split('\n')) - 1)) +
-                    linemaps)
+                    [([-1] * (len(s) + 2)) for s in jsPrefix.split('\n')[:-1]] + 
+                    linemaps[:-1] + 
+                    [([-1] * (len(s) + 2)) for s in jsPrefix.split('\n')])
     
     js = ''.join([
                     jsPrefix,
                     ''.join(jsArr),
-                    '\n\n})();'])
+                    jsSuffix])
     
     info = {
         'js': js,
