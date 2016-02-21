@@ -108,7 +108,7 @@ def Call_new(t, x):
     NAME_STRING = getNameString(x.func)
     
     if NAME_STRING and re.search(r'^[A-Z]', NAME_STRING):
-        assert not any([x.keywords, x.starargs, x.kwargs])
+        #assert not any([x.keywords, x.starargs, x.kwargs])
         return JSNewCall(x.func, x.args)
 
 

@@ -91,7 +91,7 @@ def IfExp(t, x):
 #
 # See [pj.transformations.special](special.py) for special cases
 def Call_default(t, x):
-    assert not any([x.keywords, x.starargs, x.kwargs])
+    #assert not any([x.keywords, x.starargs, x.kwargs])
     return JSCall(x.func, x.args)
 
 # **Attribute**

@@ -55,8 +55,8 @@ Kitteh.prototype.caption = function() {
 def ClassDef(t, x):
     
     assert not x.keywords, x.keywords
-    assert not x.starargs, x.starargs
-    assert not x.kwargs, x.kwargs
+    #assert not x.starargs, x.starargs
+    #assert not x.kwargs, x.kwargs
     assert not x.decorator_list, x.decorator_list
     
     # If the bundle you're building contains any ClassDef,
@@ -196,7 +196,7 @@ def Call_super(t, x):
 def FunctionDef(t, x):
     
     assert not x.decorator_list
-    assert not any(getattr(x.args, k) for k in [
+    assert not any(getattr(x.args, k, False) for k in [
             'vararg', 'varargannotation', 'kwonlyargs', 'kwarg',
             'kwargannotation', 'defaults', 'kw_defaults'])
     
