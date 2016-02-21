@@ -8,7 +8,7 @@
 #   * the value of the last line is the same in py and js
 #
 # Prereqs
-# 
+#
 #   * have [Rhino](http://www.mozilla.org/rhino/)'s js.jar somewhere
 #   * have the environment variable <code>RHINO_JAR</code> point to it
 
@@ -26,19 +26,19 @@ from pj.api_internal import codeToCode
 
 
 def main():
-    
+
     for py in getFragments():
-        
+
         js = codeToCode(py)
         jsValue = valueOfLastLine_js(js)
-        
+
         m = re.search(r'# Expected value: (.*)', py)
         if m:
             pyValue = json.loads(m.group(1))
         else:
             pyValue = valueOfLastLine_py(py)
-        
-        
+
+
         sys.stderr.write('%s... ' % json.dumps(py))
         if jsValue == pyValue:
             sys.stderr.write('ok.\n')
@@ -51,9 +51,9 @@ def main():
 
 
 def runJs(js):
-    
+
     rhinoPath = os.environ['RHINO_JAR']
-    
+
     try:
         out, err = check_communicate([
                             '/usr/bin/env',
@@ -322,7 +322,7 @@ x
 x = 5
 x += 2
 x'''
-    
+
     return re.split(r'\n\n[\n]*', s)
 
 

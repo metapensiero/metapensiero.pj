@@ -1,4 +1,3 @@
-
 # To learn what pyxc is doing for you behind the scenes,
 # read [pyxc.org/transformations/](http://pyxc.org/transformations/)
 
@@ -13,7 +12,7 @@ JS_KEYWORDS = set([
     'break', 'case', 'catch', 'continue', 'default', 'delete', 'do', 'else',
     'finally', 'for', 'function', 'if', 'in', 'instanceof', 'new', 'return',
     'switch', 'this', 'throw', 'try', 'typeof', 'var', 'void', 'while', 'with',
-    
+
     'abstract', 'boolean', 'byte', 'char', 'class', 'const', 'debugger',
     'double', 'enum', 'export', 'extends', 'final', 'float', 'goto',
     'implements', 'import', 'int', 'interface', 'long', 'native', 'package',
@@ -56,7 +55,7 @@ class JSVarStatement(JSStatement):
             assert key not in JS_KEYWORDS, key
         assert len(keys) > 0
         assert len(keys) == len(values)
-        
+
         arr = ['var ']
         for i in range(len(keys)):
             if i > 0:
@@ -73,16 +72,16 @@ class JSAugAssignStatement(JSStatement):
 
 class JSIfStatement(JSStatement):
     def emit(self, test, body, orelse):
-        
+
         arr = ['if (', test, ') {']
         delimitedList(';', body, dest=arr)
         arr.append('}')
-        
+
         if orelse:
             arr.append('else {')
             delimitedList(';', orelse, dest=arr)
             arr.append('}')
-        
+
         return arr
 
 class JSWhileStatement(JSStatement):
@@ -338,4 +337,3 @@ class JSOpGt(JSNode):
 class JSOpGtE(JSNode):
     def emit(self):
         return ['>=']
-

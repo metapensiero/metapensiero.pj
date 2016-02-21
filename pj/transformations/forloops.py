@@ -1,4 +1,3 @@
-
 import ast
 from pj.js_ast import *
 
@@ -17,7 +16,7 @@ def For_range(t, x):
                 isinstance(x.iter.func, ast.Name) and
                 x.iter.func.id == 'range' and
                 len(x.iter.args) in [1, 2]) and (not x.orelse):
-        
+
         NAME = x.target
         LDOTS = x.body
         if len(x.iter.args) == 1:
@@ -26,9 +25,9 @@ def For_range(t, x):
         else:
             START = x.iter.args[0]
             BOUND = x.iter.args[1]
-        
+
         __bound = t.newName()
-        
+
         return JSForStatement(
                     JSVarStatement(
                         [NAME.id, __bound],
@@ -40,7 +39,7 @@ def For_range(t, x):
 
 #### Case: Dicts
 # Transform
-#<pre>for NAME in dict(EXPR): 
+#<pre>for NAME in dict(EXPR):
 #    ...</pre>
 # to
 #<pre>var __dict = EXPR;
@@ -55,15 +54,15 @@ def For_dict(t, x):
             isinstance(x.iter.func, ast.Name) and
             x.iter.func.id == 'dict' and
             len(x.iter.args) == 1) and (not x.orelse):
-        
+
         assert isinstance(x.target, ast.Name)
-        
+
         NAME = x.target
         EXPR = x.iter.args[0]
         LDOTS = x.body
-        
+
         __dict = t.newName()
-        
+
         return JSStatements([
                     JSVarStatement(
                         [__dict],
@@ -95,17 +94,17 @@ def For_dict(t, x):
 #    ...
 #}</pre>
 def For_default(t, x):
-    
+
     assert isinstance(x.target, ast.Name)
-    
+
     NAME = x.target
     EXPR = x.iter
     LDOTS = x.body
-    
+
     __list = t.newName()
     __bound = t.newName()
     __i = t.newName()
-    
+
     return JSStatements([
                 JSVarStatement(
                     [NAME.id, __list],
@@ -138,4 +137,3 @@ def For_default(t, x):
 
 
 For = [For_range, For_dict, For_default]
-

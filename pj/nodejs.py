@@ -1,4 +1,3 @@
-
 import sys, os, json, subprocess, re, hashlib, time
 import urllib.request
 import urllib.parse
@@ -9,14 +8,14 @@ import pj.api_internal
 
 
 def runViaNode(path, codepath, exceptionServerHost, exceptionServerPort, runExceptionServer):
-    
+
     path = os.path.abspath(path)
     if not os.path.isfile(path):
         raise Exception('File not found: ' + repr(path))
     filename = path.split('/')[-1]
     module = filename.split('.')[-2]
     codepath = (codepath or []) + [parentOf(path)]
-    
+
     if exceptionServerPort:
         #LATER: nice fatal error if exception-server not installed
         prependJs = "require('exception-server').devCombo(%s);\n" % json.dumps({
@@ -24,7 +23,7 @@ def runViaNode(path, codepath, exceptionServerHost, exceptionServerPort, runExce
         })
     else:
         prependJs = None
-    
+
     info = pj.api_internal.buildBundle(
                             module,
                             path=codepath,
@@ -34,13 +33,13 @@ def runViaNode(path, codepath, exceptionServerHost, exceptionServerPort, runExce
     js = info['js']
     sourceMap = info['sourceMap']
     sourceDict = info['sourceDict']
-    
+
     with TempDir() as td:
-        
+
         jsPath = '%s/%s.js' % (td.path, filename)
         with open(jsPath, 'wb') as f:
             f.write(js.encode('utf-8'))
-        
+
         exception_server_proc = None
         if runExceptionServer:
             exception_server_proc = startExceptionServer(
@@ -64,11 +63,11 @@ def startExceptionServer(exceptionServerPort, js, sourceMap, sourceDict, jsPath)
     p = subprocess.Popen(
                             ['node', path, str(exceptionServerPort)],
                             stdout=subprocess.PIPE)
-    
+
     try:
         line = p.stdout.readline()
         assert line.startswith(b'Server ready, PYXC-PJ. Go, go, go!'), repr(line)
-    
+
         # Send it information
         jsdata = js.encode('utf-8')
         jshash = hashlib.sha1(jsdata).hexdigest()
@@ -86,10 +85,9 @@ def startExceptionServer(exceptionServerPort, js, sourceMap, sourceDict, jsPath)
                 'code_sha1': k,
                 'v': v,
             })
-    
+
     except Exception:
         p.kill()
         raise
-    
-    return p
 
+    return p

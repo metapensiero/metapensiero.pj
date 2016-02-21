@@ -1,4 +1,3 @@
-
 import subprocess, os, json
 
 
@@ -36,13 +35,13 @@ def buildBundle(mainModule, **kwargs):
     '''
     path = kwargs.get('path')
     assert path is not None
-    
+
     args = ['--build-bundle', mainModule]
     if path is not None:
         args.append('--path=%s' % ':'.join(path))
     if kwargs.get('createSourceMap'):
         args.append('--create-source-map')
-    
+
     return _runViaSubprocessIfNeeded(
                     # name, args, kwargs &mdash; if we're running Python 3
                     'buildBundle',
@@ -55,33 +54,33 @@ def buildBundle(mainModule, **kwargs):
 
 
 def _runViaSubprocessIfNeeded(name, args, kwargs, input, subprocessArgs, parseJson=False):
-    
+
     if usingPython3():
         import pj.api_internal
         f = getattr(pj.api_internal, name)
         return f(*args, **kwargs)
     else:
-        
+
         if isinstance(input, unicode):
             input = input.encode('utf-8')
-        
+
         pythonPath = parentOf(parentOf(os.path.abspath(__file__)))
         if os.environ.get('PYTHONPATH'):
             pythonPath += ':' + os.environ.get('PYTHONPATH')
-        
+
         subprocessArgs = ['/usr/bin/env',
                                     'PYTHONPATH=%s' % pythonPath,
                                     'python3.1',
                                     parentOf(os.path.abspath(__file__)) + '/pj',
                                     ] + subprocessArgs
-        
+
         if input is None:
             p = subprocess.Popen(subprocessArgs, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = p.communicate()
         else:
             p = subprocess.Popen(subprocessArgs, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
             out, err = p.communicate(input=input)
-        
+
         if p.returncode == 0:
             result = unicode(out, 'utf-8')
             if parseJson:
@@ -103,15 +102,15 @@ def _runViaSubprocessIfNeeded(name, args, kwargs, input, subprocessArgs, parseJs
 
 
 def closureCompile(js, closureMode):
-    
+
     if not closureMode:
         return js
-    
+
     if isinstance(closureMode, list) or isinstance(closureMode, tuple):
         for mode in closureMode:
             js = closureCompile(js, mode)
         return js
-    
+
     modeArgs = {
         'pretty': [
                         '--compilation_level', 'WHITESPACE_ONLY',
@@ -121,7 +120,7 @@ def closureCompile(js, closureMode):
         'advanced': [
                         '--compilation_level', 'ADVANCED_OPTIMIZATIONS'],
     }[closureMode]
-    
+
     p = subprocess.Popen([
                             '/usr/bin/env',
                             'java',
@@ -133,7 +132,5 @@ def closureCompile(js, closureMode):
     out, err = p.communicate(input=js.encode('utf-8'))
     if p.returncode != 0:
         raise Exception('Error while Closure-compiling:\n' + err)
-    
+
     return out
-
-

@@ -1,4 +1,3 @@
-
 from pyxc.util import usingPython3
 assert usingPython3()
 
@@ -10,10 +9,10 @@ from pyxc.pyxc_exceptions import NoTransformationForNode
 #### TargetNode
 
 class TargetNode:
-    
+
     def __init__(self, *args):
         self.args = args
-    
+
     def __str__(self):
         return ''.join(
                     str(x) for x in
@@ -23,34 +22,34 @@ class TargetNode:
 #### SourceMap
 
 class SourceMap:
-    
+
     def __init__(self, fileString, nextMappingId=0):
-        
+
         self.fileString = fileString
-        
+
         self.nextMappingId = nextMappingId
         self.node_mappingId_map = {}
         self.mappings = []
-        
+
         self.linemaps = [[]]
         self.strings = []
-    
+
     def getCode(self):
         return ''.join(self.strings)
-    
+
     def handleNode(self, node, parentMappingId=0):
-        
+
         mappingId = self.mappingIdForNode(node)
         if mappingId is None:
             mappingId = parentMappingId
-        
+
         arr = node.emit(*node.transformedArgs)
         for x in arr:
             if isinstance(x, str):
                 if x:
                     # Store the string
                     self.strings.append(x)
-                    
+
                     # Update self.linemaps
                     linemap = self.linemaps[-1]
                     for c in x:
@@ -61,7 +60,7 @@ class SourceMap:
             else:
                 assert isinstance(x, TargetNode)
                 self.handleNode(x, parentMappingId=mappingId)
-    
+
     def mappingIdForNode(self, node):
         if node in self.node_mappingId_map:
             return self.node_mappingId_map[node]
@@ -79,7 +78,7 @@ class SourceMap:
 
 
 def exportSourceMap(linemaps, mappings, sourceDict):
-    
+
     # Get filekeys from mappings
     filekeys = []
     filekeysSet = set()
@@ -88,12 +87,12 @@ def exportSourceMap(linemaps, mappings, sourceDict):
         if k not in filekeysSet:
             filekeysSet.add(k)
             filekeys.append(k)
-    
+
     arr = ['/** Begin line maps. **/{ "file" : "", "count": %d }\n' % len(filekeys)]
-    
+
     for linemap in linemaps:
         arr.append(json.dumps(linemap, separators=(',', ':')) + '\n')
-    
+
     arr.append('/** Begin file information. **/\n')
     for k in filekeys:
         sourceInfo = sourceDict[k]
@@ -105,40 +104,40 @@ def exportSourceMap(linemaps, mappings, sourceDict):
             'k': k,
         }]))
     arr.append('/** Begin mapping definitions. **/\n')
-    
+
     for mapping in mappings:
         arr.append(json.dumps(mapping, separators=(',', ':')) + '\n')
-    
+
     return ''.join(arr)
 
 
 #### Transformer
 
 class Transformer:
-    
+
     def __init__(self, parentModule, statementsClass):
         self.transformationsDict = loadTransformationsDict(parentModule)
         self.statementsClass = statementsClass
         self.snippets = set()
-    
+
     def transformCode(self, py):
-        
+
         top = ast.parse(py)
         body = top.body
-        
+
         self.node_parent_map = buildNodeParentMap(top)
-        
+
         transformedBody = [self._transformNode(x) for x in body]
         result = self.statementsClass(transformedBody)
         self._finalizeTargetNode(result)
-        
+
         self.node_parent_map = None
-        
+
         return result
-    
+
     def parentOf(self, node):
         return self.node_parent_map.get(node)
-    
+
     def firstAncestorSubclassing(self, node, cls):
         parent = self.parentOf(node)
         if parent is not None:
@@ -146,19 +145,19 @@ class Transformer:
                 return parent
             else:
                 return self.firstAncestorSubclassing(parent, cls)
-    
+
     def newName(self):
         #LATER: generate better names
         return randomToken(20)
-    
+
     def addSnippet(self, targetCode):
         self.snippets.add(targetCode)
-    
+
     def _transformNode(self, x):
-        
+
         if isinstance(x, list) or isinstance(x, tuple):
             return [self._transformNode(child) for child in x]
-        
+
         elif isinstance(x, ast.AST):
             for t in self.transformationsDict.get(x.__class__.__name__, []):
                 y = t(self, x)
@@ -166,15 +165,15 @@ class Transformer:
                     self._finalizeTargetNode(y, pyNode=x)
                     return y
             raise NoTransformationForNode(repr(x))
-        
+
         elif isinstance(x, TargetNode):
             self._finalizeTargetNode(x)
             return x
-        
+
         else:
             # e.g. an integer
             return x
-    
+
     def _finalizeTargetNode(self, y, pyNode=None):
         y.pyNode = pyNode
         y.transformedArgs = [self._transformNode(arg) for arg in y.args]
@@ -213,9 +212,9 @@ def loadTransformationsDict(parentModule):
 
 
 def buildNodeParentMap(top):
-    
+
     node_parent_map = {}
-    
+
     def _processNode(node):
         for k in node._fields:
             x = getattr(node, k)
@@ -225,8 +224,7 @@ def buildNodeParentMap(top):
                 if isinstance(y, ast.AST):
                     node_parent_map[y] = node
                     _processNode(y)
-    
-    _processNode(top)
-    
-    return node_parent_map
 
+    _processNode(top)
+
+    return node_parent_map

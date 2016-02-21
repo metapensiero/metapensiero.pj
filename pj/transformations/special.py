@@ -1,4 +1,3 @@
-
 import ast, re
 from pj.js_ast import *
 
@@ -95,7 +94,7 @@ def Call_len(t, x):
 #<pre>(new Foo(...))</pre>
 # More generally, this transformation applies iff a Name starting with <code>[A-Z]</code> is Called.
 def Call_new(t, x):
-    
+
     def getNameString(x):
         if isinstance(x, ast.Name):
             return x.id
@@ -104,9 +103,9 @@ def Call_new(t, x):
         elif isinstance(x, ast.Subscript):
             if isinstance(x.slice, ast.Index):
                 return str(x.slice.value)
-    
+
     NAME_STRING = getNameString(x.func)
-    
+
     if NAME_STRING and re.search(r'^[A-Z]', NAME_STRING):
         #assert not any([x.keywords, x.starargs, x.kwargs])
         return JSNewCall(x.func, x.args)
@@ -126,7 +125,7 @@ def Eq(t, x):
     return JSOpStrongEq()
 
 # <code>!=</code>
-# 
+#
 # Transform to <code>!==</code>
 def NotEq(t, x):
     return JSOpStrongNotEq()
@@ -141,4 +140,3 @@ def ImportFrom(t, x):
         assert name.asname is None
     assert x.level == 0
     return JSPass()
-

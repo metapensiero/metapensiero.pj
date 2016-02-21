@@ -1,4 +1,3 @@
-
 #### Statements
 
 import ast
@@ -37,8 +36,8 @@ def Continue(t, x):
 def Pass(t, x):
     return JSPass()
 
-# **Return** 
-# 
+# **Return**
+#
 # x.value is None for blank return statements
 def Return(t, x):
     return JSReturnStatement(x.value)
@@ -140,7 +139,7 @@ def Str(t, x):
     return JSStr(x.s)
 
 # **Name**
-# 
+#
 # {True,False,None} are Names
 def Name_default(t, x):
     cls = {
@@ -229,5 +228,3 @@ def Gt(t, x):
 # <code>&gt;=</code>
 def GtE(t, x):
     return JSOpGtE()
-
-

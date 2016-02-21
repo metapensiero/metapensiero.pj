@@ -28,25 +28,24 @@ import pj.api
 
 
 def jsView(request, **kwargs):
-    
+
     main = kwargs['main']
     path = settings.PJ_PATH
     closureMode = getattr(settings, 'PJ_CLOJURE_MODE', None) or request.GET.get('mode')
-    
+
     js = pj.api.buildBundle(main, path=path)['js']
-    
+
     if kwargs.get('jsPrefix', None):
       js = kwargs['jsPrefix'] + '\n\n' + js
-    
+
     if kwargs.get('renderTemplate', True):
       js = Template(js).render(Context({
         'DEBUG': settings.DEBUG,
       }))
-    
+
     if closureMode:
         js = pj.api.closureCompile(js, closureMode)
-    
+
     return HttpResponse(
                     js.encode('utf-8'),
                     mimetype='text/javascript; charset=utf-8')
-

@@ -1,4 +1,3 @@
-
 import json, sys, traceback, re, random, copy, ast
 import os, subprocess, tempfile
 from subprocess import check_call, call
@@ -68,12 +67,12 @@ def namesInNode(x):
 
 
 def exceptionRepr(exc_info=None):
-    
+
     if usingPython3():
         from io import StringIO
     else:
         from StringIO import StringIO
-    
+
     if not exc_info:
         exc_info = sys.exc_info()
     f = StringIO()
@@ -102,27 +101,27 @@ class CyclicGraphError(Exception): pass
 
 
 class DirectedGraph:
-    
+
     def __init__(self):
         self._graph = {}
-    
+
     def addNode(self, x):
         if x not in self._graph:
             self._graph[x] = set()
-    
+
     def addArc(self, x, y):
         self.addNode(x)
         self.addNode(y)
         self._graph[x].add(y)
-    
+
     @property
     def topologicalOrdering(self):
-        
+
         def topologicalOrderingDestructive(d):
-            
+
             if len(d) == 0:
                 return []
-            
+
             possibleInitialNodes = set(d.keys())
             for k, v in d.items():
                 if len(v) > 0:
@@ -130,33 +129,33 @@ class DirectedGraph:
             if len(possibleInitialNodes) == 0:
                 raise CyclicGraphError(repr(d))
             initialNode = possibleInitialNodes.pop()
-            
+
             for k, v in d.items():
                 v.discard(initialNode)
             del d[initialNode]
-            
+
             return [initialNode] + topologicalOrderingDestructive(d)
-        
+
         return topologicalOrderingDestructive(copy.deepcopy(self._graph))
 
 
 def rfilter(r, it, propFilter={}, invert=False):
     '''
-    
+
     >>> list(rfilter(r'^.o+$', ['foo', 'bar']))
     ['foo']
-    
+
     >>> list(rfilter(r'^.o+$', ['foo', 'bar'], invert=True))
     ['bar']
-    
+
     >>> list(rfilter(r'-(?P<x>[^-]+)-', ['fooo-baar-ooo', 'fooo-fooo-ooo'], propFilter={'x': r'o{3}'}))
     ['fooo-fooo-ooo']
-    
+
     >>> list(rfilter(r'-(?P<x>[^-]+)-', ['fooo-.*-ooo', 'fooo-fooo-ooo', 'fooo-.+-ooo'], propFilter={'x': ['.*', '.+']}))
     ['fooo-.*-ooo', 'fooo-.+-ooo']
-    
+
     '''
-    
+
     # Supports Python 2 and 3
     if isinstance(r, str):
         r = re.compile(r)
@@ -165,7 +164,7 @@ def rfilter(r, it, propFilter={}, invert=False):
             r = re.compile
     except NameError:
         pass
-    
+
     for x in it:
         m = r.search(x)
         ok = False
@@ -183,7 +182,7 @@ def rfilter(r, it, propFilter={}, invert=False):
                             if d[k] not in v:
                                 ok = False
                                 break
-        
+
         if invert:
             if not ok:
                 yield x
@@ -193,7 +192,7 @@ def rfilter(r, it, propFilter={}, invert=False):
 
 
 class SubprocessError(Exception):
-    
+
     def __init__(self, out, err, returncode):
         self.out = out
         self.err = err
@@ -224,13 +223,12 @@ def check_communicate(cmd, input='', **Popen_kwargs):
 
 
 class TempDir:
-    
+
     def __init__(self):
         self.path = tempfile.mkdtemp()
-    
+
     def __enter__(self):
         return self
-    
+
     def __exit__(self, *args):
         subprocess.check_call(['rm', '-rf', self.path])
-

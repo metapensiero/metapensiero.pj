@@ -1,4 +1,3 @@
-
 import ast
 from pj.js_ast import *
 
@@ -8,12 +7,12 @@ from pj.js_ast import *
 # or
 # <pre>[EXPR for NAME in LIST if CONDITION]</pre>
 def ListComp(t, x):
-    
+
     assert len(x.generators) == 1
     assert len(x.generators[0].ifs) <= 1
     assert isinstance(x.generators[0], ast.comprehension)
     assert isinstance(x.generators[0].target, ast.Name)
-    
+
     EXPR = x.elt
     NAME = x.generators[0].target
     LIST = x.generators[0].iter
@@ -21,12 +20,12 @@ def ListComp(t, x):
         CONDITION = x.generators[0].ifs[0]
     else:
         CONDITION = None
-    
+
     __new = t.newName()
     __old = t.newName()
     __i = t.newName()
     __bound = t.newName()
-    
+
     # Let's contruct the result from the inside out:
     #<pre>__new.push(EXPR);</pre>
     push = JSExpressionStatement(
@@ -35,7 +34,7 @@ def ListComp(t, x):
                     JSName(__new),
                     'push'),
                 [EXPR]))
-    
+
     # If needed, we'll wrap that with:
     #<pre>if (CONDITION) {
     #    <i>...push...</i>
@@ -47,7 +46,7 @@ def ListComp(t, x):
                 None)
     else:
         pushIfNeeded = push
-    
+
     # Wrap with:
     #<pre>for(
     #        var __i = 0, __bound = __old.length;
@@ -71,7 +70,7 @@ def ListComp(t, x):
                                 JSName(__old),
                                 JSName(__i))]),
                         pushIfNeeded])
-    
+
     # Wrap with:
     #<pre>function() {
     #    var __new = [], __old = LIST;
@@ -88,7 +87,7 @@ def ListComp(t, x):
             forloop,
             JSReturnStatement(
                 JSName(__new))])
-    
+
     # And finally:
     #<pre>((<i>...func...</i>).call(this))</pre>
     invoked = JSCall(
@@ -96,6 +95,5 @@ def ListComp(t, x):
                 func,
                 'call'),
             [JSThis()])
-    
-    return invoked
 
+    return invoked

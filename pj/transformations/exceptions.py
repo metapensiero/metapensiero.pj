@@ -1,4 +1,3 @@
-
 import ast
 from pj.js_ast import *
 
@@ -15,7 +14,7 @@ from pj.js_ast import *
 #catch(NAME) {
 #    ...
 #}</pre>
-# 
+#
 # This is the only form supported so far.
 def TryExcept(t, x):
     assert not x.orelse
@@ -23,11 +22,11 @@ def TryExcept(t, x):
     assert isinstance(x.handlers[0].type, ast.Name)
     assert x.handlers[0].type.id == 'Exception'
     assert x.handlers[0].name
-    
+
     NAME = x.handlers[0].name
     TRY_BODY = x.body
     CATCH_BODY = x.handlers[0].body
-    
+
     return JSTryCatchStatement(
                 TRY_BODY,
                 NAME,
@@ -35,7 +34,7 @@ def TryExcept(t, x):
 
 
 def Raise(t, x):
-    
+
     if isinstance(x.exc, ast.Name):
         name = x.exc.id
         arg = JSStr('')
@@ -47,9 +46,8 @@ def Raise(t, x):
             x.exc.keywords, x.exc.starargs, x.exc.kwargs))
         name = x.exc.func.id
         arg = x.exc.args[0]
-    
+
     return JSThrowStatement(
                 JSDict(
                     [JSStr('name'), JSStr('message')],
                     [JSStr(name), arg]))
-
