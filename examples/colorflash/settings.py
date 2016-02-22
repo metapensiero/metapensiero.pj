@@ -1,4 +1,3 @@
-
 import os, sys
 
 
@@ -32,10 +31,3 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.app_directories.load_template_source',
 )
 TEMPLATE_DIRS = [up(1) + '/templates']
-
-
-
-
-
-
-
