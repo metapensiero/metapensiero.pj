@@ -1,6 +1,5 @@
 import json, sys, traceback, re, random, copy, ast
-import os, subprocess, tempfile
-from subprocess import check_call, call
+import subprocess, tempfile
 
 
 def simplePost(url, POST={}):

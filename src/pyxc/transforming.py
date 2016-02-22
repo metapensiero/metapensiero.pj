@@ -1,10 +1,7 @@
-from pyxc.util import usingPython3
-assert usingPython3()
-
 import sys, os, ast, json, hashlib
-from pyxc.util import rfilter, parentOf, randomToken
 
 from pyxc.pyxc_exceptions import NoTransformationForNode
+from pyxc.util import rfilter, parentOf, randomToken
 
 #### TargetNode
 
