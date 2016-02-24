@@ -242,3 +242,57 @@ class TempDir:
 
     def __exit__(self, *args):
         subprocess.check_call(['rm', '-rf', self.path])
+
+
+class Line:
+
+    def __init__(self, item, indent=False, delim=False):
+        self.indent = int(indent)
+        self.delim = delim
+        if isinstance(item, (tuple, list)):
+            item = Part(*item)
+        self.item = item
+
+    def __str__(self):
+        line = self.item
+        if isinstance(line, (tuple, list)):
+            # we have something like
+            # ['if (', test, ') {']
+            line = ''.join(str(l) for l in line)
+        else:
+            line = str(line)
+        if self.delim:
+            line += ';'
+        if self.indent:
+            line = (' ' * 4 * self.indent) + line
+        line += '\n'
+        return line
+
+    def serialize(self):
+        yield self
+
+    def __repr__(self):
+        return '<%s indent: %d, "%s">' % (self.__class__.__name__,
+                                          self.indent, str(self))
+
+class Part:
+
+    def __init__(self, *items):
+        self.items = []
+        for i in items:
+            if isinstance(i, (str, Part)):
+                self.items.append(i)
+            elif inspect.isgenerator(i):
+                self.items.extend(i)
+            else:
+                raise ValueError
+
+    def __str__(self):
+        return ''.join(str(i) for i in self.items)
+
+    def serialize(self):
+        yield self
+
+    def __repr__(self):
+        return '<%s, "%s">' % (self.__class__.__name__,
+                               str(self))

@@ -8,7 +8,7 @@ import os
 import sys
 
 from pyxc.pyxc_exceptions import NoTransformationForNode
-from pyxc.util import rfilter, parentOf, randomToken
+from pyxc.util import rfilter, parentOf, randomToken, Line, Part
 
 #### TargetNode
 
@@ -19,11 +19,43 @@ class TargetNode:
 
     def __str__(self):
         return ''.join(
-                    str(x) for x in
-                        self.emit(*self.transformedArgs))
+            str(x) for x in
+            self.serialize())
 
+    def serialize(self):
+        for a in self.emit(*self.transformed_args):
+            yield from a.serialize()
 
-#### SourceMap
+    def lines(self, items, *, indent=False, delim=False):
+        if not isinstance(items, (tuple, list)):
+            items = (items,)
+        for i in self._chain(items):
+            yield self.line(i, indent=indent, delim=delim)
+
+    def line(self, item, indent=False, delim=False):
+        if isinstance(item, Line):
+            item.indent += int(indent)
+            l = item
+        elif isinstance(item, (tuple, list)):
+            item = tuple(self._chain(item))
+            l = Line(item, indent, delim)
+        else:
+            l = Line(item, indent, delim)
+        return l
+
+    def part(self, *items):
+        return Part(*self._expand(items))
+
+    def _expand(self, items):
+        return [i.serialize() if isinstance(i, TargetNode) else i for i in items]
+
+    def _chain(self, items):
+        for i in self._expand(items):
+            if inspect.isgenerator(i):
+                yield from i
+            else:
+                yield i
+
 
 class SourceMap:
 

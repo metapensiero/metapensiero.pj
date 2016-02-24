@@ -5,7 +5,7 @@ import ast, json, re
 from functools import reduce
 
 from pyxc.transforming import TargetNode
-from pyxc.util import delimitedList
+from pyxc.util import delimited
 
 
 JS_KEYWORDS = set([
@@ -32,31 +32,36 @@ class JSLeftSideUnaryOp(JSNode):
 
 class JSStatements(JSNode):
     def emit(self, statements):
-        return delimitedList(';\n', statements, delimAtEnd=True)
+        for s in statements:
+            yield s
 
 class JSPass(JSNode):
     def emit(self):
-        return ['']
+        return
+
 
 class JSCommentBlock(JSNode):
     def emit(self, text):
         assert text.find('*/') == -1
-        return ['/* ', text, ' */']
+        yield self.part('/* ', text, ' */')
 
 #### Statements
 
+
 class JSExpressionStatement(JSStatement):
     def emit(self, value):
-        return [value]
+        yield self.part(value)
 
-class JSVarStatement(JSStatement):
-    def emit(self, keys, values):
+
+class JSVarDeclarer(JSStatement):
+
+    def with_kind(self, kind, keys, values):
         for key in keys:
             assert key not in JS_KEYWORDS, key
         assert len(keys) > 0
         assert len(keys) == len(values)
 
-        arr = ['var ']
+        arr = ['%s ' % kind]
         for i in range(len(keys)):
             if i > 0:
                 arr.append(', ')
@@ -64,89 +69,103 @@ class JSVarStatement(JSStatement):
             if values[i] is not None:
                 arr.append(' = ')
                 arr.append(values[i])
-        return arr
+        yield self.part(*arr)
+
+
+class JSVarStatement(JSVarDeclarer):
+    def emit(self, keys, values):
+        yield from self.with_kind('var', keys, values)
+
+
+class JSLetStatement(JSVarDeclarer):
+    def emit(self, keys, values):
+        yield from self.with_kind('let', keys, values)
+
 
 class JSAugAssignStatement(JSStatement):
     def emit(self, target, op, value):
-        return [target, ' ', op, '= ', value]
+        yield self.part(target, ' ', op, '= ', value)
+
 
 class JSIfStatement(JSStatement):
     def emit(self, test, body, orelse):
-
-        arr = ['if (', test, ') {']
-        delimitedList(';', body, dest=arr)
-        arr.append('}')
-
+        yield self.line(['if (', test, ') {'])
+        yield from self.lines(body, indent=True, delim=True)
         if orelse:
-            arr.append('else {')
-            delimitedList(';', orelse, dest=arr)
-            arr.append('}')
+            yield self.line(['} else {'])
+            yield from self.lines(orelse, indent=True, delim=True)
+            yield self.line('}')
+        else:
+            yield self.line('}')
 
-        return arr
 
 class JSWhileStatement(JSStatement):
     def emit(self, test, body):
-        arr = ['while (', test, ') {']
-        delimitedList(';', body, dest=arr)
-        arr.append('}')
-        return arr
+        yield self.line(['while (', test, ') {'])
+        yield from self.lines(body, indent=True, delim=True)
+        yield self.line('}')
+
 
 class JSForStatement(JSStatement):
     def emit(self, left, test, right, body):
-        arr = ['for (', left, '; ', test, '; ', right, ') {']
-        delimitedList(';', body, dest=arr)
-        arr.append('}')
-        return arr
+        yield self.line(['for (', left, '; ', test, '; ', right, ') {'])
+        yield from self.lines(body, indent=True, delim=True)
+        yield self.line('}')
+
 
 class JSForeachStatement(JSStatement):
     def emit(self, target, source, body):
-        arr = ['for (var ', target, ' in ', source, ') {']
-        delimitedList(';', body, dest=arr)
-        arr.append('}')
-        return arr
+        yield self.line(['for (let ', target, ' in ', source, ') {'])
+        yield from self.lines(body, indent=True, delim=True)
+        yield self.line('}')
+
 
 class JSReturnStatement(JSStatement):
     def emit(self, value):
         if value:
-            return ['return ', value]
+            result = self.line(['return ', value], delim=True)
         else:
-            return ['return']
+            result = self.line('return', delim=True)
+        yield result
 
 class JSBreakStatement(JSStatement):
     def emit(self):
-        return ['break']
+        yield self.part('break')
+
 
 class JSContinueStatement(JSStatement):
     def emit(self):
-        return ['continue']
+        yield self.part('continue')
+
 
 class JSDeleteStatement(JSStatement):
     def emit(self, obj, key):
-        return ['delete ', obj, '[', key, ']']
+        yield self.part('delete ', obj, '[', key, ']')
+
 
 class JSTryCatchStatement(JSStatement):
-    def emit(self, tryBody, target, catchBody):
-        arr = ['try {']
-        delimitedList(';', tryBody, dest=arr)
-        arr.append('} catch(')
-        arr.append(target)
-        arr.append(') {')
-        delimitedList(';', catchBody, dest=arr)
-        arr.append('}')
-        return arr
+    def emit(self, try_body, target, catch_body):
+        yield self.line('try {')
+        yield from self.lines(try_body, indent=True, delim=True)
+        yield self.line(['} catch(', target, ') {'])
+        yield from self.lines(catch_body, indent=True, delim=True)
+        yield self.line('}')
+
 
 class JSThrowStatement(JSStatement):
     def emit(self, obj):
-        return ['throw ', obj]
+        yield self.line(['throw ', obj], delim=True)
 
 #### Expressions
+
 
 class JSList(JSNode):
     def emit(self, elts):
         arr = ['[']
-        delimitedList(', ', elts, dest=arr)
+        delimited(', ', elts, dest=arr)
         arr.append(']')
-        return arr
+        yield self.part(*arr)
+
 
 class JSDict(JSNode):
     def emit(self, keys, values):
@@ -158,182 +177,220 @@ class JSDict(JSNode):
             arr.append(': ')
             arr.append(values[i])
         arr.append('}')
-        return arr
+        yield self.part(*arr)
+
 
 class JSFunction(JSNode):
     def emit(self, name, args, body):
-        arr = ['(function ']
+        arr = ['function ']
         if name is not None:
             arr.append(name)
         arr.append('(')
-        delimitedList(', ', args, dest=arr)
-        arr.append('){')
-        delimitedList(';\n', body, dest=arr)
-        arr.append('})')
-        return arr
+        delimited(', ', args, dest=arr)
+        arr.append(') {')
+        yield self.line(arr)
+        yield from self.lines(body, indent=True, delim=True)
+        yield self.line('})')
+
 
 class JSAssignmentExpression(JSNode):
     def emit(self, left, right):
-        return ['(', left, ' = ', right, ')']
+        yield self.part(left, ' = ', right)
+
 
 class JSIfExp(JSNode):
     def emit(self, test, body, orelse):
-        return ['(', test, ' ? ', body, ' : ', orelse, ')']
+        yield self.part('(', test, ' ? ', body, ' : ', orelse, ')')
+
 
 class JSCall(JSNode):
     def emit(self, func, args):
-        arr = ['(', func, '(']
-        delimitedList(', ', args, dest=arr)
-        arr.append('))')
-        return arr
+        arr = [func, '(']
+        delimited(', ', args, dest=arr)
+        arr.append(')')
+        yield self.part(*arr)
+
 
 class JSNewCall(JSNode):
     def emit(self, func, args):
-        arr = ['(new ', func, '(']
-        delimitedList(', ', args, dest=arr)
-        arr.append('))')
-        return arr
+        arr = ['new ', func, '(']
+        delimited(', ', args, dest=arr)
+        arr.append(')')
+        yield self.part(*arr)
+
 
 class JSAttribute(JSNode):
     def emit(self, obj, s):
         assert re.search(r'^[a-zA-Z_][a-zA-Z_0-9]*$', s)
         assert s not in JS_KEYWORDS
-        return [obj, '.', s]
+        yield self.part(obj, '.', s)
+
 
 class JSSubscript(JSNode):
     def emit(self, obj, key):
-        return [obj, '[', key, ']']
+        yield self.part(obj, '[', key, ']')
 
 class JSBinOp(JSNode):
     def emit(self, left, op, right):
-        return ['(', left, ' ', op, ' ', right, ')']
+        yield self.part('(', left, ' ', op, ' ', right, ')')
+
 
 class JSUnaryOp(JSNode):
     def emit(self, op, right):
         assert isinstance(op, JSLeftSideUnaryOp)
-        return ['(', op, ' ', right, ')']
+        yield self.part('(', op, ' ', right, ')')
 
 #### Atoms
 
+
 class JSNum(JSNode):
     def emit(self, x):
-        return [str(x)]
+        yield self.part(str(x))
+
 
 class JSStr(JSNode):
     def emit(self, s):
-        return [json.dumps(s)]
+        yield self.part(json.dumps(s))
+
 
 class JSName(JSNode):
     def emit(self, name):
         assert name not in JS_KEYWORDS, name
-        return [name]
+        yield self.part(name)
+
 
 class JSThis(JSNode):
     def emit(self):
-        return ['this']
+        yield self.part('this')
+
 
 class JSTrue(JSNode):
     def emit(self):
-        return ['true']
+        yield self.part('true')
+
 
 class JSFalse(JSNode):
     def emit(self):
-        return ['false']
+        yield self.part('false')
+
 
 class JSNull(JSNode):
     def emit(self):
-        return ['null']
+        yield self.part('null')
 
 #### Ops
 
+
 class JSOpIn(JSNode):
     def emit(self):
-        return ['in']
+        yield self.part('in')
+
 
 class JSOpAnd(JSNode):
     def emit(self):
-        return ['&&']
+        yield self.part('&&')
+
 
 class JSOpOr(JSNode):
     def emit(self):
-        return ['||']
+        yield self.part('||')
+
 
 class JSOpNot(JSLeftSideUnaryOp):
     def emit(self):
-        return ['!']
+        yield self.part('!')
+
 
 class JSOpInstanceof(JSNode):
     def emit(self):
-        return ['instanceof']
+        yield self.part('instanceof')
+
 
 class JSOpTypeof(JSLeftSideUnaryOp):
     def emit(self):
-        return ['typeof']
+        yield self.part('typeof')
+
 
 class JSOpAdd(JSNode):
     def emit(self):
-        return ['+']
+        yield self.part('+')
+
 
 class JSOpSub(JSNode):
     def emit(self):
-        return ['-']
+        yield self.part('-')
+
 
 class JSOpMult(JSNode):
     def emit(self):
-        return ['*']
+        yield self.part('*')
+
 
 class JSOpDiv(JSNode):
     def emit(self):
-        return ['/']
+        yield self.part('/')
+
 
 class JSOpMod(JSNode):
     def emit(self):
-        return ['%']
+        yield self.part('%')
+
 
 class JSOpRShift(JSNode):
     def emit(self):
-        return ['>>']
+        yield self.part('>>')
+
 
 class JSOpLShift(JSNode):
     def emit(self):
-        return ['<<']
+        yield self.part('<<')
+
 
 class JSOpBitXor(JSNode):
     def emit(self):
-        return ['^']
+        yield self.part('^')
+
 
 class JSOpBitAnd(JSNode):
     def emit(self):
-        return ['&']
+        yield self.part('&')
+
 
 class JSOpBitOr(JSNode):
     def emit(self):
-        return ['|']
+        yield self.part('|')
+
 
 class JSOpInvert(JSLeftSideUnaryOp):
     def emit(self):
-        return ['~']
+        yield self.part('~')
+
 
 class JSOpStrongEq(JSNode):
     def emit(self):
-        return ['===']
+        yield self.part('===')
+
 
 class JSOpStrongNotEq(JSNode):
     def emit(self):
-        return ['!==']
+        yield self.part('!==')
+
 
 class JSOpLt(JSNode):
     def emit(self):
-        return ['<']
+        yield self.part('<')
+
 
 class JSOpLtE(JSNode):
     def emit(self):
-        return ['<=']
+        yield self.part('<=')
+
 
 class JSOpGt(JSNode):
     def emit(self):
-        return ['>']
+        yield self.part('>')
+
 
 class JSOpGtE(JSNode):
     def emit(self):
-        return ['>=']
+        yield self.part('>=')
