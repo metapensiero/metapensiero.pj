@@ -29,10 +29,10 @@ def For_range(t, x):
         __bound = t.new_name()
 
         return JSForStatement(
-                    JSVarStatement(
+                    JSLetStatement(
                         [NAME.id, __bound],
                         [START, BOUND]),
-                    JSBinOp(JSName(NAME.id), JSOpLt(), __bound),
+                    JSBinOp(JSName(NAME.id), JSOpLt(), JSName(__bound)),
                     JSAugAssignStatement(
                         JSName(NAME.id), JSOpAdd(), JSNum(1)),
                     LDOTS)
