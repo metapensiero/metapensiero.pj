@@ -26,7 +26,7 @@ def For_range(t, x):
             START = x.iter.args[0]
             BOUND = x.iter.args[1]
 
-        __bound = t.newName()
+        __bound = t.new_name()
 
         return JSForStatement(
                     JSVarStatement(
@@ -61,7 +61,7 @@ def For_dict(t, x):
         EXPR = x.iter.args[0]
         LDOTS = x.body
 
-        __dict = t.newName()
+        __dict = t.new_name()
 
         return JSStatements([
                     JSVarStatement(
@@ -101,9 +101,9 @@ def For_default(t, x):
     EXPR = x.iter
     LDOTS = x.body
 
-    __list = t.newName()
-    __bound = t.newName()
-    __i = t.newName()
+    __list = t.new_name()
+    __bound = t.new_name()
+    __i = t.new_name()
 
     return JSStatements([
                 JSVarStatement(

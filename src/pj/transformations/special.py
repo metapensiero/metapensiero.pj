@@ -18,10 +18,10 @@ Expr = [Expr_docstring, Expr_default]
 def BinOp_pow(t, x):
     if isinstance(x.op, ast.Pow):
         return JSCall(
-                    JSAttribute(
-                        JSName('Math'),
-                        'pow'),
-                    [x.left, x.right])
+            JSAttribute(
+                JSName('Math'),
+                'pow'),
+            [x.left, x.right])
 
 
 from pj.transformations.obvious import BinOp_default

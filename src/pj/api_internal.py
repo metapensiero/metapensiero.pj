@@ -2,7 +2,7 @@ import ast
 
 from pyxc.importing import SourcePath, orderedModules
 from pyxc.transforming import Transformer, SourceMap, exportSourceMap
-from pyxc.util import topLevelNamesInBody
+from pyxc.util import body_top_names
 
 import pj.js_ast
 import pj.transformations
@@ -12,10 +12,10 @@ import pj.transformations
 def codeToCode(py):
 
     t = Transformer(pj.transformations, pj.js_ast.JSStatements)
-    jsAst = t.transformCode(py)
+    jsAst = t.transform_code(py)
     js = '%s\n%s' % ('\n'.join(t.snippets), str(jsAst))
 
-    names = set(topLevelNamesInBody(ast.parse(py).body))
+    names = set(body_top_names(ast.parse(py).body))
     if len(names) > 0:
         js = 'var %s;\n\n%s' % (
             ', '.join(names),
@@ -62,12 +62,12 @@ def buildBundle(mainModule, path=None, createSourceMap=False, includeSource=Fals
             else:
 
                 # Load the top-level names and confirm they're distinct
-                for name in topLevelNamesInBody(ast.parse(py).body):
+                for name in body_top_names(ast.parse(py).body):
                     assert name not in topLevelNames
                     topLevelNames.add(name)
 
                 # py &rarr; js
-                jsAst = t.transformCode(py)
+                jsAst = t.transform_code(py)
                 if createSourceMap:
 
                     sm = SourceMap(fileKey, nextMappingId=len(mappings))

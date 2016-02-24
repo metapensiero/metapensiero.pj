@@ -23,16 +23,16 @@ def simplePost(url, POST={}):
         return urllib2.urlopen(urllib2.Request(url, data)).read()
 
 
-def delimitedList(item, arr, dest=None, delimAtEnd=False):
+def delimited(delimiter, arr, dest=None, at_end=False):
     if dest is None:
         dest = []
     if arr:
         dest.append(arr[0])
     for i in range(1, len(arr)):
-        dest.append(item)
+        dest.append(delimiter)
         dest.append(arr[i])
-    if delimAtEnd:
-        dest.append(item)
+    if at_end:
+        dest.append(delimiter)
     return dest
 
 
@@ -44,15 +44,16 @@ def parentOf(path):
     return '/'.join(path.rstrip('/').split('/')[:-1])
 
 
-
-def topLevelNamesInBody(body):
+def body_top_names(body):
     names = set()
     for x in body:
-        names |= namesInNode(x)
+        names |= node_names(x)
     return names
 
 
-def localNamesInBody(body):
+def body_local_names(body):
+    """Find the names assigned to in the provided body. It doesn't descent
+    into function or class subelements."""
     names = set()
     for node in body:
         names |= namesInNode(node)

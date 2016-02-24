@@ -1,7 +1,7 @@
 import ast
 from pj.js_ast import *
 
-from pyxc.util import localNamesInBody
+from pyxc.util import body_local_names
 
 
 #### ClassDef
@@ -162,9 +162,9 @@ def Call_super(t, x):
 
         # Are we in a FuncDef and is it a method?
         METHOD = t.firstAncestorSubclassing(x, ast.FunctionDef)
-        if METHOD and isinstance(t.parentOf(METHOD), ast.ClassDef):
+        if METHOD and isinstance(t.parent_of(METHOD), ast.ClassDef):
 
-            cls = t.parentOf(METHOD)
+            cls = t.parent_of(METHOD)
             assert len(cls.bases) == 1
             assert isinstance(cls.bases[0], ast.Name)
             SUPERCLASS_STRING = cls.bases[0].id
@@ -173,22 +173,24 @@ def Call_super(t, x):
             # <code>super(...)</code> &rarr; <code>SUPERCLASS.call(this, ...)</code>
             if METHOD.name == '__init__':
                 return JSCall(
-                            JSAttribute(
-                                JSName(SUPERCLASS_STRING),
-                                'call'),
-                            [JSThis()] + x.args)
+                    JSAttribute(
+                        JSName(SUPERCLASS_STRING),
+                        'call'),
+                    [JSThis()] + x.args
+                )
 
             # <code>super(...)</code> &rarr; <code>CLASSNAME.__super__.METHODNAME.call(this, ...)</code>
             else:
                 return JSCall(
+                    JSAttribute(
+                        JSAttribute(
                             JSAttribute(
-                                JSAttribute(
-                                    JSAttribute(
-                                        JSName(CLASS_STRING),
-                                        '__super__'),
-                                    METHOD.name),
-                                'call'),
-                            [JSThis()] + x.args)
+                                JSName(CLASS_STRING),
+                                '__super__'),
+                            METHOD.name),
+                        'call'),
+                    [JSThis()] + x.args
+                )
 
 
 #### FunctionDef
@@ -204,34 +206,32 @@ def FunctionDef(t, x):
     BODY = x.body
 
     # <code>var ...local vars...</code>
-    localVars = list(set(localNamesInBody(BODY)))
-    if len(localVars) > 0:
+    local_vars = list(set(body_local_names(BODY)))
+    if len(local_vars) > 0:
         BODY = [JSVarStatement(
-                            localVars,
-                            [None] * len(localVars))] + BODY
+                            local_vars,
+                            [None] * len(local_vars))] + BODY
 
     # If x is a method
-    if isinstance(t.parentOf(x), ast.ClassDef):
+    if isinstance(t.parent_of(x), ast.ClassDef):
 
         # Skip <code>self</code>
         ARGS = ARGS[1:]
 
         # Add <code>return this;</code> if we're <code>__init__</code>
         if NAME == '__init__':
-            BODY =  BODY + [JSReturnStatement(
-                                JSThis())]
+            BODY =  BODY + [JSReturnStatement(JSThis())]
 
         return JSFunction(
-                            None,
-                            ARGS,
-                            BODY)
+            None,
+            ARGS,
+            BODY
+        )
 
     # x is a function
     else:
-        return JSExpressionStatement(
-                    JSAssignmentExpression(
-                        str(NAME),
-                        JSFunction(
-                                        None,
-                                        ARGS,
-                                        BODY)))
+        return JSFunction(
+            str(NAME),
+            ARGS,
+            BODY
+        )
