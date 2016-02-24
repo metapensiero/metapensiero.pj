@@ -21,8 +21,9 @@ def ast_object(obj):
     return node
 
 def ast_dump_object(obj):
+    from meta.asttools import str_ast
     node = ast_object(obj)
-    return node, ast.dump(node)
+    return node, str_ast(node)
 
 def ast_object_to_js(obj):
     src = inspect.getsource(obj)

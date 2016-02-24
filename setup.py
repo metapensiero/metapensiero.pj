@@ -48,5 +48,5 @@ setup(
     install_requires=['setuptools'],
     extras_require={'dev': ['metapensiero.tool.bump_version', 'docutils']},
     setup_requires=['pytest-runner'],
-    tests_require=['pytest',],
+    tests_require=['pytest', 'meta'],
 )
