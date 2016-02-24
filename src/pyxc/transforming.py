@@ -171,13 +171,15 @@ class Transformer:
     def parent_of(self, node):
         return self.node_parent_map.get(node)
 
-    def first_ancestor_subclassing(self, node, cls):
+    def find_parent(self, node, cls):
+        """Retrieve the first parent of the given ast node that is an instance
+        of the given class."""
         parent = self.parent_of(node)
         if parent is not None:
             if isinstance(parent, cls):
                 return parent
             else:
-                return self.first_ancestor_subclassing(parent, cls)
+                return self.find_parent(parent, cls)
 
     def new_name(self):
         #LATER: generate better names
