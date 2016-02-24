@@ -146,6 +146,14 @@ def Name_default(t, x):
     else:
         return JSName(x.id)
 
+def NameConstant(t, x):
+    cls = {
+        True: JSTrue,
+        False: JSFalse,
+        None: JSNull,
+    }[x.value]
+    return cls()
+
 #### Ops
 
 # <code>in</code>
