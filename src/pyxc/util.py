@@ -51,26 +51,43 @@ def body_top_names(body):
     return names
 
 
+def controlled_ast_walk(node):
+    """Walk ast just like ast.walk(), but expect True on every branch to
+    descend on sub-branches."""
+    l = [node]
+    while len(l) > 0:
+        popped = l.pop()
+        check_children = (yield popped)
+        if check_children:
+            for n in ast.iter_child_nodes(popped):
+                l.append(n)
+
+
 def body_local_names(body):
     """Find the names assigned to in the provided body. It doesn't descent
     into function or class subelements."""
     names = set()
     for node in body:
-        names |= namesInNode(node)
-        for x in ast.walk(node):
-            names |= namesInNode(x)
+        it = controlled_ast_walk(node)
+        try:
+            while True:
+                subn = next(it)
+                names |= node_names(node)
+                if not isinstance(subn, (ast.FunctionDef, ast.ClassDef,
+                                         ast.AsyncFunctionDef)):
+                    it.send(True) # continue traversing sub names
+        except StopIteration:
+            pass
     return names
 
 
-def namesInNode(x):
+def node_names(x):
     names = set()
     if isinstance(x, ast.Assign):
         for target in x.targets:
             if isinstance(target, ast.Name):
                 names.add(target.id)
-    elif (
-            isinstance(x, ast.FunctionDef) or
-            isinstance(x, ast.ClassDef)):
+    elif isinstance(x, (ast.FunctionDef, ast.ClassDef)):
         names.add(x.name)
     return names
 
