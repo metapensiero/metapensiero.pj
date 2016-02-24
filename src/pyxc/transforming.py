@@ -1,4 +1,11 @@
-import sys, os, ast, json, hashlib
+#  -*- coding: utf-8 -*-
+#
+import ast
+import hashlib
+import json
+import inspect
+import os
+import sys
 
 from pyxc.pyxc_exceptions import NoTransformationForNode
 from pyxc.util import rfilter, parentOf, randomToken
