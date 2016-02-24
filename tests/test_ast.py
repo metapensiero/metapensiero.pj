@@ -16,4 +16,51 @@ def test_ast_func(astdump):
 
     node, dump = astdump(func)
 
-    assert dump == ""
+    expected = ''.join('AsyncFunctionDef(args=arguments(args=[], \n'
+                       '                                defaults=[], \n'
+                       '                                kw_defaults=[], \n'
+                       '                                kwarg=None, \n'
+                       '                                kwonlyargs=[], \n'
+                       '                                vararg=None), \n'
+                       "                 body=[Import(names=[alias(asname='aio', \n"
+                       "                                           name='asyncio')]), \n"
+                       '                       Assign(targets=[Name(ctx=Store(), \n'
+                       "                                            id='a')], \n"
+                       "                              value=BinOp(left=Str(s='abc'), \n"
+                       '                                          op=Mult(), \n'
+                       '                                          right=Num(n=3))), \n'
+                       '                       Assign(targets=[Name(ctx=Store(), \n'
+                       "                                            id='b')], \n"
+                       '                              value=BinOp(left=Num(n=2), \n'
+                       '                                          op=Pow(), \n'
+                       '                                          right=Num(n=3)))], \n'
+                       '                 decorator_list=[], \n'
+                       "                 name='func', \n"
+                       '                 returns=None)')
+    assert dump == expected
+
+
+def test_ast_class_super(astjs):
+
+    class A:
+
+        def __init__(self, value):
+            self.value = value
+            super().__init__(x, y)
+
+        def meth(self):
+            super().another_meth(x, y)
+
+    expected = ''.join((
+        'class A {\n'
+        '    constructor(value) {\n'
+        '        this.value = value;\n'
+        '        super(x, y);\n'
+        '    }\n'
+        '    meth() {\n'
+        '        super.another_meth(x, y);\n'
+        '    }\n'
+        '}\n')
+    )
+
+    assert str(astjs(A)) == expected

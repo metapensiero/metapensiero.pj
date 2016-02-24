@@ -184,16 +184,58 @@ class JSDict(JSNode):
 
 
 class JSFunction(JSNode):
+
+    def fargs(self, args):
+        result = []
+        result.append('(')
+        delimited(', ', args, dest=result)
+        result.append(') ')
+        return result
+
     def emit(self, name, args, body):
-        arr = ['function ']
+        line = ['function ']
         if name is not None:
-            arr.append(name)
-        arr.append('(')
-        delimited(', ', args, dest=arr)
-        arr.append(') {')
-        yield self.line(arr)
+            line.append(name)
+        line += self.fargs(args)
+        line += ['{']
+        yield self.line(line)
         yield from self.lines(body, indent=True, delim=True)
         yield self.line('})')
+
+
+class JSClass(JSNode):
+
+    def emit(self, name, super_, methods):
+        line = ['class ', name]
+        if super_ is not None:
+            line += [' extends ', super_]
+        line += [' {']
+        yield self.line(line)
+        yield from self.lines(methods, indent=True, delim=True)
+        yield self.line('}')
+
+
+class JSClassMember(JSFunction):
+
+    def with_kind(self, kind, args, body):
+        line = [kind]
+        line += self.fargs(args)
+        line += ['{']
+        yield self.line(line)
+        yield from self.lines(body, indent=True, delim=True)
+        yield self.line('}')
+
+
+class JSClassConstructor(JSClassMember):
+
+    def emit(self, args, body):
+        yield from self.with_kind('constructor', args, body)
+
+
+class JSMethod(JSClassMember):
+
+    def emit(self, name, args, body):
+        yield from self.with_kind(name, args, body)
 
 
 class JSAssignmentExpression(JSNode):
@@ -260,6 +302,11 @@ class JSName(JSNode):
     def emit(self, name):
         assert name not in JS_KEYWORDS, name
         yield self.part(name)
+
+
+class JSSuper(JSNode):
+    def emit(self):
+        yield self.part('super')
 
 
 class JSThis(JSNode):
