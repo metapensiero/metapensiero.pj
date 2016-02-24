@@ -397,3 +397,5 @@ class JSOpGt(JSNode):
 class JSOpGtE(JSNode):
     def emit(self):
         yield self.part('>=')
+
+JSIs = JSOpStrongEq

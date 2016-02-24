@@ -124,6 +124,8 @@ Call = [Call_typeof, Call_isinstance, Call_print, Call_len, Call_new, Call_super
 def Eq(t, x):
     return JSOpStrongEq()
 
+Is = Eq
+
 # <code>!=</code>
 #
 # Transform to <code>!==</code>
