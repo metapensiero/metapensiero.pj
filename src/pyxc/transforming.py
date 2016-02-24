@@ -10,7 +10,6 @@ import sys
 from pyxc.pyxc_exceptions import NoTransformationForNode
 from pyxc.util import rfilter, parentOf, randomToken, Line, Part
 
-#### TargetNode
 
 class TargetNode:
 
@@ -146,8 +145,6 @@ def exportSourceMap(linemaps, mappings, sourceDict):
 
     return ''.join(arr)
 
-
-#### Transformer
 
 class Transformer:
 

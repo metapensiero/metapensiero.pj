@@ -24,11 +24,14 @@ JS_KEYWORDS = set([
 class JSNode(TargetNode):
     pass
 
+
 class JSStatement(JSNode):
     pass
 
+
 class JSLeftSideUnaryOp(JSNode):
     pass
+
 
 class JSStatements(JSNode):
     def emit(self, statements):
