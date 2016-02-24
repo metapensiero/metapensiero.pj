@@ -40,7 +40,7 @@ class JSStatements(JSNode):
 
 class JSPass(JSNode):
     def emit(self):
-        return
+        return []
 
 
 class JSCommentBlock(JSNode):
