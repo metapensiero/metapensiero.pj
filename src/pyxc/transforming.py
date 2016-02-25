@@ -160,8 +160,7 @@ class Transformer:
 
         self.node_parent_map = build_node_parent_map(top)
 
-        transformed_body = [self._transform_node(x) for x in body]
-        result = self.statements_class(transformed_body)
+        result = self.statements_class(body)
         self._finalize_target_node(result)
 
         self.node_parent_map = None
