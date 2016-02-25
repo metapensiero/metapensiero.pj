@@ -4,12 +4,15 @@ import ast
 import copy
 import json
 import inspect
+import itertools
 import random
 import re
 import subprocess
 import sys
 import tempfile
 import traceback
+
+import sourcemaps
 
 
 def simplePost(url, POST={}):
@@ -261,23 +264,51 @@ class TempDir:
         subprocess.check_call(['rm', '-rf', self.path])
 
 
-class Line:
+class OutputSrc:
 
-    def __init__(self, item, indent=False, delim=False):
+    def __init__(self, node):
+        self.node = node
+
+    def _gen_mapping(self, text, src_line=None, src_offset=None, dst_offset=None):
+        """Generate a single mapping. `dst_line` is absent from signature
+        because the part hasn't this information, but is present in the
+        returned mapping. `src_line` is adjusted to be 0-based.
+
+        See `Source Map version 3 proposal
+        <https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k>`_.
+        """
+        return {
+            'src_line': src_line - 1 if src_line else None,
+            'src_offset': src_offset,
+            'dst_line': None,
+            'dst_offset': dst_offset,
+            'text': text
+        }
+
+    def _pos_in_src(self):
+        """Returns the position in source of the generated node"""
+        py_node = self.node.py_node
+        if py_node:
+            result = (getattr(py_node, 'lineno', None),
+                      getattr(py_node, 'col_offset', None))
+        else:
+            result = (None, None)
+        return result
+
+
+
+class Line(OutputSrc):
+
+    def __init__(self, node, item, indent=False, delim=False):
+        super().__init__(node)
         self.indent = int(indent)
         self.delim = delim
         if isinstance(item, (tuple, list)):
-            item = Part(*item)
+            item = Part(node, *item)
         self.item = item
 
     def __str__(self):
-        line = self.item
-        if isinstance(line, (tuple, list)):
-            # we have something like
-            # ['if (', test, ') {']
-            line = ''.join(str(l) for l in line)
-        else:
-            line = str(line)
+        line = str(self.item)
         if self.delim:
             line += ';'
         if self.indent:
@@ -288,13 +319,25 @@ class Line:
     def serialize(self):
         yield self
 
+    def src_mappings(self):
+        src_line, src_offset = self._pos_in_src()
+        offset = self.indent * 4
+        if isinstance(self.item, str) and src_line:
+            yield self._gen_mapping(self.item, src_line, src_offset, offset)
+        else:
+            assert isinstance(self.item, Part)
+            for m in self.item.src_mappings():
+                m['dst_offset'] += offset
+                yield m
+
     def __repr__(self):
         return '<%s indent: %d, "%s">' % (self.__class__.__name__,
                                           self.indent, str(self))
 
-class Part:
+class Part(OutputSrc):
 
-    def __init__(self, *items):
+    def __init__(self, node, *items):
+        super().__init__(node)
         self.items = []
         for i in items:
             if isinstance(i, (str, Part)):
@@ -310,6 +353,63 @@ class Part:
     def serialize(self):
         yield self
 
+    def src_mappings(self):
+        src = str(self)
+        src_line, src_offset = self._pos_in_src()
+        frag = ''
+        col = 0
+        for i in self.items:
+            if isinstance(i, str):
+               frag += i
+            elif isinstance(i, Part):
+                if frag and src_line:
+                    yield self._gen_mapping(frag, src_line, src_offset, col)
+                    frag = ''
+                psrc = str(i)
+                col = src.find(psrc) + len(psrc)
+                yield from i._translate_src_mappings(i, src, psrc)
+            else:
+                raise ValueError
+        else:
+            if frag and src_line:
+                yield self._gen_mapping(frag, src_line, src_offset, col)
+
+    def _translate_src_mappings(self, part, src=None, psrc=None):
+        src = src or str(self)
+        psrc = psrc or str(part)
+        offset = src.find(psrc)
+        for m in part.src_mappings():
+            m['dst_offset'] += offset
+            yield m
+
     def __repr__(self):
         return '<%s, "%s">' % (self.__class__.__name__,
                                str(self))
+
+class Block(OutputSrc):
+
+    def __init__(self, node):
+        super().__init__(None)
+        self.lines = list(node.serialize())
+
+    def src_mappings(self):
+        mappings = itertools.chain.from_iterable(map(lambda l: l.src_mappings(),
+                                                     self.lines))
+        for ix, m in enumerate(mappings, start=0):
+            m['dst_line'] = ix
+            yield m
+
+    def read(self):
+        return ''.join(str(l) for l in self.lines)
+
+    def sourcemap(self, source, src_filename):
+        Token = sourcemaps.Token
+        tokens = [Token(m['dst_line'], m['dst_offset'], src_filename,
+                        m['src_line'], m['src_offset']) for m in
+                  self.src_mappings()]
+        src_map = sourcemaps.SourceMap(
+            #sources_content={src_filename: source}
+        )
+        for t in tokens:
+            src_map.add_token(t)
+        return sourcemaps.encode(src_map)

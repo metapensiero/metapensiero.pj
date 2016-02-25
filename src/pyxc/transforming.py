@@ -37,13 +37,13 @@ class TargetNode:
             l = item
         elif isinstance(item, (tuple, list)):
             item = tuple(self._chain(item))
-            l = Line(item, indent, delim)
+            l = Line(self, item, indent, delim)
         else:
-            l = Line(item, indent, delim)
+            l = Line(self, item, indent, delim)
         return l
 
     def part(self, *items):
-        return Part(*self._expand(items))
+        return Part(self, *self._expand(items))
 
     def _expand(self, items):
         return [i.serialize() if isinstance(i, TargetNode) else i for i in items]

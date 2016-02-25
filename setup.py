@@ -45,7 +45,7 @@ setup(
     package_dir={'': 'src'},
     namespace_packages=[],
 
-    install_requires=['setuptools'],
+    install_requires=['setuptools', 'python-sourcemaps'],
     extras_require={'dev': ['metapensiero.tool.bump_version', 'docutils']},
     setup_requires=['pytest-runner'],
     tests_require=['pytest', 'meta'],

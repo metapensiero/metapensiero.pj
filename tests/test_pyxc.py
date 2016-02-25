@@ -21,7 +21,7 @@ def test_body_names_stop_at_func(astobj):
 
     assert body_local_names(astobj(outer).body) == {'yes', 'yes_func', 'yes2'}
 
-def test_convert_simple_function(astjs):
+def test_convert_block(astjs):
 
     def func(value):
 
@@ -35,4 +35,10 @@ def test_convert_simple_function(astjs):
         else:
             return 'no'
 
-    assert list(astjs(func).serialize()) == ''
+    import inspect
+    import textwrap
+    from pyxc.util import Block
+    b = Block(astjs(func))
+    src = textwrap.dedent(inspect.getsource(func))
+    smap = b.sourcemap(src, 'test.py')
+    assert smap == ''
