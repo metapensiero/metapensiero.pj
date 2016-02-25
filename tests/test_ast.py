@@ -46,6 +46,7 @@ def test_ast_class_super(astjs):
 
         def __init__(self, value):
             self.value = value
+            d = {'a': 1, 'b': 2}
             super().__init__(x, y)
 
         def meth(self):
@@ -54,7 +55,9 @@ def test_ast_class_super(astjs):
     expected = ''.join((
         'class A {\n'
         '    constructor(value) {\n'
+        '        let d;\n'
         '        this.value = value;\n'
+        '        d = {"a": 1, "b": 2};\n'
         '        super(x, y);\n'
         '    }\n'
         '    meth() {\n'
