@@ -304,21 +304,24 @@ class Block(OutputSrc):
         super().__init__(None)
         self.lines = list(node.serialize())
 
-    def src_mappings(self):
+    def src_mappings(self, src_offset=None):
+        sline_offset, scol_offset = src_offset or (0, 0)
         mappings = itertools.chain.from_iterable(map(lambda l: l.src_mappings(),
                                                      self.lines))
         for ix, m in enumerate(mappings, start=0):
             m['dst_line'] = ix
+            m['src_line'] += sline_offset
+            m['src_offset'] += scol_offset
             yield m
 
     def read(self):
         return ''.join(str(l) for l in self.lines)
 
-    def sourcemap(self, source, src_filename):
+    def sourcemap(self, source, src_filename, src_offset=None):
         Token = sourcemaps.Token
         tokens = [Token(m['dst_line'], m['dst_offset'], src_filename,
                         m['src_line'], m['src_offset']) for m in
-                  self.src_mappings()]
+                  self.src_mappings(src_offset)]
         src_map = sourcemaps.SourceMap(
             sources_content={src_filename: source}
         )
