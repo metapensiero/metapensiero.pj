@@ -408,7 +408,7 @@ class Block(OutputSrc):
                         m['src_line'], m['src_offset']) for m in
                   self.src_mappings()]
         src_map = sourcemaps.SourceMap(
-            #sources_content={src_filename: source}
+            sources_content={src_filename: source}
         )
         for t in tokens:
             src_map.add_token(t)
