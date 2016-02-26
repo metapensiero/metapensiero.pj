@@ -10,7 +10,7 @@ import textwrap
 
 import pytest
 
-from pyxc.transforming import Transformer
+from pj.processor.transforming import Transformer
 from pj import transformations
 from pj.js_ast import JSStatements
 

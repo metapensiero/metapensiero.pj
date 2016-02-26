@@ -1,8 +1,17 @@
-#### Statements
+# -*- coding: utf-8 -*-
+# :Project:  pj -- simpler transformations
+# :Created:  ven 26 feb 2016 15:17:49 CET
+# :Authors:  Andrew Schaaf <andrew@andrewschaaf.com>,
+#            Alberto Berti <alberto@metapensiero.it>
+# :License:  GNU General Public License version 3 or later
+#
 
 import ast
 from functools import reduce
-from pj.js_ast import *
+
+from ..js_ast import *
+
+#### Statements
 
 
 def Assign(t, x):

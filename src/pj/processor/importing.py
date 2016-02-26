@@ -1,10 +1,20 @@
-import os, re
+# -*- coding: utf-8 -*-
+# :Project:  pj -- imports processor
+# :Created:  ven 26 feb 2016 15:17:49 CET
+# :Authors:  Andrew Schaaf <andrew@andrewschaaf.com>,
+#            Alberto Berti <alberto@metapensiero.it>
+# :License:  GNU General Public License version 3 or later
+#
 
-from pyxc.util import DirectedGraph
+import os
+import re
 
-# Return a list of module names in an order that doesn't violate the
-# [dependency graph](http://en.wikipedia.org/wiki/Dependency_graph)
+from .util import DirectedGraph
+
 def orderedModules(sourcePath, mainModule):
+    """Return a list of module names in an order that doesn't violate the
+    [dependency graph](http://en.wikipedia.org/wiki/Dependency_graph)
+    """
     digraph = dependencyGraph(sourcePath, mainModule)
     return list(digraph.topologicalOrdering)
 

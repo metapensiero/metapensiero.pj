@@ -1,6 +1,16 @@
+# -*- coding: utf-8 -*-
+# :Project:  pj -- class and function transformations
+# :Created:  ven 26 feb 2016 15:17:49 CET
+# :Authors:  Andrew Schaaf <andrew@andrewschaaf.com>,
+#            Alberto Berti <alberto@metapensiero.it>
+# :License:  GNU General Public License version 3 or later
+#
+
 import ast
-from pj.js_ast import *
-from pyxc.util import body_local_names
+
+from pj.processor.util import body_local_names
+
+from ..js_ast import *
 
 
 def ClassDef(t, x):

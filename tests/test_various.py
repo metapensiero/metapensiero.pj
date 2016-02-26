@@ -37,7 +37,7 @@ def test_convert_block(astjs):
 
     import inspect
     import textwrap
-    from pyxc.util import Block
+    from pj.processor.util import Block
     b = Block(astjs(func))
     src = textwrap.dedent(inspect.getsource(func))
     smap = b.sourcemap(src, 'test.py')

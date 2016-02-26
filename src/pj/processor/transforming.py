@@ -1,12 +1,18 @@
-#  -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
+# :Project:  pj -- transformation processor
+# :Created:  ven 26 feb 2016 15:17:49 CET
+# :Authors:  Andrew Schaaf <andrew@andrewschaaf.com>,
+#            Alberto Berti <alberto@metapensiero.it>
+# :License:  GNU General Public License version 3 or later
 #
+
 import ast
 import inspect
 import os
 import sys
 
-from pyxc.pyxc_exceptions import NoTransformationForNode
-from pyxc.util import rfilter, parent_of, random_token, Line, Part
+from .exceptions import NoTransformationForNode
+from .util import rfilter, parent_of, random_token, Line, Part
 
 
 class TargetNode:

@@ -1,5 +1,15 @@
-import ast, re
-from pj.js_ast import *
+# -*- coding: utf-8 -*-
+# :Project:  pj -- special transformations
+# :Created:  ven 26 feb 2016 15:17:49 CET
+# :Authors:  Andrew Schaaf <andrew@andrewschaaf.com>,
+#            Alberto Berti <alberto@metapensiero.it>
+# :License:  GNU General Public License version 3 or later
+#
+
+import ast
+import re
+
+from ..js_ast import *
 
 
 #### Expr

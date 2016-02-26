@@ -1,11 +1,18 @@
-# To learn what pyxc is doing for you behind the scenes,
-# read [pyxc.org/transformations/](http://pyxc.org/transformations/)
+# -*- coding: utf-8 -*-
+# :Project:  pj -- JS ast
+# :Created:  ven 26 feb 2016 15:17:49 CET
+# :Authors:  Andrew Schaaf <andrew@andrewschaaf.com>,
+#            Alberto Berti <alberto@metapensiero.it>
+# :License:  GNU General Public License version 3 or later
+#
 
-import ast, json, re
+import ast
 from functools import reduce
+import json
+import re
 
-from pyxc.transforming import TargetNode
-from pyxc.util import delimited
+from .processor.transforming import TargetNode
+from .processor.util import delimited
 
 
 JS_KEYWORDS = set([
@@ -20,6 +27,7 @@ JS_KEYWORDS = set([
     'synchronized', 'throws', 'transient', 'volatile'])
 
 #### Misc
+
 
 class JSNode(TargetNode):
     pass
