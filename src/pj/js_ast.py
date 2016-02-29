@@ -424,6 +424,11 @@ class JSOpInvert(JSLeftSideUnaryOp):
         yield self.part('~')
 
 
+class JSOpUSub(JSLeftSideUnaryOp):
+    def emit(self):
+        yield self.part('-')
+
+
 class JSOpStrongEq(JSNode):
     def emit(self):
         yield self.part('===')

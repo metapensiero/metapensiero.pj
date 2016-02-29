@@ -177,6 +177,9 @@ def Add(t, x):
 def Sub(t, x):
     return JSOpSub()
 
+def USub(t, x):
+    return JSOpUSub()
+
 # <code>*</code>
 def Mult(t, x):
     return JSOpMult()
