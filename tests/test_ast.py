@@ -55,7 +55,7 @@ def test_ast_class_super(astjs):
     expected = ''.join((
         'class A {\n'
         '    constructor(value) {\n'
-        '        let d;\n'
+        '        var d;\n'
         '        this.value = value;\n'
         '        d = {"a": 1, "b": 2};\n'
         '        super(x, y);\n'

@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
-# :Project:  pyxc-pj -- pyxc tests
+# :Project:  pyxc-pj -- tests for various stuff
 # :Created:    lun 22 feb 2016 23:31:45 CET
 # :Author:    Alberto Berti <alberto@metapensiero.it>
 # :License:   GNU General Public License version 3 or later
 #
 
-
-
 def test_body_names_stop_at_func(astobj):
 
-    from pyxc.util import body_local_names
+    from pj.processor.util import body_local_names
 
     def outer(no):
         yes = 1
@@ -21,24 +19,12 @@ def test_body_names_stop_at_func(astobj):
 
     assert body_local_names(astobj(outer).body) == {'yes', 'yes_func', 'yes2'}
 
-def test_convert_block(astjs):
+def test_textwrap_behavior():
 
-    def func(value):
-
-        if value is True:
-            value = 4
-            for i in range(len(value)):
-                v = value[i+1]
-                other_func()
-                v = other_func2()
-            return value
-        else:
-            return 'no'
-
-    import inspect
+    txt = " " * 4 + "foo bar" + "\n" + " " * 4 + "bar foo" + "\n"
+    assert len(txt) == 24
+    l = txt.splitlines()[0]
+    assert len(l) == 11
     import textwrap
-    from pj.processor.util import Block
-    b = Block(astjs(func))
-    src = textwrap.dedent(inspect.getsource(func))
-    smap = b.sourcemap(src, 'test.py')
-    assert smap == ''
+    out = textwrap.dedent(txt)
+    assert len(out) == 16
