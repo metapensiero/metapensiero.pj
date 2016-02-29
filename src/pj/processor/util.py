@@ -240,8 +240,9 @@ class Line(OutputSrc):
     def src_mappings(self):
         src_line, src_offset = self._pos_in_src()
         offset = self.indent * 4
-        if isinstance(self.item, str) and src_line:
-            yield self._gen_mapping(self.item, src_line, src_offset, offset)
+        if isinstance(self.item, str):
+            if src_line:
+                yield self._gen_mapping(self.item, src_line, src_offset, offset)
         else:
             assert isinstance(self.item, Part)
             for m in self.item.src_mappings():
