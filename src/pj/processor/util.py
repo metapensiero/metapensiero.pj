@@ -264,7 +264,7 @@ class Part(OutputSrc):
             elif inspect.isgenerator(i):
                 self.items.extend(i)
             else:
-                raise ValueError
+                self.items.append(str(i))
 
     def __str__(self):
         return ''.join(str(i) for i in self.items)
@@ -278,6 +278,7 @@ class Part(OutputSrc):
         frag = ''
         col = 0
         for i in self.items:
+            assert isinstance(i, (str, Part))
             if isinstance(i, str):
                frag += i
             elif isinstance(i, Part):
@@ -287,8 +288,6 @@ class Part(OutputSrc):
                 psrc = str(i)
                 col = src.find(psrc) + len(psrc)
                 yield from i._translate_src_mappings(i, src, psrc)
-            else:
-                raise ValueError
         else:
             if frag and src_line:
                 yield self._gen_mapping(frag, src_line, src_offset, col)
