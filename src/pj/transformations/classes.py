@@ -94,7 +94,7 @@ def FunctionDef(t, x):
     # <code>var ...local vars...</code>
     local_vars = list(set(body_local_names(body)) - set(ARGS))
     if len(local_vars) > 0:
-        body = [JSLetStatement(
+        body = [JSVarStatement(
                             local_vars,
                             [None] * len(local_vars))] + body
 
