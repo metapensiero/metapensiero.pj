@@ -208,7 +208,7 @@ class JSFunction(JSNode):
         line += ['{']
         yield self.line(line)
         yield from self.lines(body, indent=True, delim=True)
-        yield self.line('})')
+        yield self.line('}')
 
 
 class JSClass(JSNode):
