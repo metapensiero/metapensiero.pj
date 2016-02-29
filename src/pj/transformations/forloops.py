@@ -58,11 +58,10 @@ def For_range(t, x):
 #    }
 #}</pre>
 def For_dict(t, x):
-    if (
-            isinstance(x.iter, ast.Call) and
-            isinstance(x.iter.func, ast.Name) and
-            x.iter.func.id == 'dict' and
-            len(x.iter.args) == 1) and (not x.orelse):
+    if (isinstance(x.iter, ast.Call) and
+        isinstance(x.iter.func, ast.Name) and
+        x.iter.func.id == 'dict' and
+        len(x.iter.args) == 1) and (not x.orelse):
 
         assert isinstance(x.target, ast.Name)
 

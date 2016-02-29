@@ -283,6 +283,7 @@ class JSSubscript(JSNode):
     def emit(self, obj, key):
         yield self.part(obj, '[', key, ']')
 
+
 class JSBinOp(JSNode):
     def emit(self, left, op, right):
         yield self.part('(', left, ' ', op, ' ', right, ')')
