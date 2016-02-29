@@ -30,10 +30,10 @@ def ListComp(t, x):
     else:
         CONDITION = None
 
-    __new = t.newName()
-    __old = t.newName()
-    __i = t.newName()
-    __bound = t.newName()
+    __new = t.new_name()
+    __old = t.new_name()
+    __i = t.new_name()
+    __bound = t.new_name()
 
     # Let's contruct the result from the inside out:
     #<pre>__new.push(EXPR);</pre>
