@@ -45,6 +45,11 @@ has BabelJS integration to getting this job done.
 
 __ http://webpack.github.io/
 
+PJ tries to generate also `SourceMap`__ files with the higher detail
+possible in order to aid development.
+
+__ http://blog.teamtreehouse.com/introduction-source-maps
+
 This project is far from complete, but it has achieved a good deal of
 features, please have a look at ``tests/test_evaljs.py`` file for the
 currently supported ones.
@@ -63,13 +68,23 @@ This is a brief list of what needs to be done:
 * convert ``dict()`` calls to ES6 ``Map`` object creation;
 * convert *set* literals to ES6 ``Set`` objects;
 * convert *async* and *await* to the same proposed features for js
-  (see BabelJS documentation); 
+  (see BabelJS documentation);
+* convert `*iterable` syntax to ES6 destructuring;
+* convert argument defaults on functions to ES6;
 
 
 External documentation
 ----------------------
 
 A good documentation and explanation of ES6 features can be found on
-the book `Exploring ES6`__.
+the book `Exploring ES6`__ by Axel Rauschmayer (donate if you can).
 
 __ http://exploringjs.com/es6/
+
+
+Tools
+-----
+
+Have a look at `ECMAScript 6 Tools`__ by Addy Osmani.
+
+__ https://github.com/addyosmani/es6-tools
