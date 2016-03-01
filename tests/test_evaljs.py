@@ -159,3 +159,55 @@ def test_for_items_in_array():
         return x
 
     assert dofor() == eval_object(dofor, 'dofor();')
+
+def test_class_simple():
+
+    def test_class():
+        class Foo:
+            def __init__(self):
+                self.msg = 'foo'
+        return Foo().msg
+
+    assert test_class() == eval_object_es5(test_class, 'test_class();')
+
+def test_class_inherit():
+
+    def test_class():
+
+        class Animal:
+            def __init__(self, name):
+                self.name = name
+
+        class TalkingAnimal(Animal):
+            def __init__(self, name, catchphrase):
+                super().__init__(name)
+                self.catchphrase = catchphrase
+            def caption(self):
+                return self.name + " sez '" + self.catchphrase + "'"
+
+        return TalkingAnimal('Pac-Man', 'waka waka').caption()
+
+    assert test_class() == eval_object_es5(test_class, 'test_class();')
+
+def test_class_super():
+
+    def test_class():
+
+        class Animal:
+            def __init__(self, name):
+                self.name = name
+        class TalkingAnimal(Animal):
+            def __init__(self, name, catchphrase):
+                super().__init__(name)
+                self.catchphrase = catchphrase
+            def caption(self):
+                return self.name + " sez '" + self.catchphrase + "'"
+        class Kitteh(TalkingAnimal):
+            def __init__(self, name):
+                super().__init__(name, 'OH HAI')
+            def caption(self):
+                return 'OMG AWESOMECUTE: ' + super().caption()
+
+        return Kitteh('Maru-san').caption()
+
+    assert test_class() == eval_object_es5(test_class, 'test_class();')
