@@ -50,7 +50,7 @@ def test_multiple_assignement_and_sum():
         x = y = 2
         return x + y
 
-    assert sum() == eval_object_es5(sum, 'sum();')
+    assert sum() == eval_object(sum, 'sum();')
 
 def test_list_in():
 
@@ -75,12 +75,11 @@ def test_if_else_elif():
             x = 3
         return x
 
-    assert test_if() == eval_object_es5(test_if, 'test_if();')
+    assert test_if() == eval_object(test_if, 'test_if();')
 
 def test_while_and_aug_assignement():
 
     def _while():
-
         x = 0
         i = 10
         while True:
@@ -93,7 +92,7 @@ def test_while_and_aug_assignement():
 
         return x
 
-    assert _while() == eval_object_es5(_while, '_while();')
+    assert _while() == eval_object(_while, '_while();')
 
 @pytest.mark.xfail
 def test_list_comprehension():
@@ -101,7 +100,7 @@ def test_list_comprehension():
     def _list():
         return  [x + 1 for x in [1, 2, 3, 100]]
 
-    assert _list() == eval_object_es5(_list, '_list();')
+    assert _list() == eval_object(_list, '_list();')
 
 def test_dict_member_deletion():
 
@@ -110,14 +109,14 @@ def test_dict_member_deletion():
         del d['bar']
         return d
 
-    assert deletion() == eval_object_es5(deletion, 'deletion();')
+    assert deletion() == eval_object(deletion, 'deletion();')
 
 def test_func_simple_arg():
 
     def f(x):
         return x + 1000
 
-    assert f(7) == eval_object_es5(f, 'f(7);')
+    assert f(7) == eval_object(f, 'f(7);')
 
 def test_for_range_simple():
 
@@ -137,7 +136,7 @@ def test_for_range_less_simpler():
             x += i
         return x
 
-    assert dofor() == eval_object_es5(dofor, 'dofor();')
+    assert dofor() == eval_object(dofor, 'dofor();')
 
 def test_for_items_in_dict():
 
@@ -148,7 +147,7 @@ def test_for_items_in_dict():
             x += k + d[k]
         return x
 
-    result = eval_object_es5(dofor, 'dofor();')
+    result = eval_object(dofor, 'dofor();')
     assert result == 'fooFOObarBAR' or result == 'barBARfooFOO'
 
 def test_for_items_in_array():
@@ -159,4 +158,4 @@ def test_for_items_in_array():
             x += t
         return x
 
-    assert dofor() == eval_object_es5(dofor, 'dofor();')
+    assert dofor() == eval_object(dofor, 'dofor();')
