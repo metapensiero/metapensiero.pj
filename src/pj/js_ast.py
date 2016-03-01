@@ -46,6 +46,11 @@ class JSStatements(JSNode):
         for s in statements:
             yield s
 
+    def serialize(self):
+        for a in self.emit(*self.transformed_args):
+            yield from self.lines(a.serialize(), delim=True)
+
+
 class JSPass(JSNode):
     def emit(self):
         return []
