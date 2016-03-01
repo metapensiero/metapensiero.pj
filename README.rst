@@ -1,4 +1,75 @@
+.. -*- coding: utf-8 -*-
+.. :Project:  pj -- readme
+.. :Created:    mar 01 mar 2016 15:52:36 CET
+.. :Author:    Alberto Berti <alberto@metapensiero.it>
+.. :License:   GNU General Public License version 3 or later
+..
 
-PYXC-PJ: a Python Cross-Compiler from Python to JavaScript
+========================================
+PJ a Python 3 to ES6 JavaScript compiler
+========================================
 
-See [http://pyxc.org](http://pyxc.org)
+ :author: Alberto Berti
+ :contact: alberto@metapensiero.it
+
+It is based on previous work by `Andrew Schaaf <andrew@andrewschaaf.com>`_.
+
+Goal
+----
+
+PJ is a small and simple Python 3 translator to JavaScript which aims
+to be able to translate most of the Python's core semantics without
+providing a full python-in-js environment, as most existing
+translators do. It tries to emit code which is simple to read and
+check and it does so by switching to ES6 construct when
+necessary. This allows to simplify the needs of polyfills for many of
+the expected Python behaviors.
+
+The interface with the js world is completely flat, import the modules
+or use the expected globals (``window``, ``document``, etc...) as you
+would do in JavaDcript
+
+The ES6 code is then converted (if requested) to ES5 code with the aid
+of the popular `BabelJS`__ library together with the fantastic
+`dukpy`__ embedded js interpreter.
+
+__ http://babeljs.io/
+
+__ https://github.com/amol-/dukpy
+
+
+Another goal is to just convert single modules or entire dir tree
+structures without emitting concatenated or minified files. This is
+left to the Javascript tooling of your choice. I use `webpack`__ which
+has BabelJS integration to getting this job done.
+
+__ http://webpack.github.io/
+
+This project is far from complete, but it has achieved a good deal of
+features, please have a look at ``tests/test_evaljs.py`` file for the
+currently supported ones.
+
+Todo
+----
+
+This is a brief list of what needs to be done:
+
+* translate *import* statements to ES6;
+* translate ``__all__`` definition to ES6 module exports;
+* write a command line interface to expose the api;
+* refactor the comprehensions conversion to use the snippets facility;
+* refactor snippets rendering to write them as a module and import
+  them in the module when tree conversion is enabled;
+* convert ``dict()`` calls to ES6 ``Map`` object creation;
+* convert *set* literals to ES6 ``Set`` objects;
+* convert *async* and *await* to the same proposed features for js
+  (see BabelJS documentation); 
+
+
+External documentation
+----------------------
+
+A good documentation and explanation of ES6 features can be found on
+the book `Exploring ES6`__.
+
+__ http://exploringjs.com/es6/
