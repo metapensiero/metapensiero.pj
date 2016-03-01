@@ -126,7 +126,7 @@ class JSForStatement(JSStatement):
 
 class JSForeachStatement(JSStatement):
     def emit(self, target, source, body):
-        yield self.line(['for (let ', target, ' in ', source, ') {'])
+        yield self.line(['for (var ', target, ' in ', source, ') {'])
         yield from self.lines(body, indent=True, delim=True)
         yield self.line('}')
 
