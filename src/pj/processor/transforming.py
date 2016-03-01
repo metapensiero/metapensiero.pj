@@ -85,8 +85,16 @@ class Transformer:
 
     def transform_code(self, py):
 
+        from ..js_ast import JSVarStatement
+
         top = ast.parse(py)
         body = top.body
+
+        local_vars = list(body_local_names(body))
+        if len(local_vars) > 0:
+            body = [JSVarStatement(
+                local_vars,
+                [None] * len(local_vars))] + body
 
         self.node_parent_map = build_node_parent_map(top)
 
