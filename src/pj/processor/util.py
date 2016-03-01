@@ -62,9 +62,9 @@ def body_local_names(body):
         try:
             while True:
                 subn = next(it)
-                names |= node_names(subn)
                 if not isinstance(subn, (ast.FunctionDef, ast.ClassDef,
                                          ast.AsyncFunctionDef)):
+                    names |= node_names(subn)
                     it.send(True) # continue traversing sub names
         except StopIteration:
             pass
