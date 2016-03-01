@@ -10,9 +10,24 @@ import ast
 import inspect
 import os
 import sys
+import textwrap
 
 from .exceptions import NoTransformationForNode
-from .util import rfilter, parent_of, random_token, Line, Part
+from .util import (rfilter, parent_of, random_token,
+                   Line, Part, obj_source, body_local_names)
+
+SNIPPETS_TEMPLATE ="""\
+def _pj_snippets(container):
+%(snippets)s
+%(assignements)s
+    return container
+
+_pj = {}
+_pj_snippets(_pj)
+
+"""
+
+ASSIGN_TEMPLATE="    container['%(name)s'] = %(name)s"
 
 
 class TargetNode:
@@ -62,10 +77,11 @@ class TargetNode:
 
 class Transformer:
 
-    def __init__(self, py_ast_module, statements_class):
+    def __init__(self, py_ast_module, statements_class, snippets=True):
         self.transformations = load_transformations(py_ast_module)
         self.statements_class = statements_class
         self.snippets = set()
+        self.enable_snippets = snippets
 
     def transform_code(self, py):
 
@@ -130,6 +146,23 @@ class Transformer:
         tnode.py_node = py_node
         tnode.transformed_args = [self._transform_node(arg) for arg in tnode.args]
         tnode.transformer = self
+
+    def transform_snippets(self):
+        snippets = tuple(self.snippets)
+        srcs = [obj_source(s) for s in snippets]
+        src = textwrap.indent('\n'.join(srcs), ' ' * 4)
+        names = [s.__name__ for s in snippets]
+        assign_src = '\n'.join([ASSIGN_TEMPLATE % {'name': n} for n in names])
+        trans_src = SNIPPETS_TEMPLATE % {
+            'snippets': src,
+            'assignements': assign_src
+        }
+        t = Transformer.__new__(Transformer)
+        t.transformations = self.transformations
+        t.statements_class = self.statements_class
+        t.snippets = None
+        t.enable_snippets = False
+        return t.transform_code(trans_src)
 
 
 #### Helpers

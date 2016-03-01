@@ -117,6 +117,10 @@ def translates(src_text, dedent=True, src_filename=None, src_offset=None,
     jsast = t.transform_code(pyast)
     js_code_block = Block(jsast)
     js_text = js_code_block.read()
+    if t.snippets:
+        snip_text = Block(t.transform_snippets()).read()
+        sline_offset += len(snip_text.splitlines())
+        js_text = snip_text + js_text
     src_map = js_code_block.sourcemap(src_text, src_filename,
                                       (sline_offset, scol_offset))
     return js_text, src_map

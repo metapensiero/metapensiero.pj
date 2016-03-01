@@ -12,6 +12,7 @@ import inspect
 import itertools
 import random
 import re
+import textwrap
 
 import sourcemaps
 
@@ -334,3 +335,9 @@ class Block(OutputSrc):
         for t in tokens:
             src_map.add_token(t)
         return sourcemaps.encode(src_map)
+
+
+def obj_source(obj):
+    src = inspect.getsource(obj)
+    src = textwrap.dedent(src)
+    return src
