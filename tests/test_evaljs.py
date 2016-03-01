@@ -57,12 +57,11 @@ def test_list_in():
     def list_in():
         return [
             1 in [10, 11],
-            2 in [10, 11],
+            'foo' in 'barfoobar',
             11 in [10, 11]
         ]
 
-    # ocio!
-    assert [True, False, False] == eval_object(list_in, 'list_in();')
+    assert list_in() == eval_object(list_in, 'list_in();')
 
 def test_if_else_elif():
 

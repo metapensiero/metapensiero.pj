@@ -152,3 +152,19 @@ def ImportFrom(t, x):
         assert name.asname is None
     assert x.level == 0
     return JSPass()
+
+
+from .obvious import Compare_default
+
+def Compare_in(t, x):
+    if not isinstance(x.ops[0], (ast.NotIn, ast.In)):
+        return
+    if t.enable_snippets:
+        from ..snippets import _in
+        t.add_snippet(_in)
+        result = JSCall(JSAttribute('_pj', '_in'), [x.left, x.comparators[0]])
+        if isinstance(x.ops[0], ast.NotIn):
+            result = JSUnaryOp(JSOpNot(), result)
+        return result
+
+Compare = [Compare_in, Compare_default]

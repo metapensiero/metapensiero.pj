@@ -123,14 +123,15 @@ def BoolOp(t, x):
                 x.values)
 
 
-def Compare(t, x):
+def Compare_default(t, x):
+    """Compare is for those expressions like 'x in []' or 1 < x < 10. It's
+    different from a binary operations because it can have multiple
+    operators and more than two operands."""
     exps = [x.left] + x.comparators
     bools = []
     for i in range(len(x.ops)):
         bools.append(JSBinOp(exps[i], x.ops[i], exps[i + 1]))
-    return reduce(
-            lambda x, y: JSBinOp(x, JSOpAnd(), y),
-            bools)
+    return reduce(lambda x, y: JSBinOp(x, JSOpAnd(), y), bools)
 
 #### Atoms
 
