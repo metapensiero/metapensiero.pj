@@ -33,19 +33,21 @@ setup(
     license="GPLv3+",
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
-        "Programming Language :: Python",
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
         ],
     keywords='',
 
     packages=find_packages('src'),
     package_dir={'': 'src'},
     namespace_packages=[],
-
-    install_requires=['setuptools', 'python-sourcemaps'],
+    install_requires=['setuptools',
+                      'python-sourcemaps',
+                      'dukpy'],
+    dependency_links=[
+        'hg+https://azazel75@bitbucket.org/azazel75/python-sourcemaps#egg=python-sourcemaps',
+        'git+https://github.com/amol-/dukpy.git#egg=dukpy'
+    ],
     extras_require={'dev': ['metapensiero.tool.bump_version', 'docutils']},
     setup_requires=['pytest-runner'],
     tests_require=['pytest', 'meta'],
