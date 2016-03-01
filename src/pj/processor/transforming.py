@@ -65,7 +65,8 @@ class TargetNode:
         return Part(self, *self._expand(items))
 
     def _expand(self, items):
-        return [i.serialize() if isinstance(i, TargetNode) else i for i in items]
+        return [i.serialize() if isinstance(i, TargetNode)
+                else i for i in items]
 
     def _chain(self, items):
         for i in self._expand(items):

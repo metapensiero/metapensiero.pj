@@ -23,7 +23,6 @@ from pj.transformations.obvious import Expr_default
 Expr = [Expr_docstring, Expr_default]
 
 
-#### BinOp
 # <code>2**3</code> &rarr; <code>Math.pow(2, 3)</code>
 def BinOp_pow(t, x):
     if isinstance(x.op, ast.Pow):
@@ -38,7 +37,6 @@ from pj.transformations.obvious import BinOp_default
 BinOp = [BinOp_pow, BinOp_default]
 
 
-#### Name
 # <code>self</code> &rarr; <code>this</code>
 def Name_self(t, x):
     if x.id == 'self':
@@ -47,53 +45,33 @@ def Name_self(t, x):
 from pj.transformations.obvious import Name_default
 Name = [Name_self, Name_default]
 
-#### Call
 
 # <code>typeof(x)</code> &rarr; <code>(typeof x)</code>
 def Call_typeof(t, x):
-    if (
-            isinstance(x.func, ast.Name) and
-            x.func.id == 'typeof'):
+    if (isinstance(x.func, ast.Name) and x.func.id == 'typeof'):
         assert len(x.args) == 1
-        return JSUnaryOp(
-                    JSOpTypeof(),
-                    x.args[0])
+        return JSUnaryOp(JSOpTypeof(), x.args[0])
 
 
 # <code>isinstance(x, y)</code> &rarr; <code>(x instanceof y)</code>
 def Call_isinstance(t, x):
-    if (
-            isinstance(x.func, ast.Name) and
-            x.func.id == 'isinstance'):
+    if (isinstance(x.func, ast.Name) and x.func.id == 'isinstance'):
         assert len(x.args) == 2
-        return JSBinOp(
-                    x.args[0],
-                    JSOpInstanceof(),
-                    x.args[1])
+        return JSBinOp(x.args[0], JSOpInstanceof(), x.args[1])
 
 
 
 # <code>print(...)</code> &rarr; <code>console.log(...)</code>
 def Call_print(t, x):
-    if (
-            isinstance(x.func, ast.Name) and
-            x.func.id == 'print'):
-        return JSCall(
-                    JSAttribute(
-                        JSName('console'),
-                        'log'),
-                    x.args)
+    if (isinstance(x.func, ast.Name) and x.func.id == 'print'):
+        return JSCall(JSAttribute(JSName('console'), 'log'), x.args)
 
 
 # <code>len(x)</code> &rarr; <code>x.length</code>
 def Call_len(t, x):
-    if (
-            isinstance(x.func, ast.Name) and
-            x.func.id == 'len' and
-            len(x.args) == 1):
-        return JSAttribute(
-                        x.args[0],
-                        'length')
+    if (isinstance(x.func, ast.Name) and x.func.id == 'len' and \
+        len(x.args) == 1):
+        return JSAttribute(x.args[0], 'length')
 
 
 #### Call_new
@@ -121,8 +99,8 @@ def Call_new(t, x):
         return JSNewCall(x.func, x.args)
 
 
-from pj.transformations.classes import Call_super
-from pj.transformations.obvious import Call_default
+from .classes import Call_super
+from .obvious import Call_default
 Call = [Call_typeof, Call_isinstance, Call_print, Call_len, Call_new, Call_super, Call_default]
 
 

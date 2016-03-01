@@ -183,6 +183,7 @@ def rfilter(r, it, propFilter={}, invert=False):
             if ok:
                 yield x
 
+
 class OutputSrc:
 
     def __init__(self, node):
@@ -304,6 +305,7 @@ class Part(OutputSrc):
     def __repr__(self):
         return '<%s, "%s">' % (self.__class__.__name__,
                                str(self))
+
 
 class Block(OutputSrc):
 

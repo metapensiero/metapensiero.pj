@@ -166,56 +166,66 @@ def NameConstant(t, x):
 
 #### Ops
 
-# <code>in</code>
 def In(t, x):
-  return JSOpIn()
+    return JSOpIn()
 
-# <code>+</code>
+
 def Add(t, x):
     return JSOpAdd()
 
-# <code>-</code>
+
 def Sub(t, x):
     return JSOpSub()
 
+
 def USub(t, x):
+    "Handles tokens like '-1'"
     return JSOpUSub()
 
-# <code>*</code>
+
 def Mult(t, x):
     return JSOpMult()
 
-# <code>/</code>
+
 def Div(t, x):
     return JSOpDiv()
 
-# <code>%</code>
+
 def Mod(t, x):
     return JSOpMod()
+
 
 def RShift(t, x):
     return JSOpRShift()
 
+
 def LShift(t, x):
     return JSOpLShift()
+
 
 def BitXor(t, x):
     return JSOpBitXor()
 
+
 def BitAnd(t, x):
     return JSOpBitAnd()
+
 
 def BitOr(t, x):
     return JSOpBitOr()
 
+
 def Invert(t, x):
     return JSOpInvert()
+
 
 def And(t, x):
     return JSOpAnd()
 
+
 def Or(t, x):
     return JSOpOr()
+
 
 def Not(t, x):
     return JSOpNot()
@@ -226,11 +236,14 @@ def Not(t, x):
 def Lt(t, x):
     return JSOpLt()
 
+
 def LtE(t, x):
     return JSOpLtE()
 
+
 def Gt(t, x):
     return JSOpGt()
+
 
 def GtE(t, x):
     return JSOpGtE()
