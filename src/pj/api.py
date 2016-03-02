@@ -173,6 +173,9 @@ def transpile_py_file(src_filename, dst_filename=None, map_filename=None):
     es6_relpath = os.path.relpath(es6_dst_filename, dst_dir)
     src_text = open(src_filename).readlines()
     es6_text, es6_src_map = translates(src_text, True, src_relpath)
+
+    es5_text, es5_src_map = transpile_es6s(es6_text, es6_relpath, es6_src_map)
+    es5_text += '\n//# sourceMappingURL=%s\n' % map_relpath
     es6_text += '\n//# sourceMappingURL=%s\n' % es6_map_relpath
 
     with open(es6_dst_filename, 'w') as dst:
@@ -180,13 +183,10 @@ def transpile_py_file(src_filename, dst_filename=None, map_filename=None):
     with open(es6_map_filename, 'w') as map:
         map.write(es6_src_map)
 
-    es5_text, es5_src_map = transpile_es6s(es6_text, es6_relpath, es6_src_map)
-    es5_text += '\n//# sourceMappingURL=%s\n' % map_relpath
-
     with open(dst_filename, 'w') as dst:
         dst.write(es5_text)
     with open(map_filename, 'w') as map:
-        map.write(es5_src_map)
+        map.write(json.dumps(es5_src_map))
 
 
 def eval_object(py_obj, append=None, body_only=False, **kwargs):
