@@ -91,7 +91,7 @@ class Transformer:
         top = ast.parse(py)
         body = top.body
 
-        local_vars = list(body_local_names(body))
+        local_vars = list(body_local_names(body) - {'document', 'window', 'console'})
         if len(local_vars) > 0:
             body = [JSVarStatement(
                 local_vars,
