@@ -100,7 +100,7 @@ class JSLetStatement(JSVarDeclarer):
 
 class JSAugAssignStatement(JSStatement):
     def emit(self, target, op, value):
-        yield self.part(target, ' ', op, '= ', value)
+        yield self.part(target, ' ', op, '= ', value, name=str(target))
 
 
 class JSIfStatement(JSStatement):
@@ -211,7 +211,7 @@ class JSFunction(JSNode):
             line.append(name)
         line += self.fargs(args)
         line += ['{']
-        yield self.line(line)
+        yield self.line(line, name=str(name))
         yield from self.lines(body, indent=True, delim=True)
         yield self.line('}')
 
@@ -281,12 +281,12 @@ class JSAttribute(JSNode):
     def emit(self, obj, s):
         assert re.search(r'^[a-zA-Z_][a-zA-Z_0-9]*$', s)
         assert s not in JS_KEYWORDS
-        yield self.part(obj, '.', s)
+        yield self.part(obj, '.', s, name=True)
 
 
 class JSSubscript(JSNode):
     def emit(self, obj, key):
-        yield self.part(obj, '[', key, ']')
+        yield self.part(self.part(obj, name=True), '[', self.part(key, name=True), ']')
 
 
 class JSBinOp(JSNode):
@@ -315,7 +315,7 @@ class JSStr(JSNode):
 class JSName(JSNode):
     def emit(self, name):
         assert name not in JS_KEYWORDS, name
-        yield self.part(name)
+        yield self.part(name, name=True)
 
 
 class JSSuper(JSNode):

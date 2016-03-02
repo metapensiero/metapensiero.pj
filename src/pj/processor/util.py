@@ -186,8 +186,9 @@ def rfilter(r, it, propFilter={}, invert=False):
 
 class OutputSrc:
 
-    def __init__(self, node):
+    def __init__(self, node, name=None):
         self.node = node
+        self.src_name = name
 
     def _gen_mapping(self, text, src_line=None, src_offset=None, dst_offset=None):
         """Generate a single mapping. `dst_line` is absent from signature
@@ -202,7 +203,8 @@ class OutputSrc:
             'src_offset': src_offset,
             'dst_line': None,
             'dst_offset': dst_offset,
-            'text': text
+            'text': text,
+            'name': self.src_name if self.src_name is not True else str(self)
         }
 
     def _pos_in_src(self):
@@ -219,8 +221,8 @@ class OutputSrc:
 
 class Line(OutputSrc):
 
-    def __init__(self, node, item, indent=False, delim=False):
-        super().__init__(node)
+    def __init__(self, node, item, indent=False, delim=False, name=None):
+        super().__init__(node, name)
         self.indent = int(indent)
         self.delim = delim
         if isinstance(item, (tuple, list)):
@@ -257,8 +259,8 @@ class Line(OutputSrc):
 
 class Part(OutputSrc):
 
-    def __init__(self, node, *items):
-        super().__init__(node)
+    def __init__(self, node, *items, name=None):
+        super().__init__(node, name)
         self.items = []
         for i in items:
             if isinstance(i, (str, Part)):
@@ -328,7 +330,7 @@ class Block(OutputSrc):
     def sourcemap(self, source, src_filename, src_offset=None):
         Token = sourcemaps.Token
         tokens = [Token(m['dst_line'], m['dst_offset'], src_filename,
-                        m['src_line'], m['src_offset']) for m in
+                        m['src_line'], m['src_offset'], m['name']) for m in
                   self.src_mappings(src_offset)]
         src_map = sourcemaps.SourceMap(
             sources_content={src_filename: source}

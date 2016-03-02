@@ -44,25 +44,25 @@ class TargetNode:
         for a in self.emit(*self.transformed_args):
             yield from a.serialize()
 
-    def lines(self, items, *, indent=False, delim=False):
+    def lines(self, items, *, indent=False, delim=False, name=None):
         if not isinstance(items, (tuple, list)):
             items = (items,)
         for i in self._chain(items):
-            yield self.line(i, indent=indent, delim=delim)
+            yield self.line(i, indent=indent, delim=delim, name=name)
 
-    def line(self, item, indent=False, delim=False):
+    def line(self, item, indent=False, delim=False, name=None):
         if isinstance(item, Line):
             item.indent += int(indent)
             l = item
         elif isinstance(item, (tuple, list)):
             item = tuple(self._chain(item))
-            l = Line(self, item, indent, delim)
+            l = Line(self, item, indent, delim, name)
         else:
-            l = Line(self, item, indent, delim)
+            l = Line(self, item, indent, delim, name)
         return l
 
-    def part(self, *items):
-        return Part(self, *self._expand(items))
+    def part(self, *items, name=None):
+        return Part(self, *self._expand(items), name=name)
 
     def _expand(self, items):
         return [i.serialize() if isinstance(i, TargetNode)
