@@ -88,3 +88,17 @@ Tools
 Have a look at `ECMAScript 6 Tools`__ by Addy Osmani.
 
 __ https://github.com/addyosmani/es6-tools
+
+To debug *source maps* have a look at `source-map-visualization`__ and
+its `package`__ on npm.
+
+__ https://sokra.github.io/source-map-visualization/
+__ https://www.npmjs.com/package/source-map-visualize
+
+Still i found these links to be helpful:
+
+* `BASE64 VLQ CODEC (COder/DECoder)`__
+* `Testing Source Maps`__
+
+__ http://murzwin.com/base64vlq.html
+__ http://fitzgeraldnick.com/weblog/51/
