@@ -20,7 +20,7 @@ with open(os.path.join(here, 'version.txt'), encoding='utf-8') as f:
     VERSION = f.read().strip()
 
 setup(
-    name="pyxc",
+    name="pj",
     version=VERSION,
     url="https://github.com/azazel75/pyxc-pj",
 
@@ -42,12 +42,7 @@ setup(
     package_dir={'': 'src'},
     namespace_packages=[],
     install_requires=['setuptools',
-                      'python-sourcemaps',
                       'dukpy'],
-    dependency_links=[
-        'hg+https://azazel75@bitbucket.org/azazel75/python-sourcemaps#egg=python-sourcemaps',
-        'git+https://github.com/amol-/dukpy.git#egg=dukpy'
-    ],
     extras_require={'dev': ['metapensiero.tool.bump_version', 'docutils']},
     setup_requires=['pytest-runner'],
     tests_require=['pytest', 'meta'],
