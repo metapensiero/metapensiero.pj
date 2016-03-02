@@ -14,7 +14,7 @@ import random
 import re
 import textwrap
 
-import sourcemaps
+from . import sourcemaps
 
 
 def delimited(delimiter, arr, dest=None, at_end=False):
