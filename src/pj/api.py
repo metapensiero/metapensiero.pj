@@ -18,6 +18,8 @@ from .processor.util import Block
 from .js_ast import JSStatements
 from . import transformations
 
+BABEL_COMPILER = os.path.join(os.path.dirname(__file__), 'data', 'babel-6.4.4.min.js')
+
 
 def _calc_file_names(src_filename, dst_filename=None, map_filename=None):
     """Calculate destination paths for file translation/transpile"""
@@ -218,7 +220,7 @@ def babel_compile(source, **kwargs):
     presets = kwargs.get('presets')
     if not presets:
         kwargs['presets'] = ["es2015"]
-    with open(dukpy.babel.BABEL_COMPILER, 'r') as babel_js:
+    with open(BABEL_COMPILER, 'r') as babel_js:
         return dukpy.evaljs(
             (babel_js.read(),
              'var bres, res;'
