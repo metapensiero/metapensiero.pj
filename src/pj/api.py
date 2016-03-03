@@ -72,12 +72,13 @@ def translate_object(py_obj, body_only=False):
     src_lines, sline_offset = inspect.getsourcelines(py_obj)
     # line offsets should be 0-based
     sline_offset = sline_offset - 1
+    complete_src = open(src_filename).read()
     return translates(src_lines, True, src_filename, (sline_offset, 0),
-                      body_only=body_only)
+                      body_only=body_only, complete_src=complete_src)
 
 
 def translates(src_text, dedent=True, src_filename=None, src_offset=None,
-               body_only=False):
+               body_only=False, complete_src=None):
     """Transate the given Python 3 source text to ES6 Javascript. If the
     string comes from a file, it's possible to specify the filename
     that will be inserted into the output source map. The
@@ -123,7 +124,7 @@ def translates(src_text, dedent=True, src_filename=None, src_offset=None,
         snip_text = Block(t.transform_snippets()).read()
         sline_offset += len(snip_text.splitlines())
         js_text = snip_text + js_text
-    src_map = js_code_block.sourcemap(src_text, src_filename,
+    src_map = js_code_block.sourcemap(complete_src or src_text, src_filename,
                                       (sline_offset, scol_offset))
     return js_text, src_map
 
