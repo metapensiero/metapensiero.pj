@@ -215,7 +215,7 @@ def encode(sourcemap):
             vlq.append(token.src_line - prev_src_line)
             vlq.append(token.src_col - prev_src_col)
             if token.name:
-                name_id = sources.get(token.name)
+                name_id = names.get(token.name)
                 if name_id is None:
                     names[token.name] = name_id = next_name_id
                     next_name_id += 1
