@@ -17,7 +17,7 @@ def test_body_names_stop_at_func(astobj):
 
         yes2 = 3
 
-    assert body_local_names(astobj(outer).body) == {'yes', 'yes_func', 'yes2'}
+    assert body_local_names(astobj(outer).body) == {'yes', 'yes2'}
 
 def test_textwrap_behavior():
 
