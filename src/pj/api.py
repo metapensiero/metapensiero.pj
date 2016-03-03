@@ -92,10 +92,17 @@ def translates(src_text, dedent=True, src_filename=None, src_offset=None,
     to translate only the body of the first statement.
     """
     if isinstance(src_text, (tuple, list)):
-        src_line_num = len(src_text)
+        src_lines = src_text
         src_text = ''.join(src_text)
     else:
-        src_line_num = len(src_text.splitlines())
+        src_lines = src_text.splitlines() # removes \n
+
+    # take into account only the lines with content because only those
+    # will be dedented
+    src_line_num = 0
+    for l in src_lines:
+        if not len(l.strip()) == 0:
+            src_line_num += 1
 
     sline_offset, scol_offset = src_offset or (0, 0)
     if dedent:
@@ -103,7 +110,7 @@ def translates(src_text, dedent=True, src_filename=None, src_offset=None,
         # at root can be evaluated, or ast will complain
         dedented = textwrap.dedent(src_text)
         if len(dedented) < len(src_text):
-            scol_offset += len(dedented) // src_line_num
+            scol_offset += (len(src_text) - len(dedented)) // src_line_num
     else:
         dedented = src_text
     t = Transformer(transformations, JSStatements)
