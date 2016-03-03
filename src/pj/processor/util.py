@@ -288,18 +288,19 @@ class Part(OutputSrc):
             elif isinstance(i, Part):
                 if frag and src_line:
                     yield self._gen_mapping(frag, src_line, src_offset, col)
+                    col += len(frag)
                     frag = ''
                 psrc = str(i)
-                col = src.find(psrc) + len(psrc)
-                yield from i._translate_src_mappings(i, src, psrc)
+                yield from i._translate_src_mappings(i, src, psrc, col)
+                col += len(psrc)
         else:
             if frag and src_line:
                 yield self._gen_mapping(frag, src_line, src_offset, col)
 
-    def _translate_src_mappings(self, part, src=None, psrc=None):
+    def _translate_src_mappings(self, part, src=None, psrc=None, start=None):
         src = src or str(self)
         psrc = psrc or str(part)
-        offset = src.find(psrc)
+        offset = src.find(psrc, start)
         for m in part.src_mappings():
             m['dst_offset'] += offset
             yield m
