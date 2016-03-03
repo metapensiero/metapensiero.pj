@@ -54,6 +54,26 @@ This project is far from complete, but it has achieved a good deal of
 features, please have a look at ``tests/test_evaljs.py`` file for the
 currently supported ones.
 
+Usage
+-----
+
+To *compile* or *transpile* a python source module, use the
+commandline:
+
+.. code:: bash
+
+  $ python -m pj source.py
+
+or:
+
+.. code:: bash
+
+  $ python -m pj -5 source.py
+
+to transpile. As of now  it doesn't check which features require a
+transpilation, so the latter is always safer.
+
+
 Todo
 ----
 
