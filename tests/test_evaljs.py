@@ -126,7 +126,7 @@ def test_for_range_simple():
             x += i
         return x
 
-    assert dofor() == eval_object_es5(dofor, 'dofor();')
+    assert dofor() == eval_object(dofor, 'dofor();')
 
 def test_for_range_less_simpler():
 
