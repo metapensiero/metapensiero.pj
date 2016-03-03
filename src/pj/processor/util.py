@@ -204,7 +204,8 @@ class OutputSrc:
             'dst_line': None,
             'dst_offset': dst_offset,
             'text': text,
-            'name': self.src_name if self.src_name is not True else str(self)
+            'name': self.src_name if self.src_name is not True else str(self),
+            'part': self
         }
 
     def _pos_in_src(self):
