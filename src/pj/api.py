@@ -42,13 +42,15 @@ def _calc_file_names(src_filename, dst_filename=None, map_filename=None):
     return dst_filename, map_filename, src_relpath, map_relpath
 
 
-def translate_file(src_filename, dst_filename=None, map_filename=None):
+def translate_file(src_filename, dst_filename=None, map_filename=None,
+                   enable_es6=False):
     """Translated the given python source file to ES6 Javascript"""
     dst_filename, map_filename, src_relpath, map_relpath = _calc_file_names(
         src_filename, dst_filename, map_filename
     )
     src_text = open(src_filename).readlines()
-    js_text, src_map = translates(src_text, True, src_relpath)
+    js_text, src_map = translates(src_text, True, src_relpath,
+                                  enable_es6=enable_es6)
     js_text += '\n//# sourceMappingURL=%s\n' % map_relpath
 
     with open(dst_filename, 'w') as dst:
@@ -57,7 +59,7 @@ def translate_file(src_filename, dst_filename=None, map_filename=None):
         map.write(src_map)
 
 
-def translate_object(py_obj, body_only=False):
+def translate_object(py_obj, body_only=False, enable_es6=False):
     """Translate the given Python 3 object (function, class, etc.) to ES6
     Javascript. If ``body_only`` is True, the object itself is discarded
     and only its body gets translates as it was a module body.
@@ -74,11 +76,12 @@ def translate_object(py_obj, body_only=False):
     sline_offset = sline_offset - 1
     complete_src = open(src_filename).read()
     return translates(src_lines, True, src_filename, (sline_offset, 0),
-                      body_only=body_only, complete_src=complete_src)
+                      body_only=body_only, complete_src=complete_src,
+                      enable_es6=enable_es6)
 
 
 def translates(src_text, dedent=True, src_filename=None, src_offset=None,
-               body_only=False, complete_src=None):
+               body_only=False, complete_src=None, enable_es6=False):
     """Transate the given Python 3 source text to ES6 Javascript. If the
     string comes from a file, it's possible to specify the filename
     that will be inserted into the output source map. The
@@ -113,7 +116,7 @@ def translates(src_text, dedent=True, src_filename=None, src_offset=None,
             scol_offset += (len(src_text) - len(dedented)) // src_line_num
     else:
         dedented = src_text
-    t = Transformer(transformations, JSStatements)
+    t = Transformer(transformations, JSStatements, es6=enable_es6)
     pyast = ast.parse(dedented)
     if body_only and hasattr(pyast, 'body') and len(pyast.body) == 1 \
        and hasattr(pyast.body[0], 'body'):
@@ -153,7 +156,8 @@ def transpile_es6s(es6_text, es6_filename=None, es6_sourcemap=None):
 def transpile_object(py_obj, body_only=False, es6_filename=None):
     """Transpile the given python Python 3 object to ES5 Javascript using
     Dukpy and babeljs."""
-    es6_text, es6_sourcemap = translate_object(py_obj, body_only=body_only)
+    es6_text, es6_sourcemap = translate_object(py_obj, body_only=body_only,
+                                               enable_es6=True)
     return transpile_es6s(es6_text, es6_filename, es6_sourcemap)
 
 
@@ -163,7 +167,7 @@ def transpile_pys(src_text, dedent=True, src_filename=None, src_offset=None,
     using Dukpy and babeljs.
     """
     es6_text, es6_sourcemap = translates(src_text, dedent, src_filename,
-                                         src_offset, body_only)
+                                         src_offset, body_only, enable_es6=True)
     return transpile_es6s(es6_text, es6_filename, es6_sourcemap)
 
 
@@ -182,7 +186,8 @@ def transpile_py_file(src_filename, dst_filename=None, map_filename=None):
     es6_map_relpath = os.path.relpath(es6_map_filename, dst_dir)
     es6_relpath = os.path.relpath(es6_dst_filename, dst_dir)
     src_text = open(src_filename).readlines()
-    es6_text, es6_src_map = translates(src_text, True, src_relpath)
+    es6_text, es6_src_map = translates(src_text, True, src_relpath,
+                                       enable_es6=True)
 
     es5_text, es5_src_map = transpile_es6s(es6_text, es6_relpath, es6_src_map)
     es5_text += '\n//# sourceMappingURL=%s\n' % map_relpath

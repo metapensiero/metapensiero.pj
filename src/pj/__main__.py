@@ -16,8 +16,13 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument('files', metavar='file', type=str, nargs='+',
                     help="Python source file(s) to convert.")
+parser.add_argument('--disable-es6', dest='es6', action='store_false',
+                    default=True,
+                    help="Disable ES6 features during conversion"
+                    " (Ignored if --es5 is specified)")
 parser.add_argument('-5', '--es5', dest='es5', action='store_true',
                     help="Also transpile to ES5 using BabelJS.")
+
 
 
 def main():
@@ -26,7 +31,7 @@ def main():
         if args.es5:
             api.transpile_py_file(fname)
         else:
-            api.translate_file(fname)
+            api.translate_file(fname, enable_es6=args.es6)
 
 if __name__ == '__main__':
     main()
