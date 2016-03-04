@@ -79,8 +79,6 @@ Todo
 
 This is a brief list of what needs to be done:
 
-* translate *import* statements to ES6;
-* translate ``__all__`` definition to ES6 module exports;
 * write a command line interface to expose the api;
 * refactor the comprehensions conversion to use the snippets facility;
 * refactor snippets rendering to write them as a module and import
@@ -92,6 +90,13 @@ This is a brief list of what needs to be done:
 * convert `*iterable` syntax to ES6 destructuring;
 * convert argument defaults on functions to ES6;
 
+Done
+----
+
+Stuff that was previously in the todo:
+
+* translate *import* statements to ES6;
+* translate ``__all__`` definition to ES6 module exports;
 
 External documentation
 ----------------------
