@@ -13,3 +13,7 @@ class PyxcError(Exception):
 
 class NoTransformationForNode(PyxcError):
     pass
+
+
+class TransformationError(PyxcError):
+    pass

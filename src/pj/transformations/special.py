@@ -121,15 +121,63 @@ def NotEq(t, x):
     return JSOpStrongNotEq()
 
 
-#### ImportFrom
-# Only accept imports of these forms:
-# <code>from foo import ...names...</code>
-# <code>from foo import *</code>
+#### Import
+
+def Import(t, x):
+    t.es6_guard("'import' statement requires ES6")
+    names = []
+    for n in x.names:
+        names.append(n.asname or n.name)
+    t.add_globals(*names)
+    result = []
+    for n in x.names:
+        path_module = '/'.join(n.name.split('.'))
+        result.append(
+            JSStarImport(path_module, n.asname or n.name)
+        )
+    return JSStatements(result)
+
 def ImportFrom(t, x):
-    for name in x.names:
-        assert name.asname is None
-    assert x.level == 0
-    return JSPass()
+    names = []
+    for n in x.names:
+        names.append(n.asname or n.name)
+    if x.module == '__globals__':
+        assert x.level == 0
+        # assume a fake import to import js stuff from root object
+        t.add_globals(*names)
+        result = JSPass()
+    else:
+        t.es6_guard("'import from' statement requires ES6")
+        t.add_globals(*names)
+        result = JSPass()
+        if x.module:
+            path_module = '/'.join(x.module.split('.'))
+            if x.level == 1:
+                # from .foo import bar
+                path_module = './' + path_module
+            elif x.level > 1:
+                # from ..foo import bar
+                # from ...foo import bar
+                path_module = '../' * x.level + path_module
+            result = JSNamedImport(path_module,
+                                   [(n.name, n.asname) for n in x.names])
+        else:
+            assert x.level > 0
+            result = []
+            for n in x.names:
+                if x.level == 1:
+                    # from . import foo
+                    result.append(
+                        JSStarImport('./' + n.name, n.asname or n.name)
+                    )
+                else:
+                    # from .. import foo
+                    result.append(
+                        JSStarImport('../' * x.level + n.name,
+                                     n.asname or n.name)
+                    )
+            result = JSStatements(result)
+    return result
 
 
 from .obvious import Compare_default

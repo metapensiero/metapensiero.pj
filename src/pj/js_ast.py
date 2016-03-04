@@ -172,6 +172,25 @@ class JSThrowStatement(JSStatement):
     def emit(self, obj):
         yield self.line(['throw ', obj], delim=True)
 
+
+class JSNamedImport(JSStatement):
+    def emit(self, module, names):
+        js_names=[]
+        for name, alias in names:
+            if alias:
+                js_names.append(self.part(name, ' as ', alias))
+            else:
+                js_names.append(self.part(name))
+
+        yield self.line(['import {', *delimited(', ', js_names),
+                         "} from '", module, "'"], delim=True)
+
+
+class JSStarImport(JSStatement):
+    def emit(self, module, name):
+        yield self.line(['import * as ', name, " from '", module, "'"],
+                        delim=True)
+
 #### Expressions
 
 

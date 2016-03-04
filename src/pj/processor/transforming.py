@@ -12,7 +12,7 @@ import os
 import sys
 import textwrap
 
-from .exceptions import NoTransformationForNode
+from .exceptions import NoTransformationForNode, TransformationError
 from .util import (rfilter, parent_of, random_token,
                    Line, Part, obj_source, body_local_names)
 
@@ -78,11 +78,14 @@ class TargetNode:
 
 class Transformer:
 
-    def __init__(self, py_ast_module, statements_class, snippets=True):
+    def __init__(self, py_ast_module, statements_class, snippets=True,
+                 es6=False):
         self.transformations = load_transformations(py_ast_module)
         self.statements_class = statements_class
         self.snippets = set()
         self.enable_snippets = snippets
+        self.enable_es6 = es6
+        self._globals = set()
 
     def transform_code(self, py):
 
@@ -91,16 +94,17 @@ class Transformer:
         top = ast.parse(py)
         body = top.body
 
-        local_vars = list(body_local_names(body) - {'document', 'window', 'console'})
-        if len(local_vars) > 0:
-            body = [JSVarStatement(
-                local_vars,
-                [None] * len(local_vars))] + body
-
         self.node_parent_map = build_node_parent_map(top)
 
         result = self.statements_class(body)
         self._finalize_target_node(result)
+
+        local_vars = list(body_local_names(body) - self._globals)
+        if len(local_vars) > 0:
+            vars = JSVarStatement(local_vars,
+                                  [None] * len(local_vars))
+            self._finalize_target_node(vars)
+            result.transformed_args[0].insert(0, vars)
 
         self.node_parent_map = None
 
@@ -171,7 +175,15 @@ class Transformer:
         t.statements_class = self.statements_class
         t.snippets = None
         t.enable_snippets = False
+        t._globals = set()
         return t.transform_code(trans_src)
+
+    def add_globals(self, *items):
+        self._globals |= set(items)
+
+    def es6_guard(self, desc):
+        if not self.enable_es6:
+            raise TransformationError(desc)
 
 
 #### Helpers
