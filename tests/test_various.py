@@ -33,6 +33,27 @@ def test_textwrap_behavior():
     assert len(out) == 16
 
 
+def test_globals():
+
+    def func():
+
+        def simple_alert():
+            window.alert('Hi there!')
+
+        el = document.querySelector('button')
+        el.addEventListener('click', simple_alert)
+
+
+    expected = ('var el;\n'
+                'function simple_alert() {\n'
+                '    window.alert("Hi there!");\n'
+                '}\n'
+                'el = document.querySelector("button");\n'
+                'el.addEventListener("click", simple_alert);\n')
+
+    assert translate_object(func, body_only=True)[0] == expected
+
+
 def test_imports():
 
     def func():
