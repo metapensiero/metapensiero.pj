@@ -14,11 +14,22 @@ from ..js_ast import *
 #### Statements
 
 
-def Assign(t, x):
+def Assign_default(t, x):
     y = JSAssignmentExpression(x.targets[-1], x.value)
     for i in range(len(x.targets) - 1):
         y = JSAssignmentExpression(x.targets[-(2 + i)], y)
     return JSExpressionStatement(y)
+
+
+def Assign_all(t, x):
+    if len(x.targets) == 1 and isinstance(x.targets[0], ast.Name) and \
+       x.targets[0].id == '__all__':
+        t.es6_guard("'__all__' assignement requires ES6")
+        elements = x.value.elts
+        result = [JSExport(el.s) for el in elements]
+        return JSStatements(result)
+
+Assign = [Assign_all, Assign_default]
 
 
 def AugAssign(t, x):

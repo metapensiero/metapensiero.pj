@@ -119,3 +119,37 @@ def test_ast_import(astdump):
     )
 
     assert dump == expected
+
+def test_ast_all(astdump):
+
+    def func():
+
+        __all__ = ['foo', 'bar']
+
+        __all__ = ('foo', 'bar')
+
+    node, dump = astdump(func)
+
+    expected = (
+        'FunctionDef(args=arguments(args=[], \n'
+ '                           defaults=[], \n'
+        '                           kw_defaults=[], \n'
+        '                           kwarg=None, \n'
+        '                           kwonlyargs=[], \n'
+        '                           vararg=None), \n'
+        '            body=[Assign(targets=[Name(ctx=Store(), \n'
+        "                                       id='__all__')], \n"
+        '                         value=List(ctx=Load(), \n'
+        "                                    elts=[Str(s='foo'), \n"
+        "                                          Str(s='bar')])), \n"
+        '                  Assign(targets=[Name(ctx=Store(), \n'
+        "                                       id='__all__')], \n"
+        '                         value=Tuple(ctx=Load(), \n'
+        "                                     elts=[Str(s='foo'), \n"
+        "                                           Str(s='bar')]))], \n"
+        '            decorator_list=[], \n'
+        "            name='func', \n"
+        '            returns=None)'
+    )
+
+    assert dump == expected

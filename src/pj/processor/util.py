@@ -17,6 +17,9 @@ import textwrap
 from . import sourcemaps
 
 
+IGNORED_NAMES = ('__all__',)
+
+
 def delimited(delimiter, arr, dest=None, at_end=False):
     if dest is None:
         dest = []
@@ -75,7 +78,8 @@ def node_names(x):
     names = set()
     if isinstance(x, ast.Assign):
         for target in x.targets:
-            if isinstance(target, ast.Name):
+            if isinstance(target, ast.Name) and target.id not in \
+               IGNORED_NAMES:
                 names.add(target.id)
     elif isinstance(x, (ast.FunctionDef, ast.ClassDef)):
         names.add(x.name)

@@ -191,6 +191,12 @@ class JSStarImport(JSStatement):
         yield self.line(['import * as ', name, " from '", module, "'"],
                         delim=True)
 
+
+class JSExport(JSStatement):
+    def emit(self, name):
+        yield self.line(['export ', name], delim=True)
+
+
 #### Expressions
 
 

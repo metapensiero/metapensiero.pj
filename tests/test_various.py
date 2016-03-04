@@ -72,6 +72,8 @@ def test_imports():
         # this instead should do it
         test_foo = True
 
+        __all__ = ['test_name', 'test_foo']
+
     expected = ('var test_foo;\n'
                 "import * as foo from 'foo';\n"
                 "import * as bar from 'bar';\n"
@@ -81,6 +83,8 @@ def test_imports():
                 "import * as foo from './foo';\n"
                 "import {bar} from './foo';\n"
                 'test_name = 2;\n'
-                'test_foo = true;\n')
+                'test_foo = true;\n'
+                'export test_name;\n'
+                'export test_foo;\n')
 
     assert translate_object(func, body_only=True, enable_es6=True)[0] == expected
