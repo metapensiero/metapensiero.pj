@@ -69,3 +69,53 @@ def test_ast_class_super(astjs):
     )
 
     assert str(astjs(A)) == expected
+
+def test_ast_import(astdump):
+
+    def func():
+        import foo, bar
+        import foo.bar as b
+        from foo.bar import hello as h, bye as bb
+        from ..foo.zoo import bar
+        from . import foo
+        from .foo import bar
+
+    node, dump = astdump(func)
+
+    expected = (
+        'FunctionDef(args=arguments(args=[], \n'
+        '                           defaults=[], \n'
+        '                           kw_defaults=[], \n'
+        '                           kwarg=None, \n'
+        '                           kwonlyargs=[], \n'
+        '                           vararg=None), \n'
+        '            body=[Import(names=[alias(asname=None, \n'
+        "                                      name='foo'), \n"
+        '                                alias(asname=None, \n'
+        "                                      name='bar')]), \n"
+        "                  Import(names=[alias(asname='b', \n"
+        "                                      name='foo.bar')]), \n"
+        '                  ImportFrom(level=0, \n'
+        "                             module='foo.bar', \n"
+        "                             names=[alias(asname='h', \n"
+        "                                          name='hello'), \n"
+        "                                    alias(asname='bb', \n"
+        "                                          name='bye')]), \n"
+        '                  ImportFrom(level=2, \n'
+        "                             module='foo.zoo', \n"
+        '                             names=[alias(asname=None, \n'
+        "                                          name='bar')]), \n"
+        '                  ImportFrom(level=1, \n'
+        '                             module=None, \n'
+        '                             names=[alias(asname=None, \n'
+        "                                          name='foo')]), \n"
+        '                  ImportFrom(level=1, \n'
+        "                             module='foo', \n"
+        '                             names=[alias(asname=None, \n'
+        "                                          name='bar')])], \n"
+        '            decorator_list=[], \n'
+        "            name='func', \n"
+        '            returns=None)'
+    )
+
+    assert dump == expected
