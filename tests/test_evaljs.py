@@ -7,7 +7,7 @@
 
 import pytest
 
-from pj.api import eval_object, eval_object_es5
+from pj.api import eval_object, eval_object_es5, translate_object
 
 def test_bitwise_xor():
 
@@ -62,6 +62,27 @@ def test_list_in():
         ]
 
     assert list_in() == eval_object(list_in, 'list_in();')
+    expected = (
+        'var _pj;\n'
+        'function _pj_snippets(container) {\n'
+        '    function _in(left, right) {\n'
+        '        if (((right instanceof Array) || ((typeof right) === "string"))) {\n'
+        '            return (right.indexOf(left) > (- 1));\n'
+        '        } else {\n'
+        '            return (left in right);\n'
+        '        }\n'
+        '    }\n'
+        '    container["_in"] = _in;\n'
+        '    return container;\n'
+        '}\n'
+        '_pj = {};\n'
+        '_pj_snippets(_pj);\n'
+        'function list_in() {\n'
+        '    return [_pj._in(1, [10, 11]), _pj._in("foo", "barfoobar"), _pj._in(11, '
+        '[10, 11])];\n'
+        '}\n'
+    )
+    assert translate_object(list_in)[0] == expected
 
 def test_if_else_elif():
 
