@@ -64,12 +64,23 @@ def test_imports():
         from . import foo
         from .foo import bar
 
-    expected = ("import * as foo from 'foo';\n"
+        from __globals__ import test_name
+
+        # this should not trigger variable definition
+        test_name = 2
+
+        # this instead should do it
+        test_foo = True
+
+    expected = ('var test_foo;\n'
+                "import * as foo from 'foo';\n"
                 "import * as bar from 'bar';\n"
                 "import * as b from 'foo/bar';\n"
                 "import {hello as h, bye as bb} from 'foo/bar';\n"
                 "import {bar} from '../../foo/zoo';\n"
                 "import * as foo from './foo';\n"
-                "import {bar} from './foo';\n")
+                "import {bar} from './foo';\n"
+                'test_name = 2;\n'
+                'test_foo = true;\n')
 
     assert translate_object(func, body_only=True, enable_es6=True)[0] == expected
