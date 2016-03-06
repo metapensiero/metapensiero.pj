@@ -1,4 +1,8 @@
-
+# -*- coding: utf-8 -*-
+# :Project:  metapensiero.pj
+# :Author:   Andrew Schaaf <andrew@andrewschaaf.com>
+# :License:  See LICENSE file
+#
 
 def hex_encode_256(n):
     if n == 0:
@@ -9,4 +13,4 @@ def hex_encode_256(n):
         result = n.toString(16)
     return result
 
-
+__all__ = ('hex_encode_256',)

@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+# :Project:  metapensiero.pj
+# :Author:   Andrew Schaaf <andrew@andrewschaaf.com>
+# :License:  See LICENSE file
+#
+
 from mylib.color import Color
 from mylib.tweening import Tween, easeInOut
 from mylib.random import randint

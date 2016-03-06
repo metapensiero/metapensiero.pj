@@ -1,6 +1,11 @@
+# -*- coding: utf-8 -*-
+# :Project:  metapensiero.pj
+# :Author:   Andrew Schaaf <andrew@andrewschaaf.com>
+# :License:  See LICENSE file
+#
 
-from mylib.misc import bind
-from mylib.math import bind
+from .misc import bind
+from .math import clamp
 
 
 def linear(t):
@@ -22,24 +27,25 @@ def easeInOut(t):
 #   '_easing': easeIn, # Default: linear
 #})</pre>
 class Tween:
-    
+
     def __init__(self, info):
-        
+
         self._startedAt = Date().getTime()
-        
+
         self._duration = info._duration
         self._callback = info._callback
         self._easing = info._easing or linear
-        
+
         self._tick()
-    
+
     def _tick(self):
-        
+
         t = clamp((Date().getTime() - self._startedAt) / self._duration, 0, 1)
-        
+
         self._callback(t)
-        
+
         if t < 1:
             setTimeout(bind(self._tick, self), 1)
 
 
+__all__ = ('Tween', 'easeInOut')
