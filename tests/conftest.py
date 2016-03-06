@@ -25,10 +25,10 @@ def ast_dump_object(obj):
     node = ast_object(obj)
     return node, str_ast(node)
 
-def ast_object_to_js(obj):
+def ast_object_to_js(obj, es6=False):
     src = inspect.getsource(obj)
     node = ast.parse(textwrap.dedent(src))
-    t = Transformer(transformations, JSStatements)
+    t = Transformer(transformations, JSStatements, es6=es6)
     return t.transform_code(node)
 
 @pytest.fixture

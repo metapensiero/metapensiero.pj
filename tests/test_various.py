@@ -84,7 +84,7 @@ def test_imports():
                 "import {bar} from './foo';\n"
                 'test_name = 2;\n'
                 'test_foo = true;\n'
-                'export test_name;\n'
-                'export test_foo;\n')
+                'export {test_name};\n'
+                'export {test_foo};\n')
 
     assert translate_object(func, body_only=True, enable_es6=True)[0] == expected

@@ -68,7 +68,7 @@ def test_ast_class_super(astjs):
         '}\n'
     )
 
-    assert str(astjs(A)) == expected
+    assert str(astjs(A, es6=True)) == expected
 
 def test_ast_import(astdump):
 
