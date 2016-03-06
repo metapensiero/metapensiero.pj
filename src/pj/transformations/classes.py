@@ -15,6 +15,7 @@ from ..js_ast import *
 
 def ClassDef(t, x):
 
+    t.es6_guard(x, "'class' statement requires ES6")
     assert not x.keywords, x.keywords
     #assert not x.starargs, x.starargs
     #assert not x.kwargs, x.kwargs

@@ -145,7 +145,7 @@ class Transformer:
                 if transformed is not None:
                     self._finalize_target_node(transformed, py_node=py_node)
                     return transformed
-            raise NoTransformationForNode(repr(py_node))
+            raise NoTransformationForNode(py_node)
 
         elif isinstance(py_node, TargetNode):
             self._finalize_target_node(py_node)
@@ -181,9 +181,9 @@ class Transformer:
     def add_globals(self, *items):
         self._globals |= set(items)
 
-    def es6_guard(self, desc):
+    def es6_guard(self, node, desc):
         if not self.enable_es6:
-            raise TransformationError(desc)
+            raise TransformationError(node, desc)
 
 
 #### Helpers

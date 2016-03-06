@@ -124,7 +124,7 @@ def NotEq(t, x):
 #### Import
 
 def Import(t, x):
-    t.es6_guard("'import' statement requires ES6")
+    t.es6_guard(x, "'import' statement requires ES6")
     names = []
     for n in x.names:
         names.append(n.asname or n.name)
@@ -147,7 +147,7 @@ def ImportFrom(t, x):
         t.add_globals(*names)
         result = JSPass()
     else:
-        t.es6_guard("'import from' statement requires ES6")
+        t.es6_guard(x, "'import from' statement requires ES6")
         t.add_globals(*names)
         result = JSPass()
         if x.module:

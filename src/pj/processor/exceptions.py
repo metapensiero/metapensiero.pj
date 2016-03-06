@@ -7,13 +7,23 @@
 #
 
 
-class PyxcError(Exception):
+class ProcessorError(Exception):
+
+    def __str__(self):
+        ast = self.args[0]
+        return "Node type '%s': Line: %d, column: %d" % (type(ast).__name__,
+                                                         ast.lineno,
+                                                         ast.col_offset)
+
+
+class NoTransformationForNode(ProcessorError):
     pass
 
 
-class NoTransformationForNode(PyxcError):
-    pass
+class TransformationError(ProcessorError):
 
-
-class TransformationError(PyxcError):
-    pass
+    def __str__(self):
+        error = super().__str__()
+        if len(self.args) > 1:
+            error += ". %s" % self.args[1]
+        return error
