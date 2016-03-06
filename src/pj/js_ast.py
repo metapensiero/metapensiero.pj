@@ -194,7 +194,7 @@ class JSStarImport(JSStatement):
 
 class JSExport(JSStatement):
     def emit(self, name):
-        yield self.line(['export ', name], delim=True)
+        yield self.line(['export ', '{', name, '}'], delim=True)
 
 
 #### Expressions
