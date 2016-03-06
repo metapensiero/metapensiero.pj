@@ -93,8 +93,7 @@ def Dict(t, x):
 
 def Lambda(t, x):
     assert not any(getattr(x.args, k) for k in [
-            'vararg', 'varargannotation', 'kwonlyargs', 'kwarg',
-            'kwargannotation', 'defaults', 'kw_defaults'])
+            'vararg', 'kwonlyargs', 'kwarg', 'defaults', 'kw_defaults'])
     return JSFunction(
                 None,
                 [arg.arg for arg in x.args.args],
