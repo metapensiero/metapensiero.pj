@@ -25,12 +25,15 @@ def _calc_file_names(src_filename, dst_filename=None, map_filename=None):
     """Calculate destination paths for file translation/transpile"""
     src_filename = os.path.abspath(src_filename)
     src_dir = os.path.dirname(src_filename)
-    if dst_filename:
+    if dst_filename and not os.path.isdir(dst_filename):
         dst_filename = os.path.abspath(dst_filename)
         dst_dir = os.path.dirname(dst_filename)
     else:
-        dst_name = os.path.splitext(src_filename)[0]
-        dst_dir = src_dir
+        if dst_filename and os.path.isdir(dst_filename):
+            dst_dir = os.path.abspath(dst_filename)
+        else:
+            dst_dir = src_dir
+        dst_name = os.path.basename(os.path.splitext(src_filename)[0])
         dst_filename = os.path.join(dst_dir, dst_name + '.js')
     if map_filename:
         map_filename = os.path.abspath(map_filename)
