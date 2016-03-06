@@ -36,8 +36,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
         ],
-    keywords='',
-
+    keywords='JavaScript EcmaScript compilation translation transpiling babel',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     namespace_packages=[],
@@ -46,4 +45,7 @@ setup(
     extras_require={'dev': ['metapensiero.tool.bump_version', 'docutils']},
     setup_requires=['pytest-runner'],
     tests_require=['pytest', 'meta'],
+    entry_points = {
+        'console_scripts': ['pj=pj.__main__:main'],
+    }
 )
