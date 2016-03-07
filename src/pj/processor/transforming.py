@@ -62,11 +62,19 @@ class TargetNode:
         return l
 
     def part(self, *items, name=None):
-        return Part(self, *self._expand(items), name=name)
+        it = tuple(self._expand(items))
+        if len(it) == 1 and isinstance(it[0], Line):
+            result = it[0].item
+        else:
+            result = Part(self, *it, name=name)
+        return result
 
     def _expand(self, items):
-        return [i.serialize() if isinstance(i, TargetNode)
-                else i for i in items]
+        for i in items:
+            if isinstance(i, TargetNode):
+                yield from i.serialize()
+            else:
+                yield i
 
     def _chain(self, items):
         for i in self._expand(items):
