@@ -98,10 +98,16 @@ def Call_new(t, x):
         #assert not any([x.keywords, x.starargs, x.kwargs])
         return JSNewCall(x.func, x.args)
 
+def Call_import(t, x):
+    if (isinstance(x.func, ast.Name) and x.func.id == '__import__'):
+        assert len(x.args) == 1 and isinstance(x.args[0], ast.Str)
+        t.es6_guard(x, "'__import__()' call requires ES6")
+        return JSDependImport(x.args[0].s)
 
 from .classes import Call_super
 from .obvious import Call_default
-Call = [Call_typeof, Call_isinstance, Call_print, Call_len, Call_new, Call_super, Call_default]
+Call = [Call_typeof, Call_isinstance, Call_print, Call_len,
+        Call_new, Call_super, Call_import, Call_default]
 
 
 #### Ops

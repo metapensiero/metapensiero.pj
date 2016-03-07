@@ -173,6 +173,11 @@ class JSThrowStatement(JSStatement):
         yield self.line(['throw ', obj], delim=True)
 
 
+class JSDependImport(JSStatement):
+    def emit(self, module):
+        yield self.line(['import ', "'", module, "'"], delim=True)
+
+
 class JSNamedImport(JSStatement):
     def emit(self, module, names):
         js_names=[]
@@ -195,6 +200,8 @@ class JSStarImport(JSStatement):
 class JSExport(JSStatement):
     def emit(self, name):
         yield self.line(['export ', '{', name, '}'], delim=True)
+
+
 
 
 #### Expressions
