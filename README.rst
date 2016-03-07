@@ -27,7 +27,7 @@ the expected Python behaviors.
 
 The interface with the js world is completely flat, import the modules
 or use the expected globals (``window``, ``document``, etc...) as you
-would do in JavaDcript
+would do in JavaScript.
 
 The ES6 code is then converted (if requested) to ES5 code with the aid
 of the popular `BabelJS`__ library together with the fantastic
@@ -79,7 +79,8 @@ Todo
 
 This is a brief list of what needs to be done:
 
-* write a command line interface to expose the api;
+* make try...except work again and implement try...finally;
+* use arrow functions for functions created in functions;
 * refactor the comprehensions conversion to use the snippets facility;
 * refactor snippets rendering to write them as a module and import
   them in the module when tree conversion is enabled;
@@ -97,6 +98,7 @@ Stuff that was previously in the todo:
 
 * translate *import* statements to ES6;
 * translate ``__all__`` definition to ES6 module exports;
+* write a command line interface to expose the api;
 
 External documentation
 ----------------------
