@@ -3,3 +3,7 @@
 .eggs
 .cache
 *.egg-info
+examples/node_modules
+examples/js
+examples/www/colorflash/bundle.*
+src/.ropeproject
