@@ -4,7 +4,6 @@
 # :License:  See LICENSE file
 #
 
-from .misc import bind
 from .math import clamp
 
 
@@ -45,7 +44,7 @@ class Tween:
         self._callback(t)
 
         if t < 1:
-            setTimeout(bind(self._tick, self), 1)
+            setTimeout(self._tick.bind(self), 1)
 
 
 __all__ = ('Tween', 'easeInOut')

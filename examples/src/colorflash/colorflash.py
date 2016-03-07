@@ -3,11 +3,9 @@
 # :Author:   Andrew Schaaf <andrew@andrewschaaf.com>
 # :License:  See LICENSE file
 #
-
 from mylib.color import Color
 from mylib.tweening import Tween, easeInOut
 from mylib.random import randint
-from mylib.misc import bind
 
 
 CHANGE_EVERY = 1000
@@ -29,23 +27,20 @@ class Controller:
                 randint(0, 255))
 
         def callback(t):
-            document.body.style.background = (self._oldColor
-                                                    ._interpolatedToward(self._newColor, t)
-                                                    ._webString())
+            transient_color = self._oldColor._interpolatedToward(self._newColor, t)
+            document.body.style.background = transient_color ._webString()
 
         def onComplete(t):
             document.title = self._newColor._webString()
 
         Tween({
             '_duration': TRANSITION_DURATION,
-            '_callback': bind(callback, self),
+            '_callback': callback.bind(self),
             '_easing': easeInOut,
-            '_onComplete': bind(onComplete, self),
+            '_onComplete': onComplete.bind(self),
         })
 
-        setTimeout(
-            bind(arguments.callee, self),
-            CHANGE_EVERY)
+        setTimeout(self._changeColor.bind(self), CHANGE_EVERY)
 
 
 def main():

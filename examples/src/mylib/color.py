@@ -4,7 +4,7 @@
 # :License:  See LICENSE file
 #
 
-from .hex import hex_256_encode
+from . import encode
 from .math import clamp
 
 
@@ -21,9 +21,9 @@ class Color:
                      self.b + (c2.b - self.b) * fraction)
 
     def _webString(self):
-        return ('#' + hex_encode_256(self.r) +
-                hex_encode_256(self.g) +
-                hex_encode_256(self.b))
+        return ('#' + encode.hex_encode_256(self.r) +
+                encode.hex_encode_256(self.g) +
+                encode.hex_encode_256(self.b))
 
 
 __all__ = ('Color',)
