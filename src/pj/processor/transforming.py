@@ -7,6 +7,7 @@
 #
 
 import ast
+import collections
 import inspect
 import os
 import sys
@@ -94,6 +95,7 @@ class Transformer:
         self.enable_snippets = snippets
         self.enable_es6 = es6
         self._globals = set()
+        self._args_stack = []
 
     def transform_code(self, py):
 
@@ -101,6 +103,7 @@ class Transformer:
 
         top = ast.parse(py)
         body = top.body
+        self._args_stack.clear()
 
         self.node_parent_map = build_node_parent_map(top)
 
@@ -165,8 +168,14 @@ class Transformer:
 
     def _finalize_target_node(self, tnode, py_node=None):
         tnode.py_node = py_node
-        tnode.transformed_args = [self._transform_node(arg) for arg in tnode.args]
         tnode.transformer = self
+        tnode.transformed_args = targs = []
+        args = collections.deque(tnode.args)
+        self._args_stack.append(args)
+        while args:
+            arg = args.popleft()
+            targs.append(self._transform_node(arg))
+        self._args_stack.pop()
 
     def transform_snippets(self):
         snippets = tuple(self.snippets)
@@ -184,6 +193,7 @@ class Transformer:
         t.snippets = None
         t.enable_snippets = False
         t._globals = set()
+        t._args_stack = []
         return t.transform_code(trans_src)
 
     def add_globals(self, *items):
@@ -193,6 +203,8 @@ class Transformer:
         if not self.enable_es6:
             raise TransformationError(node, desc)
 
+    def next_args(self):
+        return self._args_stack[-1]
 
 #### Helpers
 
