@@ -19,7 +19,7 @@ def Expr_docstring(t, x):
     if isinstance(x.value, ast.Str):
         return JSCommentBlock(x.value.s)
 
-from pj.transformations.obvious import Expr_default
+from .obvious import Expr_default
 Expr = [Expr_docstring, Expr_default]
 
 
@@ -33,7 +33,7 @@ def BinOp_pow(t, x):
             [x.left, x.right])
 
 
-from pj.transformations.obvious import BinOp_default
+from .obvious import BinOp_default
 BinOp = [BinOp_pow, BinOp_default]
 
 
@@ -42,7 +42,7 @@ def Name_self(t, x):
     if x.id == 'self':
         return JSThis()
 
-from pj.transformations.obvious import Name_default
+from .obvious import Name_default
 Name = [Name_self, Name_default]
 
 

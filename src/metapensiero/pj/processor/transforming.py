@@ -224,7 +224,7 @@ def load_transformations(py_ast_module):
         os.listdir(parent_of(py_ast_module.__file__)))
     for filename in filenames:
         if filename != '__init__.py':
-            modName = 'pj.transformations.%s' % filename.split('.')[0]
+            modName = 'metapensiero.pj.transformations.%s' % filename.split('.')[0]
             __import__(modName)
             mod = sys.modules[modName]
             for name in dir(mod):

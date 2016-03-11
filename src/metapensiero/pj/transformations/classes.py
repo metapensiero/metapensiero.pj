@@ -8,7 +8,7 @@
 
 import ast
 
-from pj.processor.util import body_local_names
+from ..processor.util import body_local_names
 
 from ..js_ast import *
 

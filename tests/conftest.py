@@ -10,9 +10,9 @@ import textwrap
 
 import pytest
 
-from pj.processor.transforming import Transformer
-from pj import transformations
-from pj.js_ast import JSStatements
+from metapensiero.pj.processor.transforming import Transformer
+from metapensiero.pj import transformations
+from metapensiero.pj.js_ast import JSStatements
 
 def ast_object(obj):
     src = inspect.getsource(obj)

@@ -5,12 +5,12 @@
 # :License:   GNU General Public License version 3 or later
 #
 
-from pj.api import translate_object
+from metapensiero.pj.api import translate_object
 
 
 def test_body_names_stop_at_func(astobj):
 
-    from pj.processor.util import body_local_names
+    from metapensiero.pj.processor.util import body_local_names
 
     def outer(no):
         yes = 1

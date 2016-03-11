@@ -7,7 +7,7 @@
 
 import pytest
 
-from pj.api import eval_object, eval_object_es5, translate_object
+from metapensiero.pj.api import eval_object, eval_object_es5, translate_object
 
 def test_bitwise_xor():
 

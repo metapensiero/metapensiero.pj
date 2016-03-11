@@ -11,6 +11,7 @@ import re
 
 from .util import DirectedGraph
 
+
 def orderedModules(sourcePath, mainModule):
     """Return a list of module names in an order that doesn't violate the
     [dependency graph](http://en.wikipedia.org/wiki/Dependency_graph)
