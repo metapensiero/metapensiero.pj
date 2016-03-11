@@ -1,0 +1,70 @@
+# -*- mode: makefile-gmake; coding: utf-8 -*-
+# :Project:   metapensiero.signal -- A event framework that is asyncio aware
+# :Created:   dom 09 ago 2015 12:57:35 CEST
+# :Author:    Alberto Berti <alberto@metapensiero.it>
+# :License:   GNU General Public License version 3 or later
+# :Copyright: Copyright (C) 2015 Alberto Berti
+#
+
+PYTHON := $(BINDIR)python
+BUMPER := $(BINDIR)bump_version
+VERSION_TXT := version.txt
+VERSION = $(shell cat $(VERSION_TXT))
+
+help::
+	@printf "\nRelease management\n"
+	@printf "==================\n\n"
+
+.PHONY: assert-clean-tree
+assert-clean-tree:
+	@(test -z "$(shell git status -s --untracked=no)" || \
+	  (echo "UNCOMMITTED STAFF" && false))
+
+.PHONY: assert-master-branch
+assert-master-branch:
+	@(test "$(shell git rev-parse --abbrev-ref HEAD)" = "master" || \
+	  (echo "NOT IN MASTER BRANCH" && false))
+
+help::
+	@printf "release\n\tBump version number\n"
+
+.PHONY: release
+release: assert-master-branch assert-clean-tree
+	$(BUMPER) --field minor $(VERSION_TXT)
+	@echo ">>>"
+	@echo ">>> Do your duties (update CHANGES.rst for example), then"
+	@echo ">>> execute “make tag-release”."
+	@echo ">>>"
+
+help::
+	@printf "tag-release\n\tComplete the release tagging the working tree\n"
+
+.PHONY: tag-release
+tag-release: assert-master-branch
+	git commit -a -m "Release $(VERSION)"
+	git tag -a -m "Version $(VERSION)" v$(VERSION)
+
+.PHONY: test-readme+changes-markup
+test-readme+changes-markup:
+	@[ `(cat README.rst; echo; cat CHANGES.rst) \
+		| rst2html.py 2>&1 >/dev/null \
+		| wc -l` -eq 0 ] \
+	  || (echo "ERROR: README+CHANGES rst markup check failed!"; exit 1)
+	@fgrep -qi unreleased CHANGES.rst \
+	  && (echo "ERROR: release date not set in CHANGES.rst"; exit 1) \
+	  || true
+
+help::
+	@printf "pypi-upload\n\tUpload the source distribution to PyPI\n"
+
+.PHONY: pypi-upload
+pypi-upload: assert-master-branch assert-clean-tree
+	$(PYTHON) setup.py sdist upload
+
+help::
+	@printf "publish\n\tUpload to PyPI, push changes and tags to the remote repo\n"
+
+.PHONY: publish
+publish: pypi-upload
+	git push
+	git push --tags
