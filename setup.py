@@ -20,11 +20,12 @@ with open(os.path.join(here, 'version.txt'), encoding='utf-8') as f:
     VERSION = f.read().strip()
 
 setup(
-    name="pj",
+    name="javascripthon",
     version=VERSION,
-    url="https://github.com/azazel75/pyxc-pj",
+    url="https://github.com/azazel75/metapensiero.pj",
 
-    description="A Python 3 converter to ES6 Javascript",
+    description="Javascript for refined palates:"
+    " a Python 3 to ES6 Javascript translator",
     long_description=README + u'\n\n' + CHANGES,
 
     author="Alberto Berti",
@@ -32,20 +33,22 @@ setup(
 
     license="GPLv3+",
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: GNU General Public License (GPL)",
         ],
     keywords='JavaScript EcmaScript compilation translation transpiling babel',
     packages=find_packages('src'),
     package_dir={'': 'src'},
-    namespace_packages=[],
+    namespace_packages=['metapensiero',],
     install_requires=['setuptools',
                       'dukpy'],
     extras_require={'dev': ['metapensiero.tool.bump_version', 'docutils']},
     setup_requires=['pytest-runner'],
     tests_require=['pytest', 'meta'],
     entry_points = {
-        'console_scripts': ['pj=pj.__main__:main'],
+        'console_scripts': ['pj=metapensiero.pj.__main__:main'],
     }
 )
