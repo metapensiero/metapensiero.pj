@@ -125,7 +125,6 @@ class Transformer:
         else:
             yield
 
-    def transform_code(self, py):
     @classmethod
     def new_from(cls, instance):
         new = cls.__new__(cls)
@@ -134,6 +133,8 @@ class Transformer:
         new.statements_class = instance.statements_class
         return new
 
+    def transform_code(self, py):
+        """Convert the given Python ast dump into JavaScript ast."""
         from ..js_ast import JSVarStatement
 
         top = ast.parse(py)
@@ -157,6 +158,7 @@ class Transformer:
         return result
 
     def parent_of(self, node):
+        """Return the parent of the given node."""
         return self.node_parent_map.get(node)
 
     def find_parent(self, node, cls):
@@ -170,11 +172,13 @@ class Transformer:
                 return self.find_parent(parent, cls)
 
     def new_name(self):
-        #LATER: generate better names
+        """Generate a new name to use in statements."""
+        # TODO: generate better names
         return random_token(20)
 
-    def add_snippet(self, code):
-        self.snippets.add(code)
+    def add_snippet(self, func):
+        """Add a function to the snippets."""
+        self.snippets.add(func)
 
     def _transform_node(self, py_node):
         """This transforms a Python ast node to a JS ast node."""
@@ -238,6 +242,7 @@ class Transformer:
         self._globals |= set(items)
 
     def es6_guard(self, node, desc):
+        """Raise an exception if es6 isn't enabled."""
         if not self.enable_es6:
             raise TransformationError(node, desc)
 
