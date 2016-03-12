@@ -153,3 +153,93 @@ def test_ast_all(astdump):
     )
 
     assert dump == expected
+
+def test_ast_try(astdump):
+
+    def func():
+
+        try:
+            do_stuff()
+        except ValueError:
+            fix_value()
+        except IndexError as e:
+            fix_ix()
+        except:
+            do()
+        finally:
+            closeup()
+
+    expected = (
+        'Try(body=[Expr(value=Call(args=[], \n'
+        '                          func=Name(ctx=Load(), \n'
+        "                                    id='do_stuff'), \n"
+        '                          keywords=[]))], \n'
+        '    finalbody=[Expr(value=Call(args=[], \n'
+        '                               func=Name(ctx=Load(), \n'
+        "                                         id='closeup'), \n"
+        '                               keywords=[]))], \n'
+        '    handlers=[ExceptHandler(body=[Expr(value=Call(args=[], \n'
+        '                                                  func=Name(ctx=Load(), \n'
+        "                                                            id='fix_value'), \n"
+        '                                                  keywords=[]))], \n'
+        '                            name=None, \n'
+        '                            type=Name(ctx=Load(), \n'
+        "                                      id='ValueError')), \n"
+        '              ExceptHandler(body=[Expr(value=Call(args=[], \n'
+        '                                                  func=Name(ctx=Load(), \n'
+        "                                                            id='fix_ix'), \n"
+        '                                                  keywords=[]))], \n'
+        "                            name='e', \n"
+        '                            type=Name(ctx=Load(), \n'
+        "                                      id='IndexError')), \n"
+        '              ExceptHandler(body=[Expr(value=Call(args=[], \n'
+        '                                                  func=Name(ctx=Load(), \n'
+        "                                                            id='do'), \n"
+        '                                                  keywords=[]))], \n'
+        '                            name=None, \n'
+        '                            type=None)], \n'
+        '    orelse=[])'
+    )
+
+    node, dump = astdump(func, first_stmt_only=True)
+
+    assert dump == expected
+
+def test_ast_if(astdump):
+
+    def func():
+
+        if foo is None:
+            do_foo()
+        elif foo is bar:
+            do_foo_bar()
+        else:
+            do()
+
+    expected = (
+        'If(body=[Expr(value=Call(args=[], \n'
+        '                         func=Name(ctx=Load(), \n'
+        "                                   id='do_foo'), \n"
+        '                         keywords=[]))], \n'
+        '   orelse=[If(body=[Expr(value=Call(args=[], \n'
+        '                                    func=Name(ctx=Load(), \n'
+        "                                              id='do_foo_bar'), \n"
+        '                                    keywords=[]))], \n'
+        '              orelse=[Expr(value=Call(args=[], \n'
+        '                                      func=Name(ctx=Load(), \n'
+        "                                                id='do'), \n"
+        '                                      keywords=[]))], \n'
+        '              test=Compare(comparators=[Name(ctx=Load(), \n'
+        "                                             id='bar')], \n"
+        '                           left=Name(ctx=Load(), \n'
+        "                                     id='foo'), \n"
+        '                           ops=[Is()]))], \n'
+        '   test=Compare(comparators=[NameConstant(value=None)], \n'
+        '                left=Name(ctx=Load(), \n'
+        "                          id='foo'), \n"
+        '                ops=[Is()]))'
+    )
+
+    node, dump = astdump(func, first_stmt_only=True)
+
+    assert dump == expected
