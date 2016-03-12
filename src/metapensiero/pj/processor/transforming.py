@@ -87,17 +87,31 @@ class TargetNode:
 
 class Transformer:
 
+    enable_snippets = True
+    enable_es6 = False
+    enable_let = False
+
     def __init__(self, py_ast_module, statements_class, snippets=True,
                  es6=False):
         self.transformations = load_transformations(py_ast_module)
         self.statements_class = statements_class
-        self.snippets = set()
         self.enable_snippets = snippets
         self.enable_es6 = es6
+        self._init_structs()
+
+    def _init_structs(self):
+        self.snippets = set()
         self._globals = set()
         self._args_stack = []
 
     def transform_code(self, py):
+    @classmethod
+    def new_from(cls, instance):
+        new = cls.__new__(cls)
+        new._init_structs()
+        new.transformations = instance.transformations
+        new.statements_class = instance.statements_class
+        return new
 
         from ..js_ast import JSVarStatement
 
@@ -187,13 +201,9 @@ class Transformer:
             'snippets': src,
             'assignements': assign_src
         }
-        t = Transformer.__new__(Transformer)
-        t.transformations = self.transformations
-        t.statements_class = self.statements_class
+        t = self.new_from(self)
         t.snippets = None
         t.enable_snippets = False
-        t._globals = set()
-        t._args_stack = []
         return t.transform_code(trans_src)
 
     def add_globals(self, *items):
