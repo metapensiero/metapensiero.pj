@@ -103,6 +103,26 @@ class Transformer:
         self.snippets = set()
         self._globals = set()
         self._args_stack = []
+        self._context = collections.ChainMap()
+
+    @property
+    def ctx(self):
+        return self._context
+
+    def _push_ctx(self, **kwargs):
+        self._context = self._context.new_child(kwargs)
+
+    def _pop_ctx(self):
+        self._context = self._context.parents
+
+    @contextlib.contextmanager
+    def context_for(self, py_node, **kwargs):
+        if isinstance(py_node, ast.stmt):
+            self._push_ctx(**kwargs)
+            yield
+            self._pop_ctx()
+        else:
+            yield
 
     def transform_code(self, py):
     @classmethod
@@ -156,29 +176,36 @@ class Transformer:
         self.snippets.add(code)
 
     def _transform_node(self, py_node):
-        """This transforms a Python ast node to JS."""
+        """This transforms a Python ast node to a JS ast node."""
 
         if isinstance(py_node, list) or isinstance(py_node, tuple):
-            return [self._transform_node(child) for child in py_node]
+            res = [self._transform_node(child) for child in py_node]
 
         elif isinstance(py_node, ast.AST):
-            # transformations can come in tuples or lists, take the
-            # first one
-            for transformation in self.transformations.get(
-                    py_node.__class__.__name__, []):
-                transformed = transformation(self, py_node)
-                if transformed is not None:
-                    self._finalize_target_node(transformed, py_node=py_node)
-                    return transformed
-            raise NoTransformationForNode(py_node)
+            # prepare a context for the transformation if it's a
+            # statement; it's used for example by try...catch stmts to
+            # give hints to raise
+            with self.context_for(py_node):
+                # transformations can come in tuples or lists, take the
+                # first one
+                for transformation in self.transformations.get(
+                        py_node.__class__.__name__, []):
+                    transformed = transformation(self, py_node)
+                    if transformed is not None:
+                        self._finalize_target_node(transformed, py_node=py_node)
+                        res = transformed
+                        break
+                else:
+                    raise TransformationError(py_node, 'No transformation')
 
         elif isinstance(py_node, TargetNode):
             self._finalize_target_node(py_node)
-            return py_node
+            res = py_node
 
         else:
             # e.g. an integer
-            return py_node
+            res = py_node
+        return res
 
     def _finalize_target_node(self, tnode, py_node=None):
         tnode.py_node = py_node
