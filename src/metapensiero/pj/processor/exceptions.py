@@ -16,10 +16,6 @@ class ProcessorError(Exception):
                                                          ast.col_offset)
 
 
-class NoTransformationForNode(ProcessorError):
-    pass
-
-
 class TransformationError(ProcessorError):
 
     def __str__(self):
@@ -27,3 +23,7 @@ class TransformationError(ProcessorError):
         if len(self.args) > 1:
             error += ". %s" % self.args[1]
         return error
+
+
+class UnsupportedSyntaxError(TransformationError):
+    pass

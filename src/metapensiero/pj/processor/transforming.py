@@ -104,6 +104,7 @@ class Transformer:
         self._globals = set()
         self._args_stack = []
         self._context = collections.ChainMap()
+        self._warnings = []
 
     @property
     def ctx(self):
@@ -242,6 +243,17 @@ class Transformer:
 
     def next_args(self):
         return self._args_stack[-1]
+
+    def unsupported(self, node, cond, desc):
+        """Raise an exception if cond is False"""
+        if cond:
+            raise UnsupportedSyntaxError(node, desc)
+
+    def warn(self, py_node, msg):
+        """Append the given message to the warnings"""
+        self._warnings.append((py_node, msg))
+
+
 
 #### Helpers
 
