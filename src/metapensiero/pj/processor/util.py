@@ -55,22 +55,30 @@ def controlled_ast_walk(node):
             for n in ast.iter_child_nodes(popped):
                 l.append(n)
 
+CODE_BLOCK_STMTS = (ast.FunctionDef, ast.ClassDef,
+                    ast.AsyncFunctionDef)
+
+
+def walk_under_code_boundary(node):
+    it = controlled_ast_walk(node)
+    try:
+        while True:
+            subn = next(it)
+            yield subn
+            if not isinstance(subn, CODE_BLOCK_STMTS):
+                it.send(True) # continue traversing sub names
+    except StopIteration:
+        pass
+
 
 def body_local_names(body):
     """Find the names assigned to in the provided body. It doesn't descent
     into function or class subelements."""
     names = set()
-    for node in body:
-        it = controlled_ast_walk(node)
-        try:
-            while True:
-                subn = next(it)
-                if not isinstance(subn, (ast.FunctionDef, ast.ClassDef,
-                                         ast.AsyncFunctionDef)):
-                    names |= node_names(subn)
-                    it.send(True) # continue traversing sub names
-        except StopIteration:
-            pass
+    for stmt in body:
+        for subn in walk_under_code_boundary(stmt):
+            if not isinstance(subn, CODE_BLOCK_STMTS):
+                names |= node_names(subn)
     return names
 
 
