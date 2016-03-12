@@ -151,3 +151,10 @@ Notes
 __ http://benmccormick.org/2015/07/06/backbone-and-es6-classes-revisited/
 __ http://backbonejs.org
 __ https://github.com/jashkenas/backbone/issues/3560
+
+
+* A `benchmark of ES6 features`__ and `discussion about it`__ on
+  hacker's news.
+
+__ https://kpdecker.github.io/six-speed/
+__ https://news.ycombinator.com/item?id=11203183
