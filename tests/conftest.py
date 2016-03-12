@@ -20,9 +20,11 @@ def ast_object(obj):
     node = ast.parse(textwrap.dedent(src)).body[0]
     return node
 
-def ast_dump_object(obj):
+def ast_dump_object(obj, first_stmt_only=False):
     from meta.asttools import str_ast
     node = ast_object(obj)
+    if first_stmt_only:
+        node = node.body[0]
     return node, str_ast(node)
 
 def ast_object_to_js(obj, es6=False):
