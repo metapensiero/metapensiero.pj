@@ -8,14 +8,15 @@
 
 import ast
 import collections
+import contextlib
 import inspect
 import os
 import sys
 import textwrap
 
-from .exceptions import NoTransformationForNode, TransformationError
-from .util import (rfilter, parent_of, random_token,
-                   Line, Part, obj_source, body_local_names)
+from .exceptions import TransformationError, UnsupportedSyntaxError
+from .util import (rfilter, parent_of, random_token, Line, Part, obj_source,
+                   body_local_names, walk_under_code_boundary)
 
 SNIPPETS_TEMPLATE ="""\
 def _pj_snippets(container):
@@ -170,6 +171,21 @@ class Transformer:
                 return parent
             else:
                 return self.find_parent(parent, cls)
+
+    def find_child(self, node, cls):
+        """Find any child of node that is an instance of cls. The walk will
+        not go down into other code blocks."""
+        if not isinstance(node, (tuple, list, set)):
+            node = (node)
+        for n in node:
+            for c in walk_under_code_boundary(n):
+                if isinstance(c, cls):
+                    yield c
+
+    def has_child(self, node, cls):
+        """Returns true if node has any child that instance of cls"""
+        wanted = tuple(self.find_child(node, cls))
+        return len(wanted) > 0
 
     def new_name(self):
         """Generate a new name to use in statements."""
