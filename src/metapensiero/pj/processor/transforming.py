@@ -235,13 +235,14 @@ class Transformer:
     def _finalize_target_node(self, tnode, py_node=None):
         tnode.py_node = py_node
         tnode.transformer = self
-        tnode.transformed_args = targs = []
-        args = collections.deque(tnode.args)
-        self._args_stack.append(args)
-        while args:
-            arg = args.popleft()
-            targs.append(self._transform_node(arg))
-        self._args_stack.pop()
+        if tnode.transformed_args is None:
+            tnode.transformed_args = targs = []
+            args = collections.deque(tnode.args)
+            self._args_stack.append(args)
+            while args:
+                arg = args.popleft()
+                targs.append(self._transform_node(arg))
+            self._args_stack.pop()
 
     def transform_snippets(self):
         snippets = tuple(self.snippets)
@@ -278,6 +279,18 @@ class Transformer:
         """Append the given message to the warnings"""
         self._warnings.append((py_node, msg))
 
+    def subtransform(self, obj):
+        """Transform a piece of code, either a python object or a string. This
+        is done in a new Transformer with a configuration similar to the
+        calling instance."""
+        if isinstance(obj, str):
+            src = textwrap.dedent(obj)
+        else:
+            src = obj_source(obj)
+        t = self.new_from(self)
+        t.snippets = None
+        t.enable_snippets = False
+        return t.transform_code(src)
 
 
 #### Helpers
