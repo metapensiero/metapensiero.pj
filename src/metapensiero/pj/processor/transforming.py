@@ -36,6 +36,7 @@ class TargetNode:
 
     def __init__(self, *args):
         self.args = args
+        self.transformed_args = None
 
     def __str__(self):
         return ''.join(
