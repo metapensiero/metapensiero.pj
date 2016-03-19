@@ -13,44 +13,74 @@ from ..processor.util import body_local_names
 from ..js_ast import *
 
 
-def ClassDef(t, x):
 
+def _isdoc(el):
+    return isinstance(el, ast.Expr) and isinstance(el.value, ast.Str)
+
+
+def _class_guards(t, x):
     t.es6_guard(x, "'class' statement requires ES6")
+    t.unsupported(x, x.decorator_list, "Class decorators are unsupported")
+    t.unsupported(x, len(x.bases) > 1, "Multiple inheritance is not supported")
+    body = x.body
+    for node in body:
+        t.unsupported(x, not (isinstance(node, ast.FunctionDef) or _isdoc(node)
+                              or isinstance(node, ast.Pass)) ,
+                      "Class' body members must be functions")
+
+    if len(x.bases) > 0:
+        assert len(x.bases) == 1
+        assert isinstance(x.bases[0], ast.Name)
     assert not x.keywords, x.keywords
-    #assert not x.starargs, x.starargs
-    #assert not x.kwargs, x.kwargs
-    assert not x.decorator_list, x.decorator_list
 
     name = x.name
     body = x.body
     if len(x.bases) > 0:
-        assert len(x.bases) == 1
-        assert isinstance(x.bases[0], ast.Name)
         super_name = x.bases[0].id
     else:
         super_name = None
 
-    # Enforced restrictions:
+    # strip docs from body
+    body = [e for e in body if isinstance(e, ast.FunctionDef)]
 
-    # * The class body must consist of nothing but FunctionDefs
-    for node in body:
-        assert isinstance(node, ast.FunctionDef)
+    # is this a simple definition of a subclass of Exception?
+    if len(body) > 0 or super_name != 'Exception':
+        return
+    res = t.subtransform(EXC_TEMPLATE_ES5 % dict(name=name))
+    return res
 
-    # * Each FunctionDef must have self as its first arg
-    for node in body:
-        arg_names = [arg.arg for arg in node.args.args]
-        assert len(arg_names) > 0 and arg_names[0] == 'self'
 
-    # * (You need __init__) and (it must be the first FunctionDef)
-    assert len(body) > 0
-    init = body[0]
-    assert str(init.name) == '__init__'
 
-    # * __init__ may not contain a return statement
-    init_args = [arg.arg for arg in init.args.args]
-    init_body = init.body
-    for stmt in ast.walk(init):
-        assert not isinstance(stmt, ast.Return)
+def ClassDef(t, x):
+    """Converts a class to an ES6 class."""
+    _class_guards(t, x)
+    name = x.name
+    body = x.body
+    if len(x.bases) > 0:
+        super_name = x.bases[0].id
+    else:
+        super_name = None
+
+    # strip docs from body
+    body = [e for e in body if isinstance(e, ast.FunctionDef)]
+
+    if len(body) > 0:
+        init = body[0]
+        t.unsupported(x, str(init.name) != '__init__', "The first method should be "
+                      "__init__")
+
+        # * Each FunctionDef must have self as its first arg
+        # silly check for methods
+        for node in body:
+            arg_names = [arg.arg for arg in node.args.args]
+            assert len(arg_names) > 0 and arg_names[0] == 'self'
+
+        # * __init__ may not contain a return statement
+        # silly check
+        init_args = [arg.arg for arg in init.args.args]
+        init_body = init.body
+        for stmt in ast.walk(init):
+            assert not isinstance(stmt, ast.Return)
 
     if super_name:
         superclass = JSName(super_name)
