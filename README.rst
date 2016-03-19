@@ -159,3 +159,8 @@ __ https://github.com/jashkenas/backbone/issues/3560
 
 __ https://kpdecker.github.io/six-speed/
 __ https://news.ycombinator.com/item?id=11203183
+
+* A `compatibility table of ES6 features`__ showing completeness of
+  support feature by feature.
+
+__ http://kangax.github.io/compat-table/es6/
