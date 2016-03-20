@@ -60,7 +60,6 @@ def Call_isinstance(t, x):
         return JSBinOp(x.args[0], JSOpInstanceof(), x.args[1])
 
 
-
 # <code>print(...)</code> &rarr; <code>console.log(...)</code>
 def Call_print(t, x):
     if (isinstance(x.func, ast.Name) and x.func.id == 'print'):

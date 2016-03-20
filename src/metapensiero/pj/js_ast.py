@@ -144,6 +144,7 @@ class JSReturnStatement(JSStatement):
             result = self.line('return', delim=True)
         yield result
 
+
 class JSBreakStatement(JSStatement):
     def emit(self):
         yield self.part('break')
