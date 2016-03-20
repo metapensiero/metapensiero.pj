@@ -19,7 +19,6 @@ class %(name)s(Error):
     def __init__(self, message):
         self.name = '%(name)s'
         self.message = message or 'Error'
-
 """
 
 EXC_TEMPLATE_ES5 = """\
@@ -33,7 +32,6 @@ def %(name)s(message):
 
 %(name)s.prototype = Object.create(Error.prototype);
 %(name)s.prototype.constructor = %(name)s;
-
 """
 
 
@@ -72,6 +70,11 @@ def ClassDef_exception(t, x):
           }
       }
 
+    The real implementation avoids ES6 classes because as of now
+    (2016-03-20) subclassing from Error fails the instanceof test and
+    so i would break catch bodies, as for how they are transformed
+    right now.
+
     N.B. A toString() like this is supposed to be implemented by the
     Error object:
 
@@ -92,7 +95,7 @@ def ClassDef_exception(t, x):
     body = [e for e in body if isinstance(e, ast.FunctionDef)]
 
     # is this a simple definition of a subclass of Exception?
-    if len(body) > 0 or super_name != 'Exception':
+    if len(body) > 0 or super_name not in ('Exception', 'Error'):
         return
     res = t.subtransform(EXC_TEMPLATE_ES5 % dict(name=name))
     return res
