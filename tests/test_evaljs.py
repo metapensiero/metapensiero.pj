@@ -232,3 +232,50 @@ def test_class_super():
         return Kitteh('Maru-san').caption()
 
     assert test_class() == eval_object_es5(test_class, 'test_class();')
+
+
+def test_try_except_simple():
+
+    def test_try():
+        value = 0
+        try:
+            value += 1
+            raise 'a string error'
+            value += 1
+        except:
+            value += 1
+        finally:
+            value += 1
+        return value
+
+    assert test_try() == 3
+    assert test_try() == eval_object_es5(test_try, 'test_try();')
+
+
+def test_try_except_complex():
+
+    def test_try():
+        value = 0
+
+        class MyError(Exception):
+            pass
+
+        class MySecondError(MyError):
+            """A stupid error"""
+
+        try:
+            value += 1
+            raise MyError("Something bad happened")
+            value += 1
+        except MySecondError:
+            value += 20
+        except MyError:
+            value += 30
+        except:
+            value += 40
+        finally:
+            value += 1
+        return value
+
+    assert test_try() == 32
+    assert test_try() == eval_object_es5(test_try, 'test_try();')

@@ -243,3 +243,119 @@ def test_ast_if(astdump):
     node, dump = astdump(func, first_stmt_only=True)
 
     assert dump == expected
+
+def test_ast_call_and_func(astdump):
+
+    def func():
+
+        def afunc(a, b, *args, foo=None, **kwargs):
+            acall(a, b, *args, foo=None, **kwargs)
+
+            def bfunc(a, b, *, foo=None, **kwargs):
+                pass
+
+            def cfunc(a=1, b=2, *,foo=None):
+                pass
+    expected = (
+        'FunctionDef(args=arguments(args=[arg(annotation=None, \n'
+        "                                     arg='a'), \n"
+        '                                 arg(annotation=None, \n'
+        "                                     arg='b')], \n"
+        '                           defaults=[], \n'
+        '                           kw_defaults=[NameConstant(value=None)], \n'
+        '                           kwarg=arg(annotation=None, \n'
+        "                                     arg='kwargs'), \n"
+        '                           kwonlyargs=[arg(annotation=None, \n'
+        "                                           arg='foo')], \n"
+        '                           vararg=arg(annotation=None, \n'
+        "                                      arg='args')), \n"
+        '            body=[Expr(value=Call(args=[Name(ctx=Load(), \n'
+        "                                             id='a'), \n"
+        '                                        Name(ctx=Load(), \n'
+        "                                             id='b'), \n"
+        '                                        Starred(ctx=Load(), \n'
+        '                                                value=Name(ctx=Load(), \n'
+        "                                                           id='args'))], \n"
+        '                                  func=Name(ctx=Load(), \n'
+        "                                            id='acall'), \n"
+        "                                  keywords=[keyword(arg='foo', \n"
+        '                                                    value=NameConstant(value=None)), \n'
+        '                                            keyword(arg=None, \n'
+        '                                                    value=Name(ctx=Load(), \n'
+        "                                                               id='kwargs'))])), \n"
+        '                  FunctionDef(args=arguments(args=[arg(annotation=None, \n'
+        "                                                       arg='a'), \n"
+        '                                                   arg(annotation=None, \n'
+        "                                                       arg='b')], \n"
+        '                                             defaults=[], \n'
+        '                                             kw_defaults=[NameConstant(value=None)], \n'
+        '                                             kwarg=arg(annotation=None, \n'
+        "                                                       arg='kwargs'), \n"
+        '                                             kwonlyargs=[arg(annotation=None, \n'
+        "                                                             arg='foo')], \n"
+        '                                             vararg=None), \n'
+        '                              body=[Pass()], \n'
+        '                              decorator_list=[], \n'
+        "                              name='bfunc', \n"
+        '                              returns=None), \n'
+        '                  FunctionDef(args=arguments(args=[arg(annotation=None, \n'
+        "                                                       arg='a'), \n"
+        '                                                   arg(annotation=None, \n'
+        "                                                       arg='b')], \n"
+        '                                             defaults=[Num(n=1), \n'
+        '                                                       Num(n=2)], \n'
+        '                                             kw_defaults=[NameConstant(value=None)], \n'
+        '                                             kwarg=None, \n'
+        '                                             kwonlyargs=[arg(annotation=None, \n'
+        "                                                             arg='foo')], \n"
+        '                                             vararg=None), \n'
+        '                              body=[Pass()], \n'
+        '                              decorator_list=[], \n'
+        "                              name='cfunc', \n"
+        '                              returns=None)], \n'
+        '            decorator_list=[], \n'
+        "            name='afunc', \n"
+        '            returns=None)'
+    )
+
+    node, dump = astdump(func, first_stmt_only=True)
+
+    assert dump == expected
+
+def test_ast_cls(astdump):
+
+    def func():
+
+        class TestError(Exception):
+            pass
+
+        class TestError2(Exception):
+            """Test doc"""
+
+    expected = (
+        'FunctionDef(args=arguments(args=[], \n'
+        '                           defaults=[], \n'
+        '                           kw_defaults=[], \n'
+        '                           kwarg=None, \n'
+        '                           kwonlyargs=[], \n'
+        '                           vararg=None), \n'
+        '            body=[ClassDef(bases=[Name(ctx=Load(), \n'
+        "                                       id='Exception')], \n"
+        '                           body=[Pass()], \n'
+        '                           decorator_list=[], \n'
+        '                           keywords=[], \n'
+        "                           name='TestError'), \n"
+        '                  ClassDef(bases=[Name(ctx=Load(), \n'
+        "                                       id='Exception')], \n"
+        "                           body=[Expr(value=Str(s='Test doc'))], \n"
+        '                           decorator_list=[], \n'
+        '                           keywords=[], \n'
+        "                           name='TestError2')], \n"
+        '            decorator_list=[], \n'
+        "            name='func', \n"
+        '            returns=None)'
+    )
+
+    node, dump = astdump(func)
+
+    assert dump == expected

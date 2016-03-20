@@ -159,12 +159,17 @@ class JSDeleteStatement(JSStatement):
         yield self.part('delete ', obj, '[', key, ']')
 
 
-class JSTryCatchStatement(JSStatement):
-    def emit(self, try_body, target, catch_body):
+class JSTryCatchFinallyStatement(JSStatement):
+    def emit(self, try_body, target, catch_body, finally_body):
+        assert catch_body or finally_body
         yield self.line('try {')
         yield from self.lines(try_body, indent=True, delim=True)
-        yield self.line(['} catch(', target, ') {'])
-        yield from self.lines(catch_body, indent=True, delim=True)
+        if catch_body:
+            yield self.line(['} catch(', target, ') {'])
+            yield from self.lines(catch_body, indent=True, delim=True)
+        if finally_body:
+            yield self.line(['} finally {'])
+            yield from self.lines(finally_body, indent=True, delim=True)
         yield self.line('}')
 
 

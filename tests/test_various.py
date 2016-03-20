@@ -88,3 +88,141 @@ def test_imports():
                 'export {test_foo};\n')
 
     assert translate_object(func, body_only=True, enable_es6=True)[0] == expected
+
+
+def test_exception():
+
+    def func():
+
+        class MyError(Exception):
+            pass
+
+        class MySecondError(MyError):
+            """A stupid error"""
+
+    expected = (
+        'function MyError(message) {\n'
+        '    this.name = "MyError";\n'
+        '    this.message = (message || "Custom error MyError");\n'
+        '    if (((typeof Error.captureStackTrace) === "function")) {\n'
+        '        Error.captureStackTrace(this, this.constructor);\n'
+        '    } else {\n'
+        '        this.stack = new Error(message).stack;\n'
+        '    }\n'
+        '}\n'
+        'MyError.prototype = Object.create(Error.prototype);\n'
+        'MyError.prototype.constructor = MyError;\n'
+        'class MySecondError extends MyError {\n'
+        '}\n'
+    )
+
+    assert translate_object(func, body_only=True, enable_es6=True)[0] == expected
+
+
+def test_try_except_simple():
+
+    def func():
+
+        class MyError(Exception):
+            pass
+
+        class MySecondError(MyError):
+            """A stupid error"""
+
+        try:
+            value = 0
+            raise MySecondError('This is an error')
+        except MySecondError:
+            value = 1
+
+    expected = (
+        'var value;\n'
+        'function MyError(message) {\n'
+        '    this.name = "MyError";\n'
+        '    this.message = (message || "Custom error MyError");\n'
+        '    if (((typeof Error.captureStackTrace) === "function")) {\n'
+        '        Error.captureStackTrace(this, this.constructor);\n'
+        '    } else {\n'
+        '        this.stack = new Error(message).stack;\n'
+        '    }\n'
+        '}\n'
+        'MyError.prototype = Object.create(Error.prototype);\n'
+        'MyError.prototype.constructor = MyError;\n'
+        'class MySecondError extends MyError {\n'
+        '}\n'
+        'try {\n'
+        '    value = 0;\n'
+        '    throw new MySecondError("This is an error");\n'
+        '} catch(e) {\n'
+        '    if ((e instanceof MySecondError)) {\n'
+        '        value = 1;\n'
+        '    } else {\n'
+        '        throw e;\n'
+        '    }\n'
+        '}\n'
+    )
+
+    assert translate_object(func, body_only=True, enable_es6=True)[0] == expected
+
+def test_try_except_complex():
+
+
+    def func():
+        value = 0
+
+        class MyError(Exception):
+            pass
+
+        class MySecondError(MyError):
+            """A stupid error"""
+
+        try:
+            value += 1
+            raise MyError("Something bad happened")
+            value += 1
+        except MySecondError:
+            value += 20
+        except MyError:
+            value += 30
+        except:
+            value += 40
+        finally:
+            value += 1
+
+
+    expected = (
+        'var value;\n'
+        'value = 0;\n'
+        'function MyError(message) {\n'
+        '    this.name = "MyError";\n'
+        '    this.message = (message || "Custom error MyError");\n'
+        '    if (((typeof Error.captureStackTrace) === "function")) {\n'
+        '        Error.captureStackTrace(this, this.constructor);\n'
+        '    } else {\n'
+        '        this.stack = new Error(message).stack;\n'
+        '    }\n'
+        '}\n'
+        'MyError.prototype = Object.create(Error.prototype);\n'
+        'MyError.prototype.constructor = MyError;\n'
+        'class MySecondError extends MyError {\n'
+        '}\n'
+        'try {\n'
+        '    value += 1;\n'
+        '    throw new MyError("Something bad happened");\n'
+        '    value += 1;\n'
+        '} catch(e) {\n'
+        '    if ((e instanceof MySecondError)) {\n'
+        '        value += 20;\n'
+        '    } else {\n'
+        '        if ((e instanceof MyError)) {\n'
+        '            value += 30;\n'
+        '        } else {\n'
+        '            value += 40;\n'
+        '        }\n'
+        '    }\n'
+        '} finally {\n'
+        '    value += 1;\n'
+        '}\n'
+    )
+
+    assert translate_object(func, body_only=True, enable_es6=True)[0] == expected
