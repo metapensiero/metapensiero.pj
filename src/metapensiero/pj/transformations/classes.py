@@ -13,6 +13,29 @@ from ..processor.util import body_local_names
 from ..js_ast import *
 
 
+EXC_TEMPLATE="""\
+class %(name)s(Error):
+
+    def __init__(self, message):
+        self.name = '%(name)s'
+        self.message = message or 'Error'
+
+"""
+
+EXC_TEMPLATE_ES5 = """\
+def %(name)s(message):
+    self.name = '%(name)s'
+    self.message = message or 'Custom error %(name)s'
+    if typeof(Error.captureStackTrace) == 'function':
+        Error.captureStackTrace(self, self.constructor)
+    else:
+        self.stack = Error(message).stack
+
+%(name)s.prototype = Object.create(Error.prototype);
+%(name)s.prototype.constructor = %(name)s;
+
+"""
+
 
 def _isdoc(el):
     return isinstance(el, ast.Expr) and isinstance(el.value, ast.Str)
@@ -33,6 +56,31 @@ def _class_guards(t, x):
         assert isinstance(x.bases[0], ast.Name)
     assert not x.keywords, x.keywords
 
+
+def ClassDef_exception(t, x):
+    """This converts a class like::
+
+      class MyError(Exception):
+          pass
+
+    Into something like::
+
+      class MyError extends Error {
+          constructor(message) {
+              this.name = 'MyError';
+              this.message = message || 'Error';
+          }
+      }
+
+    N.B. A toString() like this is supposed to be implemented by the
+    Error object:
+
+    function toString() {
+        return this.name + ': ' + this.message;
+    }
+    """
+    # detect if the body is empty
+    _class_guards(t, x)
     name = x.name
     body = x.body
     if len(x.bases) > 0:
@@ -51,7 +99,7 @@ def _class_guards(t, x):
 
 
 
-def ClassDef(t, x):
+def ClassDef_default(t, x):
     """Converts a class to an ES6 class."""
     _class_guards(t, x)
     name = x.name
@@ -88,6 +136,9 @@ def ClassDef(t, x):
         superclass = None
 
     return JSClass(JSName(name), superclass, body)
+
+
+ClassDef = [ClassDef_exception, ClassDef_default]
 
 
 def Call_super(t, x):
