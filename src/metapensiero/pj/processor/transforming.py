@@ -12,6 +12,7 @@ import contextlib
 import inspect
 import os
 import sys
+import string
 import textwrap
 
 from .exceptions import TransformationError, UnsupportedSyntaxError
@@ -29,8 +30,9 @@ _pj_snippets(_pj)
 
 """
 
-ASSIGN_TEMPLATE="    container['%(name)s'] = %(name)s"
+ASSIGN_TEMPLATE = "    container['%(name)s'] = %(name)s"
 
+VAR_TEMPLATE = "_pj_%s"
 
 class TargetNode:
 
@@ -193,8 +195,13 @@ class Transformer:
 
     def new_name(self):
         """Generate a new name to use in statements."""
-        # TODO: generate better names
-        return random_token(20)
+        ix = self.ctx.setdefault('gen_name_ix', -1)
+        ix += 1
+        self.ctx['gen_name_ix'] = ix
+        if ix > len(string.ascii_letters):
+            raise TransformationError("Reached maximum index for "
+                                      "auto-generated variable names")
+        return VAR_TEMPLATE % string.ascii_letters[ix]
 
     def add_snippet(self, func):
         """Add a function to the snippets."""
