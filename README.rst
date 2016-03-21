@@ -6,11 +6,12 @@
 ..
 
 ======================================================
-JavaScripthon: a Python 3 to ES6 JavaScript translator
+javascripthon: a Python 3 to ES6 JavaScript translator
 ======================================================
 
  :author: Alberto Berti
  :contact: alberto@metapensiero.it
+ :license: GNU General Public License version 3 or later
 
 It is based on previous work by `Andrew Schaaf <andrew@andrewschaaf.com>`_.
 
@@ -34,9 +35,7 @@ of the popular `BabelJS`__ library together with the fantastic
 `dukpy`__ embedded js interpreter.
 
 __ http://babeljs.io/
-
 __ https://github.com/amol-/dukpy
-
 
 Another goal is to just convert single modules or entire dir tree
 structures without emitting concatenated or minified files. This is
@@ -57,6 +56,13 @@ This project is far from complete, but it has achieved a good deal of
 features, please have a look at ``tests/test_evaljs.py`` file for the
 currently supported ones.
 
+Installation
+------------
+
+To install the package execute the following command::
+
+  $ pip install javascripthon
+
 Usage
 -----
 
@@ -76,6 +82,29 @@ or:
 to transpile. As of now  it doesn't check which features require a
 transpilation, so the latter is always safer.
 
+Examples
+--------
+
+Execute ``make`` inside the ``examples directory.
+
+Testing
+-------
+
+To run the tests you should run the following at the package root::
+
+  python setup.py test
+
+
+Build status
+------------
+
+.. image:: https://travis-ci.org/azazel75/metapensiero.pj.svg?branch=master
+    :target: https://travis-ci.org/azazel75/metapensiero.pj
+
+Contributing
+------------
+
+Any contribution is welcome, drop me a line or file a pull request.
 
 Todo
 ----
