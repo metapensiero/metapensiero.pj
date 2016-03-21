@@ -85,7 +85,7 @@ transpilation, so the latter is always safer.
 Examples
 --------
 
-Execute ``make`` inside the ``examples directory.
+Execute ``make`` inside the ``examples`` directory.
 
 Testing
 -------
