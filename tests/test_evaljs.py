@@ -9,12 +9,14 @@ import pytest
 
 from metapensiero.pj.api import eval_object, eval_object_es5, translate_object
 
+
 def test_bitwise_xor():
 
     def xor():
         return [0 ^ 0, 0 ^ 1, 1 ^ 0, 1 ^ 1]
 
     assert xor() == eval_object(xor, 'xor();')
+
 
 def test_bitwise_and():
 
@@ -23,12 +25,14 @@ def test_bitwise_and():
 
     assert _and() == eval_object(_and, '_and();')
 
+
 def test_bitwise_or():
 
     def _or():
         return [0 | 0, 0 | 1, 1 | 0, 1 | 1]
 
     assert _or() == eval_object(_or, '_or();')
+
 
 def test_bitwise_not():
 
@@ -37,12 +41,14 @@ def test_bitwise_not():
 
     assert _not() == eval_object(_not, '_not();')
 
+
 def test_rshift():
 
     def rshift():
         return [64 >> 2, 65 >> 2, -16 >> 3]
 
     assert rshift() == eval_object(rshift, 'rshift();')
+
 
 def test_multiple_assignement_and_sum():
 
@@ -51,6 +57,7 @@ def test_multiple_assignement_and_sum():
         return x + y
 
     assert sum() == eval_object(sum, 'sum();')
+
 
 def test_list_in():
 
@@ -98,6 +105,7 @@ def test_if_else_elif():
 
     assert test_if() == eval_object(test_if, 'test_if();')
 
+
 def test_while_and_aug_assignement():
 
     def _while():
@@ -115,6 +123,7 @@ def test_while_and_aug_assignement():
 
     assert _while() == eval_object(_while, '_while();')
 
+
 @pytest.mark.xfail
 def test_list_comprehension():
 
@@ -122,6 +131,7 @@ def test_list_comprehension():
         return  [x + 1 for x in [1, 2, 3, 100]]
 
     assert _list() == eval_object(_list, '_list();')
+
 
 def test_dict_member_deletion():
 
@@ -132,12 +142,14 @@ def test_dict_member_deletion():
 
     assert deletion() == eval_object(deletion, 'deletion();')
 
+
 def test_func_simple_arg():
 
     def f(x):
         return x + 1000
 
     assert f(7) == eval_object(f, 'f(7);')
+
 
 def test_for_range_simple():
 
@@ -149,6 +161,7 @@ def test_for_range_simple():
 
     assert dofor() == eval_object(dofor, 'dofor();')
 
+
 def test_for_range_less_simpler():
 
     def dofor():
@@ -158,6 +171,7 @@ def test_for_range_less_simpler():
         return x
 
     assert dofor() == eval_object(dofor, 'dofor();')
+
 
 def test_for_items_in_dict():
 
@@ -171,6 +185,7 @@ def test_for_items_in_dict():
     result = eval_object(dofor, 'dofor();')
     assert result == 'fooFOObarBAR' or result == 'barBARfooFOO'
 
+
 def test_for_items_in_array():
 
     def dofor():
@@ -181,6 +196,7 @@ def test_for_items_in_array():
 
     assert dofor() == eval_object(dofor, 'dofor();')
 
+
 def test_class_simple():
 
     def test_class():
@@ -190,6 +206,7 @@ def test_class_simple():
         return Foo().msg
 
     assert test_class() == eval_object_es5(test_class, 'test_class();')
+
 
 def test_class_inherit():
 
@@ -209,6 +226,7 @@ def test_class_inherit():
         return TalkingAnimal('Pac-Man', 'waka waka').caption()
 
     assert test_class() == eval_object_es5(test_class, 'test_class();')
+
 
 def test_class_super():
 
