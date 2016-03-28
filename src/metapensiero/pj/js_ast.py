@@ -208,6 +208,10 @@ class JSExport(JSStatement):
         yield self.line(['export ', '{', name, '}'], delim=True)
 
 
+class JSAwait(JSStatement):
+
+    def emit(self, value):
+        yield self.part(['await ', value])
 
 
 #### Expressions
@@ -236,6 +240,8 @@ class JSDict(JSNode):
 
 class JSFunction(JSNode):
 
+    begin = 'function '
+
     def fargs(self, args):
         result = []
         result.append('(')
@@ -244,7 +250,7 @@ class JSFunction(JSNode):
         return result
 
     def emit(self, name, args, body):
-        line = ['function ']
+        line = [self.begin]
         if name is not None:
             line.append(name)
         line += self.fargs(args)
@@ -252,6 +258,11 @@ class JSFunction(JSNode):
         yield self.line(line, name=str(name))
         yield from self.lines(body, indent=True, delim=True)
         yield self.line('}')
+
+
+class JSAsyncFunction(JSFunction):
+
+    begin = 'async function'
 
 
 class JSClass(JSNode):
@@ -287,6 +298,12 @@ class JSMethod(JSClassMember):
 
     def emit(self, name, args, body):
         yield from self.with_kind(name, args, body)
+
+
+class JSAsyncMethod(JSClassMember):
+
+    def emit(self, name, args, body):
+        yield from self.with_kind('async ' + name, args, body)
 
 
 class JSAssignmentExpression(JSNode):

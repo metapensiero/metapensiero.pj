@@ -94,13 +94,15 @@ class Transformer:
     enable_snippets = True
     enable_es6 = False
     enable_let = False
+    enable_stage3 = False
 
     def __init__(self, py_ast_module, statements_class, snippets=True,
-                 es6=False):
+                 es6=False, stage3=False):
         self.transformations = load_transformations(py_ast_module)
         self.statements_class = statements_class
         self.enable_snippets = snippets
         self.enable_es6 = es6
+        self.enable_stage3 = stage3
         self._init_structs()
 
     def _init_structs(self):
@@ -269,10 +271,13 @@ class Transformer:
     def add_globals(self, *items):
         self._globals |= set(items)
 
+    def _guard(self, test, node, desc):
+        if not test:
+            raise TransformationError(node, desc)
+
     def es6_guard(self, node, desc):
         """Raise an exception if es6 isn't enabled."""
-        if not self.enable_es6:
-            raise TransformationError(node, desc)
+        self._guard(self.enable_es6, node, desc)
 
     def next_args(self):
         return self._args_stack[-1]
@@ -298,6 +303,10 @@ class Transformer:
         t.snippets = None
         t.enable_snippets = False
         return t.transform_code(src)
+
+    def stage3_guard(self, node, desc):
+        """Raise an exception if stage3 isn't enabled."""
+        self._guard(self.enable_stage3, node, desc)
 
 
 #### Helpers

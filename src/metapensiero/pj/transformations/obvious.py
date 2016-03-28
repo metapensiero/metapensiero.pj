@@ -71,6 +71,10 @@ def Delete(t, x):
                 for t in x.targets])
 
 
+def Await(t, x):
+    t.stage3_guard(x, "Async stuff requires 'stage3' to be enabled")
+    return JSAwait(x.value)
+
 #### Expressions
 
 

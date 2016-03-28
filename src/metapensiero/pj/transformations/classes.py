@@ -165,7 +165,7 @@ def Call_super(t, x):
             return result
 
 
-def FunctionDef(t, x):
+def FunctionDef(t, x, fwrapper=None, mwrapper=None):
 
     assert not x.decorator_list
     assert not any(getattr(x.args, k, False) for k in [
@@ -192,12 +192,21 @@ def FunctionDef(t, x):
         if NAME == '__init__':
             result = JSClassConstructor(ARGS, body)
         else:
-            result = JSMethod(str(NAME), ARGS, body)
+            mwrapper = mwrapper or JSMethod
+            result = mwrapper(
+                str(NAME), ARGS, body
+            )
     # x is a function
     else:
-        result = JSFunction(
+        fwrapper = fwrapper or JSFunction
             str(NAME),
             ARGS,
             body
+        result = fwrapper(
         )
     return result
+
+
+def AsyncFunctionDef(t, x):
+    t.stage3_guard(x, "Async stuff requires 'stage3' to be enabled")
+    return FunctionDef(t, x, JSAsyncFunction, JSAsyncMethod)
