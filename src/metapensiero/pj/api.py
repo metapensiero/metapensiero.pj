@@ -53,7 +53,8 @@ def translate_file(src_filename, dst_filename=None, map_filename=None,
     )
     src_text = open(src_filename).readlines()
     js_text, src_map = translates(src_text, True, src_relpath,
-                                  enable_es6=enable_es6)
+                                  enable_es6=enable_es6,
+                                  enable_stage3=enable_stage3)
     js_text += '\n//# sourceMappingURL=%s\n' % map_relpath
 
     with open(dst_filename, 'w') as dst:
@@ -81,7 +82,7 @@ def translate_object(py_obj, body_only=False, enable_es6=False,
     complete_src = open(src_filename).read()
     return translates(src_lines, True, src_filename, (sline_offset, 0),
                       body_only=body_only, complete_src=complete_src,
-                      enable_es6=enable_es6)
+                      enable_es6=enable_es6, enable_stage3=enable_stage3)
 
 
 def translates(src_text, dedent=True, src_filename=None, src_offset=None,

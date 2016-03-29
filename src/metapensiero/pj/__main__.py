@@ -122,7 +122,8 @@ def main(args=None, fout=None, ferr=None):
                                     raise
                 else:
                     try:
-                        transform(fname, args.output, args.es5, args.es6)
+                        transform(fname, args.output, args.es5, args.es6,
+                                  args.stage3)
                         rep.print("Compiled file %s" % fname)
                     except Exception as e:
                         e.src_fname = fname
