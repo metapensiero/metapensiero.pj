@@ -111,16 +111,11 @@ Todo
 
 This is a brief list of what needs to be done:
 
-* use arrow functions for functions created in functions;
 * refactor the comprehensions conversion to use the snippets facility;
 * refactor snippets rendering to write them as a module and import
   them in the module when tree conversion is enabled;
 * convert ``dict()`` calls to ES6 ``Map`` object creation;
 * convert *set* literals to ES6 ``Set`` objects;
-* convert *async* and *await* to the same proposed features for js
-  (see BabelJS documentation);
-* convert `*iterable` syntax to ES6 destructuring;
-* convert argument defaults on functions to ES6;
 * multi-line strings to ES6 template strings (does this make any sense?);
 * properties to ES6 properties (getter and setter);
 * class and method decorators to ES7 class and method decorators;
@@ -135,6 +130,12 @@ Stuff that was previously in the todo:
 * translate ``__all__`` definition to ES6 module exports;
 * write a command line interface to expose the api;
 * make try...except work again and implement try...finally;
+* convert *async* and *await* to the same proposed features for js
+  (see BabelJS documentation);
+* convert argument defaults on functions to ES6;
+* convert call keyword arguments;
+* convert `*iterable` syntax to ES6 destructuring;
+* use arrow functions for functions created in functions;
 
 External documentation
 ----------------------
