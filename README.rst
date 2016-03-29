@@ -144,6 +144,9 @@ the book `Exploring ES6`__ by Axel Rauschmayer (donate if you can).
 
 __ http://exploringjs.com/es6/
 
+An `extensive documentation`__ about Python's ast objects, very handy.
+
+__ https://greentreesnakes.readthedocs.org/en/latest/
 
 Tools
 -----
