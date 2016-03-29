@@ -97,6 +97,7 @@ def Call_new(t, x):
         #assert not any([x.keywords, x.starargs, x.kwargs])
         return JSNewCall(x.func, x.args)
 
+
 def Call_import(t, x):
     if (isinstance(x.func, ast.Name) and x.func.id == '__import__'):
         assert len(x.args) == 1 and isinstance(x.args[0], ast.Str)
