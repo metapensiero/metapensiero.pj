@@ -35,9 +35,9 @@ class Controller:
 
         Tween({
             '_duration': TRANSITION_DURATION,
-            '_callback': callback.bind(self),
+            '_callback': callback,
             '_easing': easeInOut,
-            '_onComplete': onComplete.bind(self),
+            '_onComplete': onComplete,
         })
 
         setTimeout(self._changeColor.bind(self), CHANGE_EVERY)
