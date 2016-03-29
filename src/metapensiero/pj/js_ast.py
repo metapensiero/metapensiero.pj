@@ -242,18 +242,23 @@ class JSFunction(JSNode):
 
     begin = 'function '
 
-    def fargs(self, args):
+    def fargs(self, args, acc=None, kwargs=None):
         result = []
         result.append('(')
-        delimited(', ', args, dest=result)
+        js_args = args.copy()
+        if kwargs:
+            js_args.append(self.part('{', *delimited(', ', kwargs), '}={}'))
+        if acc:
+            js_args.append(acc)
+        delimited(', ', js_args, dest=result)
         result.append(') ')
         return result
 
-    def emit(self, name, args, body):
+    def emit(self, name, args, body, acc=None, kwargs=None):
         line = [self.begin]
         if name is not None:
             line.append(name)
-        line += self.fargs(args)
+        line += self.fargs(args, acc, kwargs)
         line += ['{']
         yield self.line(line, name=str(name))
         yield from self.lines(body, indent=True, delim=True)
@@ -279,9 +284,9 @@ class JSClass(JSNode):
 
 class JSClassMember(JSFunction):
 
-    def with_kind(self, kind, args, body):
+    def with_kind(self, kind, args, body, acc=None, kwargs=None):
         line = [kind]
-        line += self.fargs(args)
+        line += self.fargs(args, acc, kwargs)
         line += ['{']
         yield self.line(line)
         yield from self.lines(body, indent=True, delim=True)
@@ -290,20 +295,20 @@ class JSClassMember(JSFunction):
 
 class JSClassConstructor(JSClassMember):
 
-    def emit(self, args, body):
-        yield from self.with_kind('constructor', args, body)
+    def emit(self, args, body, acc=None, kwargs=None):
+        yield from self.with_kind('constructor', args, body, acc, kwargs)
 
 
 class JSMethod(JSClassMember):
 
-    def emit(self, name, args, body):
-        yield from self.with_kind(name, args, body)
+    def emit(self, name, args, body, acc=None, kwargs=None):
+        yield from self.with_kind(name, args, body, acc, kwargs)
 
 
 class JSAsyncMethod(JSClassMember):
 
-    def emit(self, name, args, body):
-        yield from self.with_kind('async ' + name, args, body)
+    def emit(self, name, args, body, acc=None, kwargs=None):
+        yield from self.with_kind('async ' + name, args, body, acc, kwargs)
 
 
 class JSAssignmentExpression(JSNode):
@@ -317,9 +322,13 @@ class JSIfExp(JSNode):
 
 
 class JSCall(JSNode):
-    def emit(self, func, args):
+    def emit(self, func, args, kwargs=None):
+        kwargs = kwargs or []
         arr = [func, '(']
-        delimited(', ', args, dest=arr)
+        fargs = args.copy()
+        if kwargs:
+            fargs.append(kwargs)
+        delimited(', ', fargs, dest=arr)
         arr.append(')')
         yield self.part(*arr)
 
@@ -396,6 +405,10 @@ class JSFalse(JSNode):
 class JSNull(JSNode):
     def emit(self):
         yield self.part('null')
+
+class JSRest(JSNode):
+    def emit(self, value):
+        yield self.part('...', value)
 
 #### Ops
 

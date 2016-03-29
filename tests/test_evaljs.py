@@ -297,3 +297,45 @@ def test_try_except_complex():
 
     assert test_try() == 32
     assert test_try() == eval_object_es5(test_try, 'test_try();')
+
+def test_call_rest():
+
+    def test_rest():
+
+        a = [1, 2, 3, 4, 5]
+
+        def rest(*values):
+            res = 0
+            for i in values:
+                res += i
+
+            return res
+
+        return rest(*a)
+
+    assert test_rest() == 15
+
+    assert test_rest() == eval_object_es5(test_rest, 'test_rest();')
+
+
+def test_call_kw():
+
+    def test_kw():
+
+        def kw(a=1,*, b=3, c=5):
+            return a + b + c
+
+        return kw()
+
+    assert test_kw() == 9
+    assert test_kw() == eval_object_es5(test_kw, 'test_kw();')
+
+    def test_kw2(a, c):
+
+        def kw(a=1,*, b=3, c=5):
+            return a + b + c
+
+        return kw(a, c=c)
+
+    assert test_kw2(1, 1) == 5
+    assert test_kw2(1, 1) == eval_object_es5(test_kw2, 'test_kw2(1, 1);')

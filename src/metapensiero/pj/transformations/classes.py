@@ -167,42 +167,80 @@ def Call_super(t, x):
 
 def FunctionDef(t, x, fwrapper=None, mwrapper=None):
 
-    assert not x.decorator_list
-    assert not any(getattr(x.args, k, False) for k in [
-            'vararg', 'varargannotation', 'kwonlyargs', 'kwarg',
-            'kwargannotation', 'defaults', 'kw_defaults'])
+    t.unsupported(x, x.decorator_list, "Function decorators are unsupported"
+                  " yet")
+    t.unsupported(x, x.args.kwarg, "Keyword args accumulator is insupported")
 
-    NAME = x.name
-    ARGS = [arg.arg for arg in x.args.args]
+    if x.args.vararg or x.args.kwonlyargs or x.args.defaults or \
+       x.args.kw_defaults:
+        t.es6_guard(x, "Arguments definitions other tha plain params require "
+                    "ES6 to be enabled")
+
+    t.unsupported(x, x.args.vararg and x.args.kwonlyargs, "Having both param "
+                  "accumulator and keyword args is unsupported")
+
+    name = x.name
+    arg_names = [arg.arg for arg in x.args.args]
     body = x.body
 
+    acc = JSRest(x.args.vararg.arg) if x.args.vararg else None
+    defaults = x.args.defaults
+    kw = x.args.kwonlyargs
+    kwdefs = x.args.kw_defaults
+    if kw:
+        kwargs = []
+        for k, v in zip(kw, kwdefs):
+            if v is None:
+                kwargs.append(k.arg)
+            else:
+                kwargs.append(JSAssignmentExpression(k.arg, v))
+    else:
+        kwargs = None
+
+    is_method = isinstance(t.parent_of(x), ast.ClassDef)
+
+    if is_method:
+        arg_names = arg_names[1:]
+
+    # be sure that the defaults equal in length the args list
+    if isinstance(defaults, (list, tuple)) and len(defaults) < len(arg_names):
+        defaults = ([None] * (len(arg_names) - len(defaults))) + list(defaults)
+    elif defaults is None:
+        defaults = [None] * len(arg_names)
+
+    args = []
+    for k, v in zip(arg_names, defaults):
+        if v is None:
+            args.append(k)
+        else:
+            args.append(JSAssignmentExpression(k, v))
+
+
     # <code>var ...local vars...</code>
-    local_vars = list(set(body_local_names(body)) - set(ARGS))
+    local_vars = list(set(body_local_names(body)) - set(arg_names))
     if len(local_vars) > 0:
         body = [JSVarStatement(
                             local_vars,
                             [None] * len(local_vars))] + body
 
     # If x is a method
-    if isinstance(t.parent_of(x), ast.ClassDef):
-
-        # Skip ``self``
-        ARGS = ARGS[1:]
-
-        if NAME == '__init__':
-            result = JSClassConstructor(ARGS, body)
+    if is_method:
+        if name == '__init__':
+            result = JSClassConstructor(
+                args, body, acc, kwargs
+            )
         else:
             mwrapper = mwrapper or JSMethod
             result = mwrapper(
-                str(NAME), ARGS, body
+                str(name), args, body,
+                acc, kwargs
             )
     # x is a function
     else:
         fwrapper = fwrapper or JSFunction
-            str(NAME),
-            ARGS,
-            body
         result = fwrapper(
+            str(name), args, body,
+            acc, kwargs
         )
     return result
 

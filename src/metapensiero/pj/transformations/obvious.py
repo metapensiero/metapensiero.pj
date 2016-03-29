@@ -110,9 +110,16 @@ def IfExp(t, x):
 
 def Call_default(t, x):
     # See [pj.transformations.special](special.py) for special cases
-    #assert not any([x.keywords, x.starargs, x.kwargs])
-    return JSCall(x.func, x.args)
-
+    kwargs = []
+    if x.keywords:
+        for kw in x.keywords:
+            t.unsupported(x, kw.arg is None, "'**kwargs' syntax ins'nt "
+                          "supported")
+            kwargs.append((kw.arg, kw.value))
+        kwargs = JSDict(*zip(*kwargs))
+    else:
+        kwargs = None
+    return JSCall(x.func, x.args, kwargs)
 
 def Attribute(t, x):
     return JSAttribute(x.value, str(x.attr))
@@ -261,3 +268,7 @@ def Gt(t, x):
 
 def GtE(t, x):
     return JSOpGtE()
+
+
+def Starred(t, x):
+    return JSRest(x.value)
