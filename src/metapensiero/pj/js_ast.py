@@ -251,17 +251,17 @@ class JSAsyncFunction(JSFunction):
 class JSArrowFunction(JSFunction):
 
     begin = ''
-    bet_args_n_body = ' => '
+    bet_args_n_body = '=> '
 
-    def emit(self, args, body, acc=None, kwargs=None):
-        yield from super().emit(None, args, body, acc, kwargs)
+    def emit(self, name, args, body, acc=None, kwargs=None):
+        line = [name, ' = ']
+        line += self.fargs(args, acc, kwargs)
+        line += self.bet_args_n_body
+        line += ['{']
+        yield self.line(line)
+        yield from self.lines(body, indent=True, delim=True)
+        yield self.line('}', delim=True)
 
-    def line(self, item, name=None):
-        if isinstance(item, list):
-            res = self.part(*item, name=name)
-        else:
-            res = self.part(item, name=name)
-        return res
 
 class JSClass(JSStatement):
 

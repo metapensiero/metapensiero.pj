@@ -241,11 +241,12 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
     # x is a function
     else:
         if is_in_method and fwrapper is None:
-            result = JSVarStatement(
-                [str(name)], [JSArrowFunction(
-                    args, body, acc, kwargs
-                )]
-            )
+            result = JSStatements([
+                JSVarStatement([str(name)], [None]),
+                JSArrowFunction(
+                    str(name), args, body, acc, kwargs
+                )
+            ])
         else:
             fwrapper = fwrapper or JSFunction
 
