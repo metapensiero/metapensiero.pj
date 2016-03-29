@@ -214,7 +214,7 @@ class JSAwait(JSStatement):
         yield self.part(['await ', value])
 
 
-class JSFunction(JSNode):
+class JSFunction(JSStatement):
 
     begin = 'function '
     bet_args_n_body = ''
@@ -263,7 +263,7 @@ class JSArrowFunction(JSFunction):
             res = self.part(item, name=name)
         return res
 
-class JSClass(JSNode):
+class JSClass(JSStatement):
 
     def emit(self, name, super_, methods):
         line = ['class ', name]
