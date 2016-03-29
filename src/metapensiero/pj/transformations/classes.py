@@ -45,8 +45,8 @@ def _class_guards(t, x):
     t.unsupported(x, len(x.bases) > 1, "Multiple inheritance is not supported")
     body = x.body
     for node in body:
-        t.unsupported(x, not (isinstance(node, ast.FunctionDef) or _isdoc(node)
-                              or isinstance(node, ast.Pass)) ,
+        t.unsupported(x, not (isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) \
+                              or _isdoc(node) or isinstance(node, ast.Pass)) ,
                       "Class' body members must be functions")
 
     if len(x.bases) > 0:
@@ -92,7 +92,7 @@ def ClassDef_exception(t, x):
         super_name = None
 
     # strip docs from body
-    body = [e for e in body if isinstance(e, ast.FunctionDef)]
+    body = [e for e in body if isinstance(e, (ast.FunctionDef, ast.AsyncFunctionDef))]
 
     # is this a simple definition of a subclass of Exception?
     if len(body) > 0 or super_name not in ('Exception', 'Error'):
@@ -113,7 +113,7 @@ def ClassDef_default(t, x):
         super_name = None
 
     # strip docs from body
-    body = [e for e in body if isinstance(e, ast.FunctionDef)]
+    body = [e for e in body if isinstance(e, (ast.FunctionDef, ast.AsyncFunctionDef))]
 
     # * Each FunctionDef must have self as its first arg
     # silly check for methods
