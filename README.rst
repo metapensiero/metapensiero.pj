@@ -40,7 +40,8 @@ __ https://github.com/amol-/dukpy
 Another goal is to just convert single modules or entire dir tree
 structures without emitting concatenated or minified files. This is
 left to the Javascript tooling of your choice. I use `webpack`__ which
-has BabelJS integration to getting this job done.
+has BabelJS integration to getting this job done. Check out the bundled
+example.
 
 __ http://webpack.github.io/
 
@@ -79,8 +80,457 @@ or:
 
   $ python -m pj -5 source.py
 
-to transpile. As of now  it doesn't check which features require a
-transpilation, so the latter is always safer.
+to transpile.
+
+A ``pj`` console script is also automatically installed:
+
+.. code:: bash
+
+  $ pj --help
+  usage: pj [-h] [--disable-es6] [--disable-stage3] [-5] [-o OUTPUT] [-d]
+            [--pdb]
+            file [file ...]
+
+  A Python 3 to ES6 JavaScript compiler
+
+  positional arguments:
+    file                  Python source file(s) or directory(ies) to convert.
+                          When it is a directory it will be converted
+                          recursively
+
+  optional arguments:
+    -h, --help            show this help message and exit
+    --disable-es6         Disable ES6 features during conversion (Ignored if
+                          --es5 is specified)
+    --disable-stage3      Disable ES7 stage3 features during conversion
+    -5, --es5             Also transpile to ES5 using BabelJS.
+    -o OUTPUT, --output OUTPUT
+                          Output file/directory where to save the generated code
+    -d, --debug           Enable error reporting
+    --pdb                 Enter post-mortem debug when an error occurs
+
+Conversions Rosetta Stone
+-------------------------
+
+Here are brief list of examples of the conversions the tool applies,
+just some, but not all.
+
+Simple stuff
+~~~~~~~~~~~~
+
+.. list-table:: Most are obvious
+  :header-rows: 1
+
+  * - Python
+    - JavaScript
+
+  * - .. code:: python
+
+        x < y <= z < 5
+
+        def foo():
+            return [True, False, None, 1729,
+                    "foo", r"foo\bar", {}]
+
+
+        while len(foo) > 0:
+            print(foo.pop())
+
+
+        if foo > 0:
+            ....
+        elif foo < 0:
+            ....
+        else:
+            ....
+
+    - .. code:: javascript
+
+        ((x < y) && (y <= z) && (z < 5))
+
+        function foo() {
+            return [true, false, null, 1729,
+                    "foo", "foo\\bar", {}];
+        }
+
+        while ((foo.length > 0)) {
+            console.log(foo.pop());
+        }
+
+        if ((foo > 0)) {
+            ....
+        } else {
+            if ((foo < 0)) {
+                ....
+            } else {
+                ....
+            }
+        }
+
+Then there are special cases. Here you can see some of these
+conversions. Javascripthon cannot do a full trace of the sources, so
+some shortcuts are taken about the conversion of some core, specific
+Python's semantics. For example Python's ``self`` is always converted
+to JavaScript's ``this``, no matter where it's found. Or ``len(foo)``
+is always translated to ``foo.length``. Albeit this an api specific of
+just some objects (Strings, Arrays, etc...), it considered wide
+adopted and something the user may consider obvious.
+
+The rules of thumb to treat things especially are:
+
+* Is it possible to think of a conversion that covers most of the use
+  cases?
+
+* It's possible to find a convention widely used on the Python world
+  to express this special case?
+
+.. list-table:: There are special cases
+  :header-rows: 1
+
+  * - Python
+    - JavaScript
+
+  * - .. code:: python
+
+        ==
+        !=
+        2**3
+        'docstring'
+
+        self
+        len(...)
+        print(...)
+        isinstance(x, y)
+        typeof(x)
+
+        FirstCharCapitalized(...)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        foo in bar
+
+    - .. code:: javascript
+
+        ===
+        !==
+        Math.pow(2, 3)
+        /* docstring */
+
+        this
+        (...).length
+        console.log(...)
+        (x instanceof y)
+        (typeof x)
+
+        new FirstCharCapitalized(...)
+
+        var _pj;
+        function _pj_snippets(container) {
+            function _in(left, right) {
+                if (((right instanceof Array) || ((typeof right) === "string"))) {
+                    return (right.indexOf(left) > (- 1));
+                } else {
+                    return (left in right);
+                }
+            }
+            container["_in"] = _in;
+            return container;
+        }
+        _pj = {};
+        _pj_snippets(_pj);
+        _pj._in(foo, bar);
+
+``for`` statement
+~~~~~~~~~~~~~~~~~
+
+The ``for`` statement by default is translated as if the object of the
+cycle is a list but has two special cases:
+
+.. list-table:: ``for`` loops
+  :header-rows: 1
+
+  * - Python
+    - JavaScript
+
+  * - .. code:: python
+
+        for el in dict(a_dict):
+            print(el)
+
+
+
+
+
+        for el in an_array:
+            print(el)
+
+
+
+
+        for i in range(5):
+            print(i)
+
+    - .. code:: javascript
+
+        var _pj_a = a_dict;
+        for (var el in _pj_a) {
+            if (_pj_a.hasOwnProperty(el)) {
+                console.log(el);
+            }
+        }
+
+        for (var el, _pj_c = 0, _pj_a = an_array, _pj_b = _pj_a.length;
+              (_pj_c < _pj_b); _pj_c += 1) {
+            el = _pj_a[_pj_c];
+            console.log(el);
+        }
+
+        for (var i = 0, _pj_a = 5; (i < _pj_a); i += 1) {
+            console.log(i);
+        }
+
+Classes
+~~~~~~~
+
+Classes with single inheritance are translated to ES6 classes, they
+can have only function members for now, with no class or method
+decorators, because the ES7 spec for them is being rediscussed.
+
+Methods can be functions or async-functions.
+
+Python`s ``super()`` calls are converted accordingly to the type of
+their surrounding method: ``super().__init__(foo)`` becomes
+``super(foo)`` in constructors.
+
+Functions inside methods are translated to arrow functions so that
+they keep the ``this`` of the surrounding method.
+
+Arrow method expression to retain the ``this`` at method level aren't
+implemented yet.
+
+
+.. list-table:: Classes
+  :header-rows: 1
+
+  * - Python
+    - JavaScript
+
+  * - .. code:: python
+
+        class Foo(bar):
+            def __init__(self, zoo):
+                super().__init__(zoo)
+
+            def meth(self, zoo):
+                super().meth(zoo)
+                def cool(a, b, c):
+                    print(self.zoo)
+
+            async def something(self, a_promise):
+                result = await a_promise
+
+    - .. code:: javascript
+
+        class Foo extends bar {
+            constructor(zoo) {
+                super(zoo);
+            }
+
+            meth(zoo) {
+                super.meth(zoo);
+                var cool;
+                cool = (a, b, c) => {
+                    console.log(this.zoo);
+                };
+            }
+
+            async something(a_promise) {
+                var result;
+                result = await a_promise;
+            }
+        }
+
+Only direct descendants of ``Exception`` are threated especially, but
+just for them to be meaningful in js-land and to be detectable with
+``instanceof`` in catch statements.
+
+
+.. list-table:: Exceptions
+  :header-rows: 1
+
+  * - Python
+    - JavaScript
+
+  * - .. code:: python
+
+        class MyError(Exception):
+            pass
+
+        raise MyError("An error occurred")
+
+    - .. code:: javascript
+
+        function MyError(message) {
+            this.name = "MyError";
+            this.message = (message || "Custom error MyError");
+            if (((typeof Error.captureStackTrace) === "function")) {
+                Error.captureStackTrace(this, this.constructor);
+            } else {
+                this.stack = new Error(message).stack;
+            }
+        }
+        MyError.prototype = Object.create(Error.prototype);
+        MyError.prototype.constructor = MyError;
+        throw new MyError("An error occurred");
+
+
+``try...except...finally`` statement
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The conversion of this statement is mostly obvious, with the only
+exception of the ``except`` part: it is translate to a ``catch`` part
+containing one ``if`` statement per each non catchall ``except``. If
+catchall ``except`` is present, the error will be re-thrown, to mimic
+Python's behavior.
+
+.. list-table:: ``try...catch...finally`` statement
+  :header-rows: 1
+
+  * - Python
+    - JavaScript
+
+  * - .. code:: python
+
+        try:
+            foo.bar()
+        except MyError:
+            recover()
+        except MyOtherError:
+            recover_bad()
+        finally:
+            foo.on_end()
+
+    - .. code:: javascript
+
+        try {
+            foo.bar();
+        } catch(e) {
+            if ((e instanceof MyError)) {
+                recover();
+            } else {
+                if ((e instanceof MyOtherError)) {
+                    recover_bad()
+                } else {
+                    throw e;
+                }
+            }
+        } finally {
+            foo.on_end();
+        }
+
+
+``import`` statements
+~~~~~~~~~~~~~~~~~~~~~
+
+``import`` and ``from ... import`` statements are converted to ES6
+imports, and the declaration of an ``__all__`` member on the module
+top level is translated to ES6 exports.
+
+
+.. list-table:: import and exports
+  :header-rows: 1
+
+  * - Python
+    - JavaScript
+
+  * - .. code:: python
+
+        import foo, bar
+        import foo.bar as b
+        from foo.bar import hello as h, bye as bb
+        from ..foo.zoo import bar
+        from . import foo
+        from .foo import bar
+
+        from __globals__ import test_name
+
+        # this should not trigger variable definition
+        test_name = 2
+
+        # this instead should do it
+        test_foo = True
+
+        __all__ = ['test_name', 'test_foo']
+
+    - .. code:: javascript
+
+        var test_foo;
+
+        import * as foo from 'foo';
+        import * as bar from 'bar';
+        import * as b from 'foo/bar';
+        import {hello as h, bye as bb} from 'foo/bar';
+        import {bar} from '../../foo/zoo';
+        import * as foo from './foo';
+        import {bar} from './foo';
+
+        test_name = 2;
+        test_foo = true;
+
+        export {test_name};
+        export {test_foo};
+
+
+function's args and call parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Parmeters defaults and keyword parameters are supported and so is
+``*foo`` accumulator, which is translated into the ES6 rest expression
+(``...foo``).
+
+The only caveat is that really JS support for keyword args sucks, so
+you will have to remember to fill in all the arguments before
+specifying keywords.
+
+.. list-table:: function's args and call parameters
+  :header-rows: 1
+
+  * - Python
+    - JavaScript
+
+  * - .. code:: python
+
+        def foo(a=2, b=3, *args):
+            pass
+
+        def bar(c, d, *, zoo=2):
+            pass
+
+
+        foo(5, *a_list)
+
+        bar('a', 'b', zoo=5, another='c')
+
+    - .. code:: javascript
+
+        function foo(a = 2, b = 3, ...args) {
+        }
+        function bar(c, d, {zoo = 2}={}) {
+        }
+        foo(5, ...a_list);
+        bar("a", "b", {zoo: 5, another: "c"});
 
 Examples
 --------
