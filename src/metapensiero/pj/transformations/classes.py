@@ -115,17 +115,15 @@ def ClassDef_default(t, x):
     # strip docs from body
     body = [e for e in body if isinstance(e, ast.FunctionDef)]
 
-    if len(body) > 0:
+    # * Each FunctionDef must have self as its first arg
+    # silly check for methods
+    for node in body:
+        arg_names = [arg.arg for arg in node.args.args]
+        t.unsupported(node, len(arg_names) == 0 or arg_names[0] != 'self',
+                      "First arg on method must be 'self'")
+
+    if len(body) > 0 and body[0].name == '__init__':
         init = body[0]
-        t.unsupported(x, str(init.name) != '__init__', "The first method should be "
-                      "__init__")
-
-        # * Each FunctionDef must have self as its first arg
-        # silly check for methods
-        for node in body:
-            arg_names = [arg.arg for arg in node.args.args]
-            assert len(arg_names) > 0 and arg_names[0] == 'self'
-
         # * __init__ may not contain a return statement
         # silly check
         init_args = [arg.arg for arg in init.args.args]
