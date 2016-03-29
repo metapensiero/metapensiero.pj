@@ -214,30 +214,6 @@ class JSAwait(JSStatement):
         yield self.part(['await ', value])
 
 
-#### Expressions
-
-
-class JSList(JSNode):
-    def emit(self, elts):
-        arr = ['[']
-        delimited(', ', elts, dest=arr)
-        arr.append(']')
-        yield self.part(*arr)
-
-
-class JSDict(JSNode):
-    def emit(self, keys, values):
-        arr = ['{']
-        for i in range(len(keys)):
-            if i > 0:
-                arr.append(', ')
-            arr.append(keys[i])
-            arr.append(': ')
-            arr.append(values[i])
-        arr.append('}')
-        yield self.part(*arr)
-
-
 class JSFunction(JSNode):
 
     begin = 'function '
@@ -326,6 +302,29 @@ class JSAsyncMethod(JSClassMember):
 
     def emit(self, name, args, body, acc=None, kwargs=None):
         yield from self.with_kind('async ' + name, args, body, acc, kwargs)
+
+#### Expressions
+
+
+class JSList(JSNode):
+    def emit(self, elts):
+        arr = ['[']
+        delimited(', ', elts, dest=arr)
+        arr.append(']')
+        yield self.part(*arr)
+
+
+class JSDict(JSNode):
+    def emit(self, keys, values):
+        arr = ['{']
+        for i in range(len(keys)):
+            if i > 0:
+                arr.append(', ')
+            arr.append(keys[i])
+            arr.append(': ')
+            arr.append(values[i])
+        arr.append('}')
+        yield self.part(*arr)
 
 
 class JSAssignmentExpression(JSNode):
