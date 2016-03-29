@@ -211,7 +211,7 @@ class JSExport(JSStatement):
 class JSAwait(JSStatement):
 
     def emit(self, value):
-        yield self.part(['await ', value])
+        yield self.part('await ', value)
 
 
 class JSFunction(JSStatement):
