@@ -25,6 +25,9 @@ parser.add_argument('--disable-es6', dest='es6', action='store_false',
                     default=True,
                     help="Disable ES6 features during conversion"
                     " (Ignored if --es5 is specified)")
+parser.add_argument('--disable-stage3', dest='stage3', action='store_false',
+                    default=True,
+                    help="Disable ES7 stage3 features during conversion")
 parser.add_argument('-5', '--es5', dest='es5', action='store_true',
                     help="Also transpile to ES5 using BabelJS.")
 parser.add_argument('-o', '--output', type=str,
@@ -50,11 +53,13 @@ class Reporter:
         print(*args, **kwargs)
 
 
-def transform(src_fname, dst_fname=None, transpile=False, enable_es6=False):
+def transform(src_fname, dst_fname=None, transpile=False, enable_es6=False,
+              enable_stage3=False):
     if transpile:
         api.transpile_py_file(src_fname, dst_fname)
     else:
-        api.translate_file(src_fname, dst_fname, enable_es6=enable_es6)
+        api.translate_file(src_fname, dst_fname, enable_es6=enable_es6,
+                           enable_stage3=enable_stage3)
 
 
 def main(args=None, fout=None, ferr=None):
@@ -108,7 +113,8 @@ def main(args=None, fout=None, ferr=None):
                                         str(spath),
                                         str(ddir) if ddir else None,
                                         args.es5,
-                                        args.es6
+                                        args.es6,
+                                        args.stage3
                                     )
                                     rep.print("Compiled file %s" % spath)
                                 except Exception as e:

@@ -46,7 +46,7 @@ def _calc_file_names(src_filename, dst_filename=None, map_filename=None):
 
 
 def translate_file(src_filename, dst_filename=None, map_filename=None,
-                   enable_es6=False):
+                   enable_es6=False, enable_stage3=False):
     """Translated the given python source file to ES6 Javascript"""
     dst_filename, map_filename, src_relpath, map_relpath = _calc_file_names(
         src_filename, dst_filename, map_filename
@@ -62,7 +62,8 @@ def translate_file(src_filename, dst_filename=None, map_filename=None,
         map.write(src_map)
 
 
-def translate_object(py_obj, body_only=False, enable_es6=False):
+def translate_object(py_obj, body_only=False, enable_es6=False,
+                     enable_stage3=False):
     """Translate the given Python 3 object (function, class, etc.) to ES6
     Javascript. If ``body_only`` is True, the object itself is discarded
     and only its body gets translates as it was a module body.
@@ -84,7 +85,8 @@ def translate_object(py_obj, body_only=False, enable_es6=False):
 
 
 def translates(src_text, dedent=True, src_filename=None, src_offset=None,
-               body_only=False, complete_src=None, enable_es6=False):
+               body_only=False, complete_src=None, enable_es6=False,
+               enable_stage3=False):
     """Transate the given Python 3 source text to ES6 Javascript. If the
     string comes from a file, it's possible to specify the filename
     that will be inserted into the output source map. The
@@ -119,7 +121,8 @@ def translates(src_text, dedent=True, src_filename=None, src_offset=None,
             scol_offset += (len(src_text) - len(dedented)) // src_line_num
     else:
         dedented = src_text
-    t = Transformer(transformations, JSStatements, es6=enable_es6)
+    t = Transformer(transformations, JSStatements, es6=enable_es6,
+                    stage3=enable_stage3)
     pyast = ast.parse(dedented)
     if body_only and hasattr(pyast, 'body') and len(pyast.body) == 1 \
        and hasattr(pyast.body[0], 'body'):
