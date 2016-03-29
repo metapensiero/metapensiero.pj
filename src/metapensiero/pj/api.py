@@ -207,28 +207,42 @@ def transpile_py_file(src_filename, dst_filename=None, map_filename=None):
         map.write(json.dumps(es5_src_map))
 
 
-def eval_object(py_obj, append=None, body_only=False, **kwargs):
+def eval_object(py_obj, append=None, body_only=False, ret_code=False,
+                **kwargs):
     js_text, _ = translate_object(py_obj, body_only)
     if append:
         js_text += append
-    return dukpy.evaljs(js_text, **kwargs)
+    res = dukpy.evaljs(js_text, **kwargs)
+    if ret_code:
+        res = (res, js_text)
+    return res
 
 
-def evals(py_text, body_only=False, **kwargs):
+def evals(py_text, body_only=False, ret_code=False, **kwargs):
     js_text, _ = translates(py_text, body_only=body_only)
-    return dukpy.evaljs(js_text, **kwargs)
+    res = dukpy.evaljs(js_text, **kwargs)
+    if ret_code:
+        res = (res, js_text)
+    return res
 
 
-def eval_object_es5(py_obj, append=None, body_only=False, **kwargs):
+def eval_object_es5(py_obj, append=None, body_only=False, ret_code=False,
+                    **kwargs):
     es5_text, _ = transpile_object(py_obj, body_only)
     if append:
         es5_text += '\n' + append
-    return dukpy.evaljs(es5_text, **kwargs)
+    res = dukpy.evaljs(es5_text, **kwargs)
+    if ret_code:
+        res = (res, es5_text)
+    return res
 
 
-def evals_es5(py_text, body_only=False, **kwargs):
+def evals_es5(py_text, body_only=False, ret_code=False, **kwargs):
     es5_text, _ = transpile_pys(py_text, body_only=body_only)
-    return dukpy.evaljs(es5_text, **kwargs)
+    res = dukpy.evaljs(es5_text, **kwargs)
+    if ret_code:
+        res = (res, es5_text)
+    return res
 
 
 def babel_compile(source, **kwargs):
