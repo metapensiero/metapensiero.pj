@@ -242,7 +242,9 @@ def test_inner_method_func():
     expected = (
         'class Example {\n'
         '    foo() {\n'
-        '        var bar = ()  => {};\n'
+        '        var bar;\n'
+        '        bar = () => {\n'
+        '        };\n'
         '    }\n'
         '}\n'
     )
