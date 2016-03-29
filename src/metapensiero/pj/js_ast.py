@@ -241,6 +241,7 @@ class JSDict(JSNode):
 class JSFunction(JSNode):
 
     begin = 'function '
+    bet_args_n_body = ''
 
     def fargs(self, args, acc=None, kwargs=None):
         result = []
@@ -259,6 +260,7 @@ class JSFunction(JSNode):
         if name is not None:
             line.append(name)
         line += self.fargs(args, acc, kwargs)
+        line += self.bet_args_n_body
         line += ['{']
         yield self.line(line, name=str(name))
         yield from self.lines(body, indent=True, delim=True)
@@ -269,6 +271,21 @@ class JSAsyncFunction(JSFunction):
 
     begin = 'async function'
 
+
+class JSArrowFunction(JSFunction):
+
+    begin = ''
+    bet_args_n_body = ' => '
+
+    def emit(self, args, body, acc=None, kwargs=None):
+        yield from super().emit(None, args, body, acc, kwargs)
+
+    def line(self, item, name=None):
+        if isinstance(item, list):
+            res = self.part(*item, name=name)
+        else:
+            res = self.part(item, name=name)
+        return res
 
 class JSClass(JSNode):
 

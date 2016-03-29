@@ -226,3 +226,25 @@ def test_try_except_complex():
     )
 
     assert translate_object(func, body_only=True, enable_es6=True)[0] == expected
+
+
+def test_inner_method_func():
+
+    def func():
+
+        class Example:
+            def foo(self):
+
+                def bar():
+                    pass
+
+
+    expected = (
+        'class Example {\n'
+        '    foo() {\n'
+        '        var bar = ()  => {};\n'
+        '    }\n'
+        '}\n'
+    )
+
+    assert translate_object(func, body_only=True, enable_es6=True)[0] == expected

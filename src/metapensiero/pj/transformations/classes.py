@@ -198,6 +198,11 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
         kwargs = None
 
     is_method = isinstance(t.parent_of(x), ast.ClassDef)
+    is_in_method = (not is_method and
+                    isinstance(t.parent_of(x), (ast.FunctionDef,
+                                                ast.AsyncFunctionDef)) and
+                    isinstance(t.parent_of(t.parent_of(x)), ast.ClassDef))
+
 
     if is_method:
         arg_names = arg_names[1:]
@@ -237,11 +242,19 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
             )
     # x is a function
     else:
-        fwrapper = fwrapper or JSFunction
-        result = fwrapper(
-            str(name), args, body,
-            acc, kwargs
-        )
+        if is_in_method and fwrapper is None:
+            result = JSVarStatement(
+                [str(name)], [JSArrowFunction(
+                    args, body, acc, kwargs
+                )]
+            )
+        else:
+            fwrapper = fwrapper or JSFunction
+
+            result = fwrapper(
+                str(name), args, body,
+                acc, kwargs
+            )
     return result
 
 
