@@ -564,8 +564,8 @@ This is a brief list of what needs to be done:
 * refactor the comprehensions conversion to use the snippets facility;
 * refactor snippets rendering to write them as a module and import
   them in the module when tree conversion is enabled;
-* convert ``dict()`` calls to ES6 ``Map`` object creation;
-* convert *set* literals to ES6 ``Set`` objects;
+* convert ``dict()`` calls to ES6 ``Map`` object creation; update "foo in bar" to use bar.has(foo) for maps.
+* convert *set* literals to ES6 ``Set`` objects; update "foo in bar" to use bar.has(foo) for sets
 * multi-line strings to ES6 template strings (does this make any sense?);
 * properties to ES6 properties (getter and setter);
 * class and method decorators to ES7 class and method decorators;
