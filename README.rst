@@ -72,13 +72,13 @@ commandline:
 
 .. code:: bash
 
-  $ python -m pj source.py
+  $ python -m metapensiero.pj source.py
 
 or:
 
 .. code:: bash
 
-  $ python -m pj -5 source.py
+  $ python -m metapensiero.pj -5 source.py
 
 to transpile.
 
