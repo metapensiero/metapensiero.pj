@@ -657,3 +657,7 @@ __ https://news.ycombinator.com/item?id=11203183
   support feature by feature.
 
 __ http://kangax.github.io/compat-table/es6/
+
+* `A story`__ about ES6 crazyest stuff... symbols
+
+__ http://blog.keithcirkel.co.uk/metaprogramming-in-es6-symbols/
