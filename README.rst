@@ -399,9 +399,9 @@ just for them to be meaningful in js-land and to be detectable with
 ``try...except...finally`` statement
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The conversion of this statement is mostly obvious, with the only
-exception of the ``except`` part: it is translate to a ``catch`` part
-containing one ``if`` statement per each non catchall ``except``. If
+The conversion of this statement is mostly obvious with the only
+exception of the ``except`` part: it translates to a ``catch`` part
+containing one ``if`` statement for each non catchall ``except``. If a
 catchall ``except`` is present, the error will be re-thrown, to mimic
 Python's behavior.
 
