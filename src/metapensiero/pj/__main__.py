@@ -13,8 +13,14 @@ import sys
 from . import api
 
 
+class UnsupportedPythonError(Exception):
+    """Exception raised if the running interpreter version is
+    unsupported.
+    """
+
+
 parser = argparse.ArgumentParser(
-    description="A Python 3 to ES6 JavaScript compiler",
+    description="A Python 3.5+ to ES6 JavaScript compiler",
     prog='pj'
 )
 parser.add_argument('files', metavar='file', type=str, nargs='+',
@@ -61,6 +67,10 @@ def transform(src_fname, dst_fname=None, transpile=False, enable_es6=False,
         api.translate_file(src_fname, dst_fname, enable_es6=enable_es6,
                            enable_stage3=enable_stage3)
 
+def check_interpreter_supported():
+    if sys.version_info < (3, 5):
+        raise UnsupportedPythonError('JavaScripthon needs at least'
+                                     ' Python 3.5 to run')
 
 def main(args=None, fout=None, ferr=None):
     result = 0
@@ -72,6 +82,7 @@ def main(args=None, fout=None, ferr=None):
         result = 2
     else:
         try:
+            check_interpreter_supported()
             for fname in args.files:
                 src = Path(fname)
                 if not src.exists():

@@ -18,7 +18,7 @@ It is based on previous work by `Andrew Schaaf <andrew@andrewschaaf.com>`_.
 Goal
 ----
 
-JavaScripthon is a small and simple Python 3 translator to JavaScript
+JavaScripthon is a small and simple Python 3.5+ translator to JavaScript
 which aims to be able to translate most of the Python's core semantics
 without providing a full python-in-js environment, as most existing
 translators do. It tries to emit code which is simple to read and
@@ -60,9 +60,14 @@ currently supported ones.
 Installation
 ------------
 
+Python 3.5 is required because Python's ast has changed between 3.4
+and 3.5 and as of now supporting multiple Python versions is not one
+of my priorities.
+
 To install the package execute the following command::
 
   $ pip install javascripthon
+
 
 Usage
 -----
@@ -91,7 +96,7 @@ A ``pj`` console script is also automatically installed:
             [--pdb]
             file [file ...]
 
-  A Python 3 to ES6 JavaScript compiler
+  A Python 3.5+ to ES6 JavaScript compiler
 
   positional arguments:
     file                  Python source file(s) or directory(ies) to convert.
@@ -564,12 +569,17 @@ This is a brief list of what needs to be done:
 * refactor the comprehensions conversion to use the snippets facility;
 * refactor snippets rendering to write them as a module and import
   them in the module when tree conversion is enabled;
-* convert ``dict()`` calls to ES6 ``Map`` object creation; update "foo in bar" to use bar.has(foo) for maps.
-* convert *set* literals to ES6 ``Set`` objects; update "foo in bar" to use bar.has(foo) for sets
+* convert ``dict()`` calls to ES6 ``Map`` object creation. Also,
+  update "foo in bar" to use bar.has(foo) for maps;
+* convert *set* literals to ES6 ``Set`` objects. Also, update
+  "foo in bar" to use bar.has(foo) for sets;
 * multi-line strings to ES6 template strings (does this make any sense?);
 * properties to ES6 properties (getter and setter);
 * class and method decorators to ES7 class and method decorators;
 * implement *yield* and generator functions;
+* take advantage of new duckpy features to use a JS execution context
+  that lasts multiple calls. This way the BabelJS bootstrap affects
+  only the initial execution;
 
 Done
 ----
