@@ -81,6 +81,10 @@ def Call_len(t, x):
 #<pre>(new Foo(...))</pre>
 # More generally, this transformation applies iff a Name starting with <code>[A-Z]</code> is Called.
 def Call_new(t, x):
+def Call_str(t, x):
+    if (isinstance(x.func, ast.Name) and x.func.id == 'str' and \
+        len(x.args) == 1):
+        return JSCall(JSAttribute(JSName(x.args[0]), 'toString'), [])
 
     def getNameString(x):
         if isinstance(x, ast.Name):
@@ -107,7 +111,7 @@ def Call_import(t, x):
 from .classes import Call_super
 from .obvious import Call_default
 Call = [Call_typeof, Call_isinstance, Call_print, Call_len,
-        Call_new, Call_super, Call_import, Call_default]
+        Call_new, Call_super, Call_import, Call_str, Call_default]
 
 
 #### Ops

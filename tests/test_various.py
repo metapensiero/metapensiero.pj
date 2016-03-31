@@ -250,3 +250,14 @@ def test_inner_method_func():
     )
 
     assert translate_object(func, body_only=True, enable_es6=True)[0] == expected
+
+
+def test_str():
+
+    def func():
+
+        str(x)
+
+    expected = 'x.toString();\n'
+
+    assert translate_object(func, body_only=True, enable_es6=True)[0] == expected
