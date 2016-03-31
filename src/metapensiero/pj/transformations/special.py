@@ -73,19 +73,16 @@ def Call_len(t, x):
         return JSAttribute(x.args[0], 'length')
 
 
-#### Call_new
-#
-# Transform
-#<pre>Foo(...)</pre>
-# to
-#<pre>(new Foo(...))</pre>
-# More generally, this transformation applies iff a Name starting with <code>[A-Z]</code> is Called.
-def Call_new(t, x):
 def Call_str(t, x):
     if (isinstance(x.func, ast.Name) and x.func.id == 'str' and \
         len(x.args) == 1):
         return JSCall(JSAttribute(JSName(x.args[0]), 'toString'), [])
 
+
+def Call_new(t, x):
+    """Translates ``Foo(...) to ``new Foo(...)`` if function name starts
+    with a capital letter.
+    """
     def getNameString(x):
         if isinstance(x, ast.Name):
             return x.id
