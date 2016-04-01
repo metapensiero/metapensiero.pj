@@ -167,15 +167,19 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
 
     t.unsupported(x, x.decorator_list, "Function decorators are unsupported"
                   " yet")
-    t.unsupported(x, x.args.kwarg, "Keyword args accumulator is insupported")
 
     if x.args.vararg or x.args.kwonlyargs or x.args.defaults or \
-       x.args.kw_defaults:
+       x.args.kw_defaults or x.args.kwarg:
         t.es6_guard(x, "Arguments definitions other tha plain params require "
                     "ES6 to be enabled")
 
-    t.unsupported(x, x.args.vararg and x.args.kwonlyargs, "Having both param "
-                  "accumulator and keyword args is unsupported")
+    t.unsupported(x, x.args.kwarg and x.args.kwonlyargs,
+                  "Keyword arguments together with keyord args accumulator"
+                  " are unsupported")
+
+    t.unsupported(x, x.args.vararg and (x.args.kwonlyargs or x.args.kwarg),
+                  "Having both param accumulator and keyword args is "
+                  "unsupported")
 
     name = x.name
     arg_names = [arg.arg for arg in x.args.args]
@@ -185,6 +189,7 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
     defaults = x.args.defaults
     kw = x.args.kwonlyargs
     kwdefs = x.args.kw_defaults
+    kw_acc = x.args.kwarg
     if kw:
         kwargs = []
         for k, v in zip(kw, kwdefs):
@@ -210,6 +215,10 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
         defaults = ([None] * (len(arg_names) - len(defaults))) + list(defaults)
     elif defaults is None:
         defaults = [None] * len(arg_names)
+
+    if kw_acc:
+        arg_names += [kw_acc.arg]
+        defaults += [JSDict((), ())]
 
     args = []
     for k, v in zip(arg_names, defaults):

@@ -339,3 +339,13 @@ def test_call_kw():
 
     assert test_kw2(1, 1) == 5
     assert test_kw2(1, 1) == eval_object_es5(test_kw2, 'test_kw2(1, 1);')
+
+    def test_kw3(foo, bar):
+
+        def kw(foo, **kwargs):
+            return foo + kwargs['bar']
+
+        return kw(foo, bar=bar)
+
+    assert test_kw3(5, 10) == 15
+    assert test_kw3(5, 10) == eval_object_es5(test_kw3, 'test_kw3(5, 10);')

@@ -359,3 +359,49 @@ def test_ast_cls(astdump):
     node, dump = astdump(func)
 
     assert dump == expected
+
+def test_ast_cls(astdump):
+
+    def func():
+
+        def test(a, **kwargs):
+            pass
+
+        test(1, pippo=2, **kwargs)
+
+    expected = (
+        'FunctionDef(args=arguments(args=[], \n'
+        '                           defaults=[], \n'
+        '                           kw_defaults=[], \n'
+        '                           kwarg=None, \n'
+        '                           kwonlyargs=[], \n'
+        '                           vararg=None), \n'
+        '            body=[FunctionDef(args=arguments(args=[arg(annotation=None, \n'
+        "                                                       arg='a')], \n"
+        '                                             defaults=[], \n'
+        '                                             kw_defaults=[], \n'
+        '                                             kwarg=arg(annotation=None, \n'
+        "                                                       arg='kwargs'), \n"
+        '                                             kwonlyargs=[], \n'
+        '                                             vararg=None), \n'
+        '                              body=[Pass()], \n'
+        '                              decorator_list=[], \n'
+        "                              name='test', \n"
+        '                              returns=None), \n'
+        '                  Expr(value=Call(args=[Num(n=1)], \n'
+        '                                  func=Name(ctx=Load(), \n'
+        "                                            id='test'), \n"
+        "                                  keywords=[keyword(arg='pippo', \n"
+        '                                                    value=Num(n=2)), \n'
+        '                                            keyword(arg=None, \n'
+        '                                                    value=Name(ctx=Load(), \n'
+        "                                                               id='kwargs'))]))], \n"
+        '            decorator_list=[], \n'
+        "            name='func', \n"
+        '            returns=None)'
+    )
+
+
+    node, dump = astdump(func)
+
+    assert dump == expected

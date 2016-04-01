@@ -149,6 +149,11 @@ Simple stuff
         else:
             ....
 
+
+
+
+        str(x)
+
     - .. code:: javascript
 
         ((x < y) && (y <= z) && (z < 5))
@@ -171,6 +176,9 @@ Simple stuff
                 ....
             }
         }
+
+        x.toString()
+
 
 Then there are special cases. Here you can see some of these
 conversions. Javascripthon cannot do a full trace of the sources, so
@@ -509,6 +517,9 @@ The only caveat is that really JS support for keyword args sucks, so
 you will have to remember to fill in all the arguments before
 specifying keywords.
 
+On function definitions, ``**kwargs`` is supported if it's alone,
+i.e. without either keyword arguments or ``*args``.
+
 .. list-table:: function's args and call parameters
   :header-rows: 1
 
@@ -523,20 +534,33 @@ specifying keywords.
         def bar(c, d, *, zoo=2):
             pass
 
-
         foo(5, *a_list)
 
         bar('a', 'b', zoo=5, another='c')
+
+        def zoo(e, **kwargs):
+            print(kwargs['bar'])
+
+
+        zoo(4, bar=6)
 
     - .. code:: javascript
 
         function foo(a = 2, b = 3, ...args) {
         }
+
         function bar(c, d, {zoo = 2}={}) {
         }
+
         foo(5, ...a_list);
+
         bar("a", "b", {zoo: 5, another: "c"});
 
+        function zoo(e, kwargs = {}) {
+            console.log(kwargs['bar'])
+        }
+
+        zoo(4, {bar: 6})
 Examples
 --------
 

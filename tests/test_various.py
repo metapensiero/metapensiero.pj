@@ -261,3 +261,18 @@ def test_str():
     expected = 'x.toString();\n'
 
     assert translate_object(func, body_only=True, enable_es6=True)[0] == expected
+
+
+def test_kwargs():
+
+    def func():
+
+        def with_kwargs(a, **kwargs):
+            pass
+
+        with_kwargs(1, foo=2, bar=3)
+
+    expected = ('function with_kwargs(a, kwargs = {}) {\n}\n'
+                'with_kwargs(1, {foo: 2, bar: 3});\n')
+
+    assert translate_object(func, body_only=True, enable_es6=True)[0] == expected
