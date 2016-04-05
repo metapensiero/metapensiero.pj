@@ -598,7 +598,6 @@ This is a brief list of what needs to be done:
 * convert *set* literals to ES6 ``Set`` objects. Also, update
   "foo in bar" to use bar.has(foo) for sets;
 * multi-line strings to ES6 template strings (does this make any sense?);
-* properties to ES6 properties (getter and setter);
 * class and method decorators to ES7 class and method decorators;
 * implement *yield* and generator functions;
 * take advantage of new duckpy features to use a JS execution context
@@ -620,6 +619,7 @@ Stuff that was previously in the todo:
 * convert call keyword arguments;
 * convert `*iterable` syntax to ES6 destructuring;
 * use arrow functions for functions created in functions;
+* properties to ES6 properties (getter and setter);
 
 External documentation
 ----------------------
