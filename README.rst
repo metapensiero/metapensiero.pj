@@ -6,14 +6,25 @@
 ..
 
 ======================================================
-javascripthon: a Python 3 to ES6 JavaScript translator
+JavaScripthon: a Python 3 to ES6 JavaScript translator
 ======================================================
+
+.. figure:: http://s3.amazonaws.com/fossbytes.content/wp-content/uploads/2016/04/Javascripthon-python-js-converter.jpg
+   :alt: JavaScripthon
+   :align: center
+
+   ..
+
+   (image courtesy of `fossBytes`__)
+
+   __ http://fossbytes.com/javascripthon-a-simple-python-to-es6-javascript-translator/
+
+
+It is based on previous work by `Andrew Schaaf <andrew@andrewschaaf.com>`_.
 
  :author: Alberto Berti
  :contact: alberto@metapensiero.it
  :license: GNU General Public License version 3 or later
-
-It is based on previous work by `Andrew Schaaf <andrew@andrewschaaf.com>`_.
 
 Goal
 ----
@@ -181,7 +192,7 @@ Simple stuff
 
 
 Then there are special cases. Here you can see some of these
-conversions. Javascripthon cannot do a full trace of the sources, so
+conversions. JavaScripthon cannot do a full trace of the sources, so
 some shortcuts are taken about the conversion of some core, specific
 Python's semantics. For example Python's ``self`` is always converted
 to JavaScript's ``this``, no matter where it's found. Or ``len(foo)``
@@ -561,6 +572,7 @@ i.e. without either keyword arguments or ``*args``.
         }
 
         zoo(4, {bar: 6})
+
 Examples
 --------
 
