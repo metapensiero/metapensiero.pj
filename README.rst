@@ -573,6 +573,32 @@ To run the tests you should run the following at the package root::
 
   python setup.py test
 
+How to contribute
+-----------------
+
+So you like this project and want to contribute? Good!
+
+These are the terse guidelines::
+
+  There are some TODO points in the readme, or even the issue #6 is
+  quite simple to fix. Feel free to pick what you like.
+
+  The guidelines are to follow PEP8 for coding where possible, so use
+  CamelCase for classes and snake_case for variables, functions and
+  members, and UPPERCASE for constants.
+
+  An exception to this rules are the function names inside
+  ``metapensiero.pj.transformations`` subpackage. Those are matched
+  against names of the ast objects coming from the ``ast`` module in
+  standard lib, so they have to to match even in case.
+
+  Try to keep lines lengths under 79 chars, more or less ;-)
+
+  The workflow is to fork the project, d your stuff, maybe add a test
+  for it and then submit a pull request.
+
+  Have fun
+
 
 Build status
 ------------
