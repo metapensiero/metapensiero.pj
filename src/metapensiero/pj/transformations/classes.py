@@ -260,16 +260,16 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
             mwrapper = mwrapper or deco or JSMethod
             if mwrapper is JSGetter:
                 result = mwrapper(
-                    str(name), body
+                    name, body
                 )
             elif mwrapper is JSSetter:
                 t.unsupported(x, len(args) == 0, "Missing argument in setter")
                 result = mwrapper(
-                    str(name), args[0], body
+                    name, args[0], body
                 )
             else:
                 result = mwrapper(
-                    str(name), args, body,
+                    name, args, body,
                     acc, kwargs
                 )
     # x is a function
@@ -278,14 +278,14 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
             result = JSStatements([
                 JSVarStatement([str(name)], [None]),
                 JSArrowFunction(
-                    str(name), args, body, acc, kwargs
+                    name, args, body, acc, kwargs
                 )
             ])
         else:
             fwrapper = fwrapper or JSFunction
 
             result = fwrapper(
-                str(name), args, body,
+                name, args, body,
                 acc, kwargs
             )
     return result
