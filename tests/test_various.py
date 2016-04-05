@@ -302,3 +302,29 @@ def test_properties():
     )
 
     assert translate_object(Foo, enable_es6=True)[0] == expected
+
+
+def test_special_methods():
+
+    # it seems that if name this class the same of the previous test,
+    # inspect.getsourcelines will found that instead of this...
+    class Foo2:
+
+        def __len__(self):
+            return 5
+
+        def __str__(self):
+            return 'bar'
+
+    expected = (
+        'class Foo2 {\n'
+        '    get length() {\n'
+        '        return 5;\n'
+        '    }\n'
+        '    toString() {\n'
+        '        return "bar";\n'
+        '    }\n'
+        '}\n'
+    )
+
+    assert translate_object(Foo2, enable_es6=True)[0] == expected

@@ -267,6 +267,22 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
                 result = mwrapper(
                     name, args[0], body
                 )
+            elif mwrapper is JSMethod:
+                if name == '__len__':
+                    result = JSGetter(
+                        'length',
+                        body
+                    )
+                elif name == '__str__':
+                    result = JSMethod(
+                        'toString',
+                        [], body
+                    )
+                else:
+                    result = mwrapper(
+                        name, args, body,
+                        acc, kwargs
+                    )
             else:
                 result = mwrapper(
                     name, args, body,
