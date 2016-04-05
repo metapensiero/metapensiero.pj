@@ -594,7 +594,7 @@ These are the terse guidelines::
 
   Try to keep lines lengths under 79 chars, more or less ;-)
 
-  The workflow is to fork the project, d your stuff, maybe add a test
+  The workflow is to fork the project, do your stuff, maybe add a test
   for it and then submit a pull request.
 
   Have fun
