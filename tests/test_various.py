@@ -347,3 +347,26 @@ def test_special_methods():
     )
 
     assert translate_object(Foo3, enable_es6=True)[0] == expected
+
+def test_slices():
+
+    def func():
+
+        foo = 'foofoo'
+        foo[1:]
+        foo[:-1]
+        foo[3:-1]
+        foo[2]
+
+    expected = (
+        'function func() {\n'
+        '    var foo;\n'
+        '    foo = "foofoo";\n'
+        '    foo.slice(1);\n'
+        '    foo.slice(0, (- 1));\n'
+        '    foo.slice(3, (- 1));\n'
+        '    foo[2];\n'
+        '}\n'
+    )
+
+    assert translate_object(func)[0] == expected

@@ -209,3 +209,22 @@ def Compare_in(t, x):
         return result
 
 Compare = [Compare_in, Compare_default]
+
+def Subscript_slice(t, x):
+
+    if isinstance(x.slice, ast.Slice):
+        slice = x.slice
+        t.unsupported(x, slice.step and slice.step != 1, "Slice step is unsupported")
+        args = []
+        if slice.lower:
+            args.append(slice.lower)
+        else:
+            args.append(JSNum(0))
+        if slice.upper:
+            args.append(slice.upper)
+
+        return JSCall(JSAttribute(x.value, 'slice'), args)
+
+from .obvious import Subscript_default
+
+Subscript = [Subscript_slice, Subscript_default]

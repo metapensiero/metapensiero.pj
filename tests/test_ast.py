@@ -468,3 +468,48 @@ def test_properties(astdump):
     node, dump = astdump(Foo)
 
     assert dump == expected
+
+def test_slices(astdump):
+
+    def func():
+
+        foo = 'foofoo'
+        foo[1:]
+        foo[3:-1]
+        foo[2]
+
+    expected = (
+        'FunctionDef(args=arguments(args=[], \n'
+        '                           defaults=[], \n'
+        '                           kw_defaults=[], \n'
+        '                           kwarg=None, \n'
+        '                           kwonlyargs=[], \n'
+        '                           vararg=None), \n'
+        '            body=[Assign(targets=[Name(ctx=Store(), \n'
+        "                                       id='foo')], \n"
+        "                         value=Str(s='foofoo')), \n"
+        '                  Expr(value=Subscript(ctx=Load(), \n'
+        '                                       slice=Slice(lower=Num(n=1), \n'
+        '                                                   step=None, \n'
+        '                                                   upper=None), \n'
+        '                                       value=Name(ctx=Load(), \n'
+        "                                                  id='foo'))), \n"
+        '                  Expr(value=Subscript(ctx=Load(), \n'
+        '                                       slice=Slice(lower=Num(n=3), \n'
+        '                                                   step=None, \n'
+        '                                                   upper=UnaryOp(op=USub(), \n'
+        '                                                                 operand=Num(n=1))), \n'
+        '                                       value=Name(ctx=Load(), \n'
+        "                                                  id='foo'))), \n"
+        '                  Expr(value=Subscript(ctx=Load(), \n'
+        '                                       slice=Index(value=Num(n=2)), \n'
+        '                                       value=Name(ctx=Load(), \n'
+        "                                                  id='foo')))], \n"
+        '            decorator_list=[], \n'
+        "            name='func', \n"
+        '            returns=None)'
+    )
+
+    node, dump = astdump(func)
+
+    assert dump == expected

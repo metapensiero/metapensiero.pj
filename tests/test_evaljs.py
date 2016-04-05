@@ -349,3 +349,19 @@ def test_call_kw():
 
     assert test_kw3(5, 10) == 15
     assert test_kw3(5, 10) == eval_object_es5(test_kw3, 'test_kw3(5, 10);')
+
+
+def test_slices():
+
+    def test():
+
+        foo = 'fooFoo'
+        a = [
+            foo[1],
+            foo[-3:],
+            foo[2:-1],
+            foo[:5]
+        ]
+        return a
+
+    assert test() == ['o', 'Foo', 'oFo', 'fooFo'] == eval_object(test, 'test();')

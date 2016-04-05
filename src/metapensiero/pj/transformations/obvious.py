@@ -121,13 +121,15 @@ def Call_default(t, x):
         kwargs = None
     return JSCall(x.func, x.args, kwargs)
 
+
 def Attribute(t, x):
     return JSAttribute(x.value, str(x.attr))
 
 
-def Subscript(t, x):
+def Subscript_default(t, x):
     if isinstance(x.slice, ast.Index):
         return JSSubscript(x.value, x.slice.value)
+
 
 def UnaryOp(t, x):
     return JSUnaryOp(x.op, x.operand)
