@@ -165,8 +165,30 @@ def Call_super(t, x):
 
 def FunctionDef(t, x, fwrapper=None, mwrapper=None):
 
-    t.unsupported(x, x.decorator_list, "Function decorators are unsupported"
-                  " yet")
+    is_method = isinstance(t.parent_of(x), ast.ClassDef)
+    is_in_method = (not is_method and
+                    isinstance(t.parent_of(x), (ast.FunctionDef,
+                                                ast.AsyncFunctionDef)) and
+                    isinstance(t.parent_of(t.parent_of(x)), ast.ClassDef))
+
+    t.unsupported(x, not is_method and x.decorator_list, "Function decorators are"
+                  " unsupported yet")
+
+    t.unsupported(x, len(x.decorator_list) > 1, "No more than one decorator"
+                  " is supported")
+
+    if x.decorator_list:
+        # decorator should be "property" or "<name>.setter"
+        fdeco = x.decorator_list[0]
+        if isinstance(fdeco, ast.Name) and fdeco.id == 'property':
+            deco = JSGetter
+        elif (isinstance(fdeco, ast.Attribute) and  fdeco.attr == 'setter'
+              and isinstance(fdeco.value, ast.Name)):
+            deco = JSSetter
+        else:
+            t.unsupported(x, True, "Unsupported method decorator")
+    else:
+        deco = None
 
     if x.args.vararg or x.args.kwonlyargs or x.args.defaults or \
        x.args.kw_defaults or x.args.kwarg:
@@ -199,13 +221,6 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
                 kwargs.append(JSAssignmentExpression(k.arg, v))
     else:
         kwargs = None
-
-    is_method = isinstance(t.parent_of(x), ast.ClassDef)
-    is_in_method = (not is_method and
-                    isinstance(t.parent_of(x), (ast.FunctionDef,
-                                                ast.AsyncFunctionDef)) and
-                    isinstance(t.parent_of(t.parent_of(x)), ast.ClassDef))
-
 
     if is_method:
         arg_names = arg_names[1:]
@@ -242,11 +257,21 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
                 args, body, acc, kwargs
             )
         else:
-            mwrapper = mwrapper or JSMethod
-            result = mwrapper(
-                str(name), args, body,
-                acc, kwargs
-            )
+            mwrapper = mwrapper or deco or JSMethod
+            if mwrapper is JSGetter:
+                result = mwrapper(
+                    str(name), body
+                )
+            elif mwrapper is JSSetter:
+                t.unsupported(x, len(args) == 0, "Missing argument in setter")
+                result = mwrapper(
+                    str(name), args[0], body
+                )
+            else:
+                result = mwrapper(
+                    str(name), args, body,
+                    acc, kwargs
+                )
     # x is a function
     else:
         if is_in_method and fwrapper is None:

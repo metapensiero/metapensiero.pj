@@ -276,3 +276,29 @@ def test_kwargs():
                 'with_kwargs(1, {foo: 2, bar: 3});\n')
 
     assert translate_object(func, body_only=True, enable_es6=True)[0] == expected
+
+
+def test_properties():
+
+    class Foo:
+
+        @property
+        def bar(self):
+            return self._bar
+
+        @bar.setter
+        def bar(self, value):
+            self._bar = value
+
+    expected = (
+        'class Foo {\n'
+        '    get bar() {\n'
+        '        return this._bar;\n'
+        '    }\n'
+        '    set bar(value) {\n'
+        '        this._bar = value;\n'
+        '    }\n'
+        '}\n'
+    )
+
+    assert translate_object(Foo, enable_es6=True)[0] == expected

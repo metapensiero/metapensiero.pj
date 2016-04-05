@@ -303,6 +303,19 @@ class JSAsyncMethod(JSClassMember):
     def emit(self, name, args, body, acc=None, kwargs=None):
         yield from self.with_kind('async ' + name, args, body, acc, kwargs)
 
+
+class JSGetter(JSClassMember):
+
+    def emit(self, name, body):
+        yield from self.with_kind('get ' + name, [], body)
+
+
+class JSSetter(JSClassMember):
+
+    def emit(self, name, arg, body):
+        yield from self.with_kind('set ' + name, [arg], body)
+
+
 #### Expressions
 
 

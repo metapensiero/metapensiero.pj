@@ -405,3 +405,66 @@ def test_ast_cls(astdump):
     node, dump = astdump(func)
 
     assert dump == expected
+
+def test_properties(astdump):
+
+    class Foo:
+
+        @property
+        def bar(self):
+
+            return self
+
+        @bar.setter
+        def bar(self, value):
+            self._bar = value
+
+        zoo = 1
+
+    expected = (
+        'ClassDef(bases=[], \n'
+        '         body=[FunctionDef(args=arguments(args=[arg(annotation=None, \n'
+        "                                                    arg='self')], \n"
+        '                                          defaults=[], \n'
+        '                                          kw_defaults=[], \n'
+        '                                          kwarg=None, \n'
+        '                                          kwonlyargs=[], \n'
+        '                                          vararg=None), \n'
+        '                           body=[Return(value=Name(ctx=Load(), \n'
+        "                                                   id='self'))], \n"
+        '                           decorator_list=[Name(ctx=Load(), \n'
+        "                                                id='property')], \n"
+        "                           name='bar', \n"
+        '                           returns=None), \n'
+        '               FunctionDef(args=arguments(args=[arg(annotation=None, \n'
+        "                                                    arg='self'), \n"
+        '                                                arg(annotation=None, \n'
+        "                                                    arg='value')], \n"
+        '                                          defaults=[], \n'
+        '                                          kw_defaults=[], \n'
+        '                                          kwarg=None, \n'
+        '                                          kwonlyargs=[], \n'
+        '                                          vararg=None), \n'
+        "                           body=[Assign(targets=[Attribute(attr='_bar', \n"
+        '                                                           ctx=Store(), \n'
+        '                                                           value=Name(ctx=Load(), \n'
+        "                                                                      id='self'))], \n"
+        '                                        value=Name(ctx=Load(), \n'
+        "                                                   id='value'))], \n"
+        "                           decorator_list=[Attribute(attr='setter', \n"
+        '                                                     ctx=Load(), \n'
+        '                                                     value=Name(ctx=Load(), \n'
+        "                                                                id='bar'))], \n"
+        "                           name='bar', \n"
+        '                           returns=None), \n'
+        '               Assign(targets=[Name(ctx=Store(), \n'
+        "                                    id='zoo')], \n"
+        '                      value=Num(n=1))], \n'
+        '         decorator_list=[], \n'
+        '         keywords=[], \n'
+        "         name='Foo')"
+    )
+
+    node, dump = astdump(Foo)
+
+    assert dump == expected
