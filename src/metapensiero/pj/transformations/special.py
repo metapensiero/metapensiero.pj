@@ -95,6 +95,7 @@ def Call_new(t, x):
     NAME_STRING = getNameString(x.func)
 
     if NAME_STRING and re.search(r'^[A-Z]', NAME_STRING):
+        # TODO: generalize args mangling and apply here
         #assert not any([x.keywords, x.starargs, x.kwargs])
         return JSNewCall(x.func, x.args)
 
@@ -105,10 +106,17 @@ def Call_import(t, x):
         t.es6_guard(x, "'__import__()' call requires ES6")
         return JSDependImport(x.args[0].s)
 
+
+def Call_type(t, x):
+    if (isinstance(x.func, ast.Name) and x.func.id == '__import__'):
+        assert len(x.args) == 1
+        return JSCall(JSAttribute(JSName('Object'), 'getPrototypeOf'), x.args)
+
+
 from .classes import Call_super
 from .obvious import Call_default
 Call = [Call_typeof, Call_isinstance, Call_print, Call_len,
-        Call_new, Call_super, Call_import, Call_str, Call_default]
+        Call_new, Call_super, Call_import, Call_str, Call_type, Call_default]
 
 
 #### Ops

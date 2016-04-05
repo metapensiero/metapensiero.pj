@@ -328,3 +328,22 @@ def test_special_methods():
     )
 
     assert translate_object(Foo2, enable_es6=True)[0] == expected
+
+
+def test_special_methods():
+
+    class Foo3:
+
+        @classmethod
+        def foo(self):
+            return 'bar'
+
+    expected = (
+        'class Foo3 {\n'
+        '    static foo() {\n'
+        '        return "bar";\n'
+        '    }\n'
+        '}\n'
+    )
+
+    assert translate_object(Foo3, enable_es6=True)[0] == expected

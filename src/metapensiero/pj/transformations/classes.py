@@ -177,19 +177,6 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
     t.unsupported(x, len(x.decorator_list) > 1, "No more than one decorator"
                   " is supported")
 
-    if x.decorator_list:
-        # decorator should be "property" or "<name>.setter"
-        fdeco = x.decorator_list[0]
-        if isinstance(fdeco, ast.Name) and fdeco.id == 'property':
-            deco = JSGetter
-        elif (isinstance(fdeco, ast.Attribute) and  fdeco.attr == 'setter'
-              and isinstance(fdeco.value, ast.Name)):
-            deco = JSSetter
-        else:
-            t.unsupported(x, True, "Unsupported method decorator")
-    else:
-        deco = None
-
     if x.args.vararg or x.args.kwonlyargs or x.args.defaults or \
        x.args.kw_defaults or x.args.kwarg:
         t.es6_guard(x, "Arguments definitions other tha plain params require "
@@ -252,6 +239,23 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
 
     # If x is a method
     if is_method:
+        cls_member_opts = {}
+        if x.decorator_list:
+            # decorator should be "property" or "<name>.setter" or "classmethod"
+            fdeco = x.decorator_list[0]
+            if isinstance(fdeco, ast.Name) and fdeco.id == 'property':
+                deco = JSGetter
+            elif (isinstance(fdeco, ast.Attribute) and  fdeco.attr == 'setter'
+                  and isinstance(fdeco.value, ast.Name)):
+                deco = JSSetter
+            elif isinstance(fdeco, ast.Name) and fdeco.id == 'classmethod':
+                deco = None
+                cls_member_opts['static'] = True
+            else:
+                t.unsupported(x, True, "Unsupported method decorator")
+        else:
+            deco = None
+
         if name == '__init__':
             result = JSClassConstructor(
                 args, body, acc, kwargs
@@ -260,33 +264,39 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
             mwrapper = mwrapper or deco or JSMethod
             if mwrapper is JSGetter:
                 result = mwrapper(
-                    name, body
+                    name, body,
+                    **cls_member_opts
                 )
             elif mwrapper is JSSetter:
                 t.unsupported(x, len(args) == 0, "Missing argument in setter")
                 result = mwrapper(
-                    name, args[0], body
+                    name, args[0], body,
+                    **cls_member_opts
                 )
             elif mwrapper is JSMethod:
                 if name == '__len__':
                     result = JSGetter(
                         'length',
-                        body
+                        body,
+                        **cls_member_opts
                     )
                 elif name == '__str__':
                     result = JSMethod(
                         'toString',
-                        [], body
+                        [], body,
+                        **cls_member_opts
                     )
                 else:
                     result = mwrapper(
                         name, args, body,
-                        acc, kwargs
+                        acc, kwargs,
+                        **cls_member_opts
                     )
             else:
                 result = mwrapper(
                     name, args, body,
-                    acc, kwargs
+                    acc, kwargs,
+                    **cls_member_opts
                 )
     # x is a function
     else:

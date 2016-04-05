@@ -277,8 +277,11 @@ class JSClass(JSStatement):
 
 class JSClassMember(JSFunction):
 
-    def with_kind(self, kind, args, body, acc=None, kwargs=None):
-        line = [kind]
+    def with_kind(self, kind, args, body, acc=None, kwargs=None, static=False):
+        if static:
+            line = ['static ', kind]
+        else:
+            line = [kind]
         line += self.fargs(args, acc, kwargs)
         line += ['{']
         yield self.line(line)
@@ -294,26 +297,27 @@ class JSClassConstructor(JSClassMember):
 
 class JSMethod(JSClassMember):
 
-    def emit(self, name, args, body, acc=None, kwargs=None):
-        yield from self.with_kind(name, args, body, acc, kwargs)
+    def emit(self, name, args, body, acc=None, kwargs=None, static=False):
+        yield from self.with_kind(name, args, body, acc, kwargs, static)
 
 
 class JSAsyncMethod(JSClassMember):
 
-    def emit(self, name, args, body, acc=None, kwargs=None):
-        yield from self.with_kind('async ' + name, args, body, acc, kwargs)
+    def emit(self, name, args, body, acc=None, kwargs=None, static=False):
+        yield from self.with_kind('async ' + name, args, body, acc, kwargs,
+                                  static)
 
 
 class JSGetter(JSClassMember):
 
-    def emit(self, name, body):
-        yield from self.with_kind('get ' + name, [], body)
+    def emit(self, name, body, static=False):
+        yield from self.with_kind('get ' + name, [], body, static=static)
 
 
 class JSSetter(JSClassMember):
 
-    def emit(self, name, arg, body):
-        yield from self.with_kind('set ' + name, [arg], body)
+    def emit(self, name, arg, body, static=False):
+        yield from self.with_kind('set ' + name, [arg], body, static=static)
 
 
 #### Expressions

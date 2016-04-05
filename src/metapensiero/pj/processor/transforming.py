@@ -36,8 +36,9 @@ VAR_TEMPLATE = "_pj_%s"
 
 class TargetNode:
 
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
         self.args = args
+        self.options = kwargs
         self.transformed_args = None
 
     def __str__(self):
@@ -46,7 +47,7 @@ class TargetNode:
             self.serialize())
 
     def serialize(self):
-        for a in self.emit(*self.transformed_args):
+        for a in self.emit(*self.transformed_args, **self.options):
             yield from a.serialize()
 
     def lines(self, items, *, indent=False, delim=False, name=None):
