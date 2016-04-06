@@ -79,7 +79,7 @@ def test_imports():
                 "import * as bar from 'bar';\n"
                 "import * as b from 'foo/bar';\n"
                 "import {hello as h, bye as bb} from 'foo/bar';\n"
-                "import {bar} from '../../foo/zoo';\n"
+                "import {bar} from '../foo/zoo';\n"
                 "import * as foo from './foo';\n"
                 "import {bar} from './foo';\n"
                 'test_name = 2;\n'

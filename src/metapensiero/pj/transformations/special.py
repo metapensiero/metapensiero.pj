@@ -173,7 +173,7 @@ def ImportFrom(t, x):
             elif x.level > 1:
                 # from ..foo import bar
                 # from ...foo import bar
-                path_module = '../' * x.level + path_module
+                path_module = '../' * (x.level - 1) + path_module
             result = JSNamedImport(path_module,
                                    [(n.name, n.asname) for n in x.names])
         else:
