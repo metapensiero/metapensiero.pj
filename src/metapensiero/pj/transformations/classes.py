@@ -97,7 +97,7 @@ def ClassDef_exception(t, x):
     # is this a simple definition of a subclass of Exception?
     if len(body) > 0 or super_name not in ('Exception', 'Error'):
         return
-    res = t.subtransform(EXC_TEMPLATE_ES5 % dict(name=name))
+    res = t.subtransform(EXC_TEMPLATE_ES5 % dict(name=name), remap_to=x)
     return res
 
 

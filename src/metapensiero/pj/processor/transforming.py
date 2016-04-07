@@ -96,14 +96,16 @@ class Transformer:
     enable_es6 = False
     enable_let = False
     enable_stage3 = False
+    remap_to = None
 
     def __init__(self, py_ast_module, statements_class, snippets=True,
-                 es6=False, stage3=False):
+                 es6=False, stage3=False, remap_to=None):
         self.transformations = load_transformations(py_ast_module)
         self.statements_class = statements_class
         self.enable_snippets = snippets
         self.enable_es6 = es6
         self.enable_stage3 = stage3
+        self.remap_to = remap_to
         self._init_structs()
 
     def _init_structs(self):
@@ -143,11 +145,11 @@ class Transformer:
                 setattr(new, k, v)
         return new
 
-    def transform_code(self, py):
+    def transform_code(self, ast_tree):
         """Convert the given Python ast dump into JavaScript ast."""
         from ..js_ast import JSVarStatement
 
-        top = ast.parse(py)
+        top = ast.parse(ast_tree)
         body = top.body
         self._args_stack.clear()
 
@@ -243,7 +245,7 @@ class Transformer:
         return res
 
     def _finalize_target_node(self, tnode, py_node=None):
-        tnode.py_node = py_node
+        tnode.py_node = self.remap_to or py_node
         tnode.transformer = self
         if tnode.transformed_args is None:
             tnode.transformed_args = targs = []
@@ -292,7 +294,7 @@ class Transformer:
         """Append the given message to the warnings"""
         self._warnings.append((py_node, msg))
 
-    def subtransform(self, obj):
+    def subtransform(self, obj, remap_to=None):
         """Transform a piece of code, either a python object or a string. This
         is done in a new Transformer with a configuration similar to the
         calling instance."""
@@ -301,6 +303,7 @@ class Transformer:
         else:
             src = obj_source(obj)
         t = self.new_from(self)
+        t.remap_to = remap_to
         t.snippets = None
         t.enable_snippets = False
         return t.transform_code(src)
