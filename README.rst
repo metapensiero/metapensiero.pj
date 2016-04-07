@@ -245,6 +245,9 @@ The rules of thumb to treat things especially are:
 
         foo in bar
 
+        foo[3:]
+        foo[:3]
+
     - .. code:: javascript
 
         ===
@@ -275,6 +278,9 @@ The rules of thumb to treat things especially are:
         _pj = {};
         _pj_snippets(_pj);
         _pj._in(foo, bar);
+
+        foo.slice(3);
+        foo.slice(0, 3);
 
 ``for`` statement
 ~~~~~~~~~~~~~~~~~
@@ -329,8 +335,8 @@ Classes
 ~~~~~~~
 
 Classes with single inheritance are translated to ES6 classes, they
-can have only function members for now, with no class or method
-decorators, because the ES7 spec for them is being rediscussed.
+can have only function members for now, with no generic class or
+method decorators, because the ES7 spec for them is being rediscussed.
 
 Methods can be functions or async-functions.
 
@@ -340,6 +346,13 @@ their surrounding method: ``super().__init__(foo)`` becomes
 
 Functions inside methods are translated to arrow functions so that
 they keep the ``this`` of the surrounding method.
+
+``@property`` and ``@a_property.setter`` are translated to ES6 properties.
+
+Methods decorated with ``@classmethod`` are translated to ``static`` methods.
+
+Special methods ``__str__`` and ``__len__`` are translated to
+``toString()`` method and ``get length()`` property, respectively.
 
 Arrow method expression to retain the ``this`` at method level aren't
 implemented yet.
@@ -357,13 +370,38 @@ implemented yet.
             def __init__(self, zoo):
                 super().__init__(zoo)
 
+
             def meth(self, zoo):
                 super().meth(zoo)
                 def cool(a, b, c):
                     print(self.zoo)
 
+
             async def something(self, a_promise):
                 result = await a_promise
+
+
+            @property
+            def foo(self):
+                return self._foo
+
+
+            @foo.setter
+            def foo(self, value):
+                self._foo = value
+
+
+            @classmethod
+            def bar(self, val):
+                do_something()
+
+
+            def __len__(self):
+                return 1
+
+
+            def __str__(self):
+                return 'Foo instance'
 
     - .. code:: javascript
 
@@ -383,6 +421,26 @@ implemented yet.
             async something(a_promise) {
                 var result;
                 result = await a_promise;
+            }
+
+            get foo() {
+                return this._foo;
+            }
+
+            set foo(value) {
+                self._foo = value;
+            }
+
+            static bar(val) {
+                do_something()
+            }
+
+            get length() {
+                return 1;
+            }
+
+            toString() {
+                return "Foo instance";
             }
         }
 
