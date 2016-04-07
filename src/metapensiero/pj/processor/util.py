@@ -224,8 +224,12 @@ class OutputSrc:
         """Returns the position in source of the generated node"""
         py_node = self.node.py_node
         if py_node:
+            offset = getattr(py_node, 'col_offset', 0)
+            # multi-line comments have an offset of -1
+            if offset < 0:
+                offset = 0
             result = (getattr(py_node, 'lineno', None),
-                      getattr(py_node, 'col_offset', None))
+                      offset)
         else:
             result = (None, None)
         return result
