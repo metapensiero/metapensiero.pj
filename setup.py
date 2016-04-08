@@ -50,5 +50,8 @@ setup(
     tests_require=['pytest', 'meta'],
     entry_points = {
         'console_scripts': ['pj=metapensiero.pj.__main__:main'],
-    }
+    },
+    package_data={
+        'metapensiero.pj': ['data/*.js']
+    },
 )
