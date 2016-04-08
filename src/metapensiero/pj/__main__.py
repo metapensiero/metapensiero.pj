@@ -62,7 +62,7 @@ class Reporter:
 def transform(src_fname, dst_fname=None, transpile=False, enable_es6=False,
               enable_stage3=False):
     if transpile:
-        api.transpile_py_file(src_fname, dst_fname)
+        api.transpile_py_file(src_fname, dst_fname, enable_stage3=enable_stage3)
     else:
         api.translate_file(src_fname, dst_fname, enable_es6=enable_es6,
                            enable_stage3=enable_stage3)

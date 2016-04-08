@@ -146,7 +146,8 @@ def translates(src_text, dedent=True, src_filename=None, src_offset=None,
     return js_text, src_map
 
 
-def transpile_es6s(es6_text, es6_filename=None, es6_sourcemap=None):
+def transpile_es6s(es6_text, es6_filename=None, es6_sourcemap=None,
+                   enable_stage3=False):
     """Transpile the given ES6 Javascript to ES5 Javascript using Dukpy
     and babeljs."""
     opts = dict(sourceMaps=True)
@@ -156,29 +157,38 @@ def transpile_es6s(es6_text, es6_filename=None, es6_sourcemap=None):
         if isinstance(es6_sourcemap, str):
             es6_sourcemap = json.loads(es6_sourcemap)
         opts['inputSourceMap'] = es6_sourcemap
+    opts['presets'] = ["es2015"]
+    if enable_stage3:
+        opts['presets'].append('stage-3')
     res = babel_compile(es6_text, **opts)
     return res['code'], res['map']
 
 
-def transpile_object(py_obj, body_only=False, es6_filename=None):
+def transpile_object(py_obj, body_only=False, es6_filename=None,
+                     enable_stage3=False):
     """Transpile the given python Python 3 object to ES5 Javascript using
     Dukpy and babeljs."""
     es6_text, es6_sourcemap = translate_object(py_obj, body_only=body_only,
-                                               enable_es6=True)
-    return transpile_es6s(es6_text, es6_filename, es6_sourcemap)
+                                               enable_es6=True,
+                                               enable_stage3=enable_stage3)
+    return transpile_es6s(es6_text, es6_filename, es6_sourcemap,
+                          enable_stage3=enable_stage3)
 
 
 def transpile_pys(src_text, dedent=True, src_filename=None, src_offset=None,
-                  body_only=False, es6_filename=None):
+                  body_only=False, es6_filename=None, enable_stage3=False):
     """Transpile the given python Python 3 source text to ES5 Javascript
     using Dukpy and babeljs.
     """
     es6_text, es6_sourcemap = translates(src_text, dedent, src_filename,
-                                         src_offset, body_only, enable_es6=True)
-    return transpile_es6s(es6_text, es6_filename, es6_sourcemap)
+                                         src_offset, body_only, enable_es6=True,
+                                         enable_stage3=enable_stage3)
+    return transpile_es6s(es6_text, es6_filename, es6_sourcemap,
+                          enable_stage3=enable_stage3)
 
 
-def transpile_py_file(src_filename, dst_filename=None, map_filename=None):
+def transpile_py_file(src_filename, dst_filename=None, map_filename=None,
+                      enable_stage3=False):
     """Transpile the given python Python 3 source file to ES5 Javascript
     using Dukpy and babeljs.
     """
@@ -194,9 +204,10 @@ def transpile_py_file(src_filename, dst_filename=None, map_filename=None):
     es6_relpath = os.path.relpath(es6_dst_filename, dst_dir)
     src_text = open(src_filename).readlines()
     es6_text, es6_src_map = translates(src_text, True, src_relpath,
-                                       enable_es6=True)
+                                       enable_es6=True, enable_stage3=enable_stage3)
 
-    es5_text, es5_src_map = transpile_es6s(es6_text, es6_relpath, es6_src_map)
+    es5_text, es5_src_map = transpile_es6s(es6_text, es6_relpath, es6_src_map,
+                                           enable_stage3=enable_stage3)
     es5_text += '\n//# sourceMappingURL=%s\n' % map_relpath
     es6_text += '\n//# sourceMappingURL=%s\n' % es6_map_relpath
 
@@ -231,8 +242,8 @@ def evals(py_text, body_only=False, ret_code=False, **kwargs):
 
 
 def eval_object_es5(py_obj, append=None, body_only=False, ret_code=False,
-                    **kwargs):
-    es5_text, _ = transpile_object(py_obj, body_only)
+                    enable_stage3=False, **kwargs):
+    es5_text, _ = transpile_object(py_obj, body_only, enable_stage3=enable_stage3)
     if append:
         es5_text += '\n' + append
     res = dukpy.evaljs(es5_text, **kwargs)
@@ -241,8 +252,10 @@ def eval_object_es5(py_obj, append=None, body_only=False, ret_code=False,
     return res
 
 
-def evals_es5(py_text, body_only=False, ret_code=False, **kwargs):
-    es5_text, _ = transpile_pys(py_text, body_only=body_only)
+def evals_es5(py_text, body_only=False, ret_code=False, enable_stage3=False,
+              **kwargs):
+    es5_text, _ = transpile_pys(py_text, body_only=body_only,
+                                enable_stage3=enable_stage3)
     res = dukpy.evaljs(es5_text, **kwargs)
     if ret_code:
         res = (res, es5_text)
