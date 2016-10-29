@@ -8,7 +8,7 @@
 
 import ast
 
-from ..processor.util import body_local_names
+from ..processor.util import body_local_names, controlled_ast_walk
 
 from ..js_ast import *
 
@@ -128,7 +128,7 @@ def ClassDef_default(t, x):
         # silly check
         init_args = [arg.arg for arg in init.args.args]
         init_body = init.body
-        for stmt in ast.walk(init):
+        for stmt in controlled_ast_walk(init):
             assert not isinstance(stmt, ast.Return)
 
     if super_name:

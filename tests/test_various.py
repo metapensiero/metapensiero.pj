@@ -330,7 +330,7 @@ def test_special_methods():
     assert translate_object(Foo2, enable_es6=True)[0] == expected
 
 
-def test_special_methods():
+def test_special_methods2():
 
     class Foo3:
 
@@ -347,6 +347,7 @@ def test_special_methods():
     )
 
     assert translate_object(Foo3, enable_es6=True)[0] == expected
+
 
 def test_slices():
 
@@ -370,3 +371,27 @@ def test_slices():
     )
 
     assert translate_object(func)[0] == expected
+
+
+def test_init_local_def_with_return():
+    """An __init__ with a function that returns something should not raise any
+    concern."""
+
+    class Foo4:
+        def __init__(self):
+            def bar():
+                return 10
+            self.bar = bar
+
+    expected = (
+        'class Foo4 {\n'
+        '    constructor() {\n'
+        '        var bar;\n'
+        '        bar = () => {\n'
+        '            return 10;\n'
+        '        };\n'
+        '        this.bar = bar;\n'
+        '    }\n'
+        '}\n'
+    )
+    assert translate_object(Foo4, enable_es6=True)[0] == expected
