@@ -140,7 +140,7 @@ class Transformer:
         new._init_structs()
         new.transformations = instance.transformations
         new.statements_class = instance.statements_class
-        for k,v in vars(instance).items():
+        for k, v in vars(instance).items():
             if k.startswith('enable_'):
                 setattr(new, k, v)
         return new
