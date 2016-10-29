@@ -233,6 +233,7 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
     # <code>var ...local vars...</code>
     local_vars = list(set(body_local_names(body)) - set(arg_names))
     if len(local_vars) > 0:
+        local_vars.sort()
         body = [JSVarStatement(
                             local_vars,
                             [None] * len(local_vars))] + body

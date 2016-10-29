@@ -160,6 +160,7 @@ class Transformer:
 
         local_vars = list(body_local_names(body) - self._globals)
         if len(local_vars) > 0:
+            local_vars.sort()
             vars = JSVarStatement(local_vars,
                                   [None] * len(local_vars))
             self._finalize_target_node(vars)
