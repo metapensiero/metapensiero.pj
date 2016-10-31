@@ -43,12 +43,27 @@ setup(
     packages=find_packages('src'),
     package_dir={'': 'src'},
     namespace_packages=['metapensiero',],
-    install_requires=['setuptools',
-                      'dukpy'],
-    extras_require={'dev': ['metapensiero.tool.bump_version', 'docutils']},
-    setup_requires=['pytest-runner'],
-    tests_require=['pytest', 'meta'],
-    entry_points = {
+    install_requires=[
+        'setuptools',
+        'dukpy'
+    ],
+    extras_require={
+        'dev': [
+            'metapensiero.tool.bump_version',
+            'docutils'
+        ],
+        'test': [
+            'pytest',
+            'meta'
+        ],
+    },
+    setup_requires=[
+        'pytest-runner'
+    ],
+    tests_require=[
+        'javascripthon[test]'
+    ],
+    entry_points={
         'console_scripts': ['pj=metapensiero.pj.__main__:main'],
     },
     package_data={
