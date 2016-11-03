@@ -36,6 +36,8 @@ parser.add_argument('--disable-stage3', dest='stage3', action='store_false',
                     help="Disable ES7 stage3 features during conversion")
 parser.add_argument('-5', '--es5', dest='es5', action='store_true',
                     help="Also transpile to ES5 using BabelJS.")
+parser.add_argument('--transform-runtime', action='store_true', dest='truntime',
+                    help="Add trasform runtime as plugin during transpile")
 parser.add_argument('-o', '--output', type=str,
                     help="Output file/directory where to save the generated "
                     "code")
@@ -60,9 +62,10 @@ class Reporter:
 
 
 def transform(src_fname, dst_fname=None, transpile=False, enable_es6=False,
-              enable_stage3=False):
+              enable_stage3=False, **kw):
     if transpile:
-        api.transpile_py_file(src_fname, dst_fname, enable_stage3=enable_stage3)
+        api.transpile_py_file(src_fname, dst_fname, enable_stage3=enable_stage3,
+                              **kw)
     else:
         api.translate_file(src_fname, dst_fname, enable_es6=enable_es6,
                            enable_stage3=enable_stage3)
@@ -76,6 +79,9 @@ def main(args=None, fout=None, ferr=None):
     result = 0
     rep = Reporter(fout, ferr)
     args = parser.parse_args(args)
+    freeargs = {
+        'truntime': args.truntime
+    }
     if args.output and len(args.files) > 1:
         rep.print_err("Error: only one source file is allowed when --output is "
                       "specified.")
@@ -125,7 +131,8 @@ def main(args=None, fout=None, ferr=None):
                                         str(ddir) if ddir else None,
                                         args.es5,
                                         args.es6,
-                                        args.stage3
+                                        args.stage3,
+                                        **freeargs
                                     )
                                     rep.print("Compiled file %s" % spath)
                                 except Exception as e:
@@ -134,7 +141,7 @@ def main(args=None, fout=None, ferr=None):
                 else:
                     try:
                         transform(fname, args.output, args.es5, args.es6,
-                                  args.stage3)
+                                  args.stage3, **freeargs)
                         rep.print("Compiled file %s" % fname)
                     except Exception as e:
                         e.src_fname = fname

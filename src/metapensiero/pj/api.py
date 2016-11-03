@@ -147,7 +147,7 @@ def translates(src_text, dedent=True, src_filename=None, src_offset=None,
 
 
 def transpile_es6s(es6_text, es6_filename=None, es6_sourcemap=None,
-                   enable_stage3=False):
+                   enable_stage3=False, **kw):
     """Transpile the given ES6 Javascript to ES5 Javascript using Dukpy
     and babeljs."""
     opts = dict(sourceMaps=True)
@@ -160,19 +160,22 @@ def transpile_es6s(es6_text, es6_filename=None, es6_sourcemap=None,
     opts['presets'] = ["es2015"]
     if enable_stage3:
         opts['presets'].append('stage-3')
+    truntime = kw.pop('truntime')
+    if truntime:
+        opts['plugins'] = ['transform-runtime']
     res = babel_compile(es6_text, **opts)
     return res['code'], res['map']
 
 
 def transpile_object(py_obj, body_only=False, es6_filename=None,
-                     enable_stage3=False):
+                     enable_stage3=False, **kw):
     """Transpile the given python Python 3 object to ES5 Javascript using
     Dukpy and babeljs."""
     es6_text, es6_sourcemap = translate_object(py_obj, body_only=body_only,
                                                enable_es6=True,
                                                enable_stage3=enable_stage3)
     return transpile_es6s(es6_text, es6_filename, es6_sourcemap,
-                          enable_stage3=enable_stage3)
+                          enable_stage3=enable_stage3, **kw)
 
 
 def transpile_pys(src_text, dedent=True, src_filename=None, src_offset=None,
@@ -184,11 +187,11 @@ def transpile_pys(src_text, dedent=True, src_filename=None, src_offset=None,
                                          src_offset, body_only, enable_es6=True,
                                          enable_stage3=enable_stage3)
     return transpile_es6s(es6_text, es6_filename, es6_sourcemap,
-                          enable_stage3=enable_stage3)
+                          enable_stage3=enable_stage3, **kw)
 
 
 def transpile_py_file(src_filename, dst_filename=None, map_filename=None,
-                      enable_stage3=False):
+                      enable_stage3=False, **kw):
     """Transpile the given python Python 3 source file to ES5 Javascript
     using Dukpy and babeljs.
     """
@@ -207,7 +210,7 @@ def transpile_py_file(src_filename, dst_filename=None, map_filename=None,
                                        enable_es6=True, enable_stage3=enable_stage3)
 
     es5_text, es5_src_map = transpile_es6s(es6_text, es6_relpath, es6_src_map,
-                                           enable_stage3=enable_stage3)
+                                           enable_stage3=enable_stage3, **kw)
     es5_text += '\n//# sourceMappingURL=%s\n' % map_relpath
     es6_text += '\n//# sourceMappingURL=%s\n' % es6_map_relpath
 
