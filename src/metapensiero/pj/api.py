@@ -160,7 +160,7 @@ def transpile_es6s(es6_text, es6_filename=None, es6_sourcemap=None,
     opts['presets'] = ["es2015"]
     if enable_stage3:
         opts['presets'].append('stage-3')
-    truntime = kw.pop('truntime')
+    truntime = kw.pop('truntime', False)
     if truntime:
         opts['plugins'] = ['transform-runtime']
     res = babel_compile(es6_text, **opts)
