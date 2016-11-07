@@ -138,6 +138,10 @@ def NotEq(t, x):
 
 #### Import
 
+INSIDE_DUNDER_RE = re.compile(r'([a-zA-Z0-9])__([a-zA-Z0-9])')
+def _replace_inside_dunder(name):
+    return INSIDE_DUNDER_RE.sub(r'\1-\2', name)
+
 def Import(t, x):
     t.es6_guard(x, "'import' statement requires ES6")
     names = []
@@ -146,6 +150,10 @@ def Import(t, x):
     t.add_globals(*names)
     result = []
     for n in x.names:
+        old_name = n.name
+        n.name = _replace_inside_dunder(n.name)
+        t.unsupported(x, (old_name != n.name) and not n.asname,
+        "A module name cannot contain dashes, use 'as' to give it a new name.")
         path_module = '/'.join(n.name.split('.'))
         result.append(
             JSStarImport(path_module, n.asname or n.name)
@@ -166,7 +174,7 @@ def ImportFrom(t, x):
         t.add_globals(*names)
         result = JSPass()
         if x.module:
-            path_module = '/'.join(x.module.split('.'))
+            path_module = '/'.join(_replace_inside_dunder(x.module).split('.'))
             if x.level == 1:
                 # from .foo import bar
                 path_module = './' + path_module

@@ -66,6 +66,8 @@ def test_imports():
 
         from __globals__ import test_name
 
+        from foo__bar import zoo
+        import foo__bar as fb
         # this should not trigger variable definition
         test_name = 2
 
@@ -82,6 +84,8 @@ def test_imports():
                 "import {bar} from '../foo/zoo';\n"
                 "import * as foo from './foo';\n"
                 "import {bar} from './foo';\n"
+                "import {zoo} from 'foo-bar';\n"
+                "import * as fb from 'foo-bar';\n"
                 'test_name = 2;\n'
                 'test_foo = true;\n'
                 'export {test_name};\n'
