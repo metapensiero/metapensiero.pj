@@ -9,7 +9,27 @@
 import ast
 import re
 
-from ..js_ast import *
+from ..js_ast import (
+    JSAttribute,
+    JSBinOp,
+    JSCall,
+    JSCommentBlock,
+    JSDependImport,
+    JSName,
+    JSNamedImport,
+    JSNewCall,
+    JSNum,
+    JSOpInstanceof,
+    JSOpNot,
+    JSOpStrongEq,
+    JSOpStrongNotEq,
+    JSOpTypeof,
+    JSPass,
+    JSStarImport,
+    JSStatements,
+    JSThis,
+    JSUnaryOp,
+)
 
 
 #### Expr
