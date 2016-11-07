@@ -16,7 +16,7 @@ import string
 import textwrap
 
 from .exceptions import TransformationError, UnsupportedSyntaxError
-from .util import (rfilter, parent_of, random_token, Line, Part, obj_source,
+from .util import (rfilter, parent_of, Line, Part, obj_source,
                    body_local_names, walk_under_code_boundary)
 
 SNIPPETS_TEMPLATE ="""\
@@ -33,6 +33,7 @@ _pj_snippets(_pj)
 ASSIGN_TEMPLATE = "    container['%(name)s'] = %(name)s"
 
 VAR_TEMPLATE = "_pj_%s"
+
 
 class TargetNode:
 
