@@ -254,6 +254,33 @@ def test_inner_method_func():
     )
 
     assert translate_object(func, body_only=True, enable_es6=True)[0] == expected
+    # test that multiple levels of nested functions all gets translated to
+    # arrow functions
+    def func2():
+
+        class Example:
+            def foo(self):
+
+                def bar():
+
+                    def zoo():
+                        pass
+
+
+    expected = (
+        'class Example {\n'
+        '    foo() {\n'
+        '        var bar;\n'
+        '        bar = () => {\n'
+        '            var zoo;\n'
+        '            zoo = () => {\n'
+        '            };\n'
+        '        };\n'
+        '    }\n'
+        '}\n'
+    )
+
+    assert translate_object(func2, body_only=True, enable_es6=True)[0] == expected
 
 
 def test_str():

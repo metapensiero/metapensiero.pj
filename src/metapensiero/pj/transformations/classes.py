@@ -166,10 +166,12 @@ def Call_super(t, x):
 def FunctionDef(t, x, fwrapper=None, mwrapper=None):
 
     is_method = isinstance(t.parent_of(x), ast.ClassDef)
-    is_in_method = (not is_method and
-                    isinstance(t.parent_of(x), (ast.FunctionDef,
-                                                ast.AsyncFunctionDef)) and
-                    isinstance(t.parent_of(t.parent_of(x)), ast.ClassDef))
+    is_in_method = all(lambda p: isinstance(p, (ast.FunctionDef,
+                                                ast.AsyncFunctionDef,
+                                                ast.ClassDef)) \
+                       for p in t.parents(x, stop_at=ast.ClassDef)) and \
+                           isinstance(tuple(t.parents(x, stop_at=ast.ClassDef))[-1],
+                                      ast.ClassDef) # Make sure a class is there
 
     t.unsupported(x, not is_method and x.decorator_list, "Function decorators are"
                   " unsupported yet")
@@ -183,7 +185,7 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
                     "ES6 to be enabled")
 
     t.unsupported(x, x.args.kwarg and x.args.kwonlyargs,
-                  "Keyword arguments together with keyord args accumulator"
+                  "Keyword arguments together with keyword args accumulator"
                   " are unsupported")
 
     t.unsupported(x, x.args.vararg and (x.args.kwonlyargs or x.args.kwarg),

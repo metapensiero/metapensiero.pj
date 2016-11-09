@@ -175,6 +175,15 @@ class Transformer:
         """Return the parent of the given node."""
         return self.node_parent_map.get(node)
 
+    def parents(self, node, stop_at=None):
+        """Return all the parents possibly up an instance of ``stop_at`` class."""
+        parent = self.node_parent_map.get(node)
+        while parent:
+            yield parent
+            if stop_at and isinstance(parent, stop_at):
+                break
+            parent = self.node_parent_map.get(parent)
+
     def find_parent(self, node, cls):
         """Retrieve the first parent of the given ast node that is an instance
         of the given class."""
