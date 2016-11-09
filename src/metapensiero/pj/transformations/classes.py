@@ -8,9 +8,15 @@
 
 import ast
 
-from ..processor.util import body_local_names, controlled_ast_walk
+from ..processor.util import controlled_ast_walk
 
-from ..js_ast import *
+from ..js_ast import (
+    JSAttribute,
+    JSCall,
+    JSClass,
+    JSName,
+    JSSuper,
+)
 
 
 EXC_TEMPLATE="""\
