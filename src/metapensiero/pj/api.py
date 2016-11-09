@@ -244,7 +244,7 @@ def evals(py_text, body_only=False, ret_code=False, **kwargs):
     return res
 
 
-def eval_object_es5(py_obj, append=None, body_only=False, ret_code=False,
+def eval_object_es6(py_obj, append=None, body_only=False, ret_code=False,
                     enable_stage3=False, **kwargs):
     es5_text, _ = transpile_object(py_obj, body_only, enable_stage3=enable_stage3)
     if append:
@@ -255,7 +255,7 @@ def eval_object_es5(py_obj, append=None, body_only=False, ret_code=False,
     return res
 
 
-def evals_es5(py_text, body_only=False, ret_code=False, enable_stage3=False,
+def evals_es6(py_text, body_only=False, ret_code=False, enable_stage3=False,
               **kwargs):
     es5_text, _ = transpile_pys(py_text, body_only=body_only,
                                 enable_stage3=enable_stage3)

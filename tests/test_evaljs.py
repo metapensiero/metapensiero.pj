@@ -7,7 +7,7 @@
 
 import pytest
 
-from metapensiero.pj.api import eval_object, eval_object_es5, translate_object
+from metapensiero.pj.api import eval_object, eval_object_es6, translate_object
 
 
 def test_bitwise_xor():
@@ -205,7 +205,7 @@ def test_class_simple():
                 self.msg = 'foo'
         return Foo().msg
 
-    assert test_class() == eval_object_es5(test_class, 'test_class();')
+    assert test_class() == eval_object_es6(test_class, 'test_class();')
 
 
 def test_class_inherit():
@@ -225,7 +225,7 @@ def test_class_inherit():
 
         return TalkingAnimal('Pac-Man', 'waka waka').caption()
 
-    assert test_class() == eval_object_es5(test_class, 'test_class();')
+    assert test_class() == eval_object_es6(test_class, 'test_class();')
 
 
 def test_class_super():
@@ -249,7 +249,7 @@ def test_class_super():
 
         return Kitteh('Maru-san').caption()
 
-    assert test_class() == eval_object_es5(test_class, 'test_class();')
+    assert test_class() == eval_object_es6(test_class, 'test_class();')
 
 
 def test_try_except_simple():
@@ -267,7 +267,7 @@ def test_try_except_simple():
         return value
 
     assert test_try() == 3
-    assert test_try() == eval_object_es5(test_try, 'test_try();')
+    assert test_try() == eval_object_es6(test_try, 'test_try();')
 
 
 def test_try_except_complex():
@@ -296,7 +296,7 @@ def test_try_except_complex():
         return value
 
     assert test_try() == 32
-    assert test_try() == eval_object_es5(test_try, 'test_try();')
+    assert test_try() == eval_object_es6(test_try, 'test_try();')
 
 def test_call_rest():
 
@@ -315,7 +315,7 @@ def test_call_rest():
 
     assert test_rest() == 15
 
-    assert test_rest() == eval_object_es5(test_rest, 'test_rest();')
+    assert test_rest() == eval_object_es6(test_rest, 'test_rest();')
 
 
 def test_call_kw():
@@ -328,7 +328,7 @@ def test_call_kw():
         return kw()
 
     assert test_kw() == 9
-    assert test_kw() == eval_object_es5(test_kw, 'test_kw();')
+    assert test_kw() == eval_object_es6(test_kw, 'test_kw();')
 
     def test_kw2(a, c):
 
@@ -338,7 +338,7 @@ def test_call_kw():
         return kw(a, c=c)
 
     assert test_kw2(1, 1) == 5
-    assert test_kw2(1, 1) == eval_object_es5(test_kw2, 'test_kw2(1, 1);')
+    assert test_kw2(1, 1) == eval_object_es6(test_kw2, 'test_kw2(1, 1);')
 
     def test_kw3(foo, bar):
 
@@ -348,7 +348,7 @@ def test_call_kw():
         return kw(foo, bar=bar)
 
     assert test_kw3(5, 10) == 15
-    assert test_kw3(5, 10) == eval_object_es5(test_kw3, 'test_kw3(5, 10);')
+    assert test_kw3(5, 10) == eval_object_es6(test_kw3, 'test_kw3(5, 10);')
 
 
 def test_slices():
