@@ -150,7 +150,8 @@ ClassDef = [ClassDef_exception, ClassDef_default]
 
 def Call_super(t, x):
     if isinstance(x.func, ast.Attribute) and isinstance(x.func.value, ast.Call) \
-         and isinstance(x.func.value.func, ast.Name) and x.func.value.func.id == 'super':
+         and isinstance(x.func.value.func, ast.Name) and \
+         x.func.value.func.id == 'super':
         sup_args = x.func.value.args
         # Are we in a FuncDef and is it a method and super() has no args?
         method = t.find_parent(x, ast.FunctionDef)
