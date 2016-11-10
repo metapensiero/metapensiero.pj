@@ -169,17 +169,18 @@ def Call_dict_update(t, x):
     """Converts ``dict(foo).update(bar)`` to ``Object.assign(foo, bar)``.
 
     requires ES6
-    ast dump:
-    Expr(value=Call(args=[Name(ctx=Load(),
-                               id='bar')],
-                    func=Attribute(attr='update',
-                                   ctx=Load(),
-                                   value=Call(args=[Name(ctx=Load(),
-                                                         id='foo')],
-                                              func=Name(ctx=Load(),
-                                                        id='dict'),
-                                              keywords=[])),
-                    keywords=[]))
+    ast dump::
+
+      Expr(value=Call(args=[Name(ctx=Load(),
+                                 id='bar')],
+                      func=Attribute(attr='update',
+                                     ctx=Load(),
+                                     value=Call(args=[Name(ctx=Load(),
+                                                           id='foo')],
+                                                func=Name(ctx=Load(),
+                                                          id='dict'),
+                                                keywords=[])),
+                      keywords=[]))
 
     """
     if isinstance(x.func, ast.Attribute) and x.func.attr == 'update' and \
@@ -197,17 +198,17 @@ def Call_dict_copy(t, x):
     """Converts ``dict(foo).copy()`` to ``Object.assign({}, foo)``.
 
     requires ES6
-    ast dump:
-    Expr(value=Call(args=[],
-                    func=Attribute(attr='copy',
-                                   ctx=Load(),
-                                   value=Call(args=[Name(ctx=Load(),
-                                                         id='foo')],
-                                              func=Name(ctx=Load(),
-                                                        id='dict'),
-                                              keywords=[])),
-                    keywords=[]))
+    ast dump::
 
+      Expr(value=Call(args=[],
+                      func=Attribute(attr='copy',
+                                     ctx=Load(),
+                                     value=Call(args=[Name(ctx=Load(),
+                                                           id='foo')],
+                                                func=Name(ctx=Load(),
+                                                          id='dict'),
+                                                keywords=[])),
+                      keywords=[]))
     """
     if isinstance(x.func, ast.Attribute) and x.func.attr == 'copy' and \
        isinstance(x.func.value, ast.Call) and  \
@@ -350,18 +351,18 @@ from .obvious import Attribute_default
 def Attribute_list_append(t, x):
     """Converts ``list(foo).append(bar)`` to ``foo.push(bar)``.
 
-    ast dump:
-    Expr(value=Call(args=[Name(ctx=Load(),
-                               id='bar')],
-                    func=Attribute(attr='append',
-                                   ctx=Load(),
-                                   value=Call(args=[Name(ctx=Load(),
-                                                         id='foo')],
-                                              func=Name(ctx=Load(),
-                                                        id='list'),
-                                              keywords=[])),
-                    keywords=[]))
+    ast dump::
 
+      Expr(value=Call(args=[Name(ctx=Load(),
+                                 id='bar')],
+                      func=Attribute(attr='append',
+                                     ctx=Load(),
+                                     value=Call(args=[Name(ctx=Load(),
+                                                           id='foo')],
+                                                func=Name(ctx=Load(),
+                                                          id='list'),
+                                                keywords=[])),
+                      keywords=[]))
     """
     if x.attr == 'append' and isinstance(x.value, ast.Call) and \
        isinstance(x.value.func, ast.Name) and x.value.func.id == 'list' and \
