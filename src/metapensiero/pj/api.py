@@ -19,6 +19,7 @@ from .js_ast import JSStatements
 from . import transformations
 
 BABEL_COMPILER = os.path.join(os.path.dirname(__file__), 'data', 'babel-6.18.1.min.js')
+BABEL_POLYFILL = os.path.join(os.path.dirname(__file__), 'data', 'polyfill.min.js')
 
 
 def _calc_file_names(src_filename, dst_filename=None, map_filename=None):
@@ -225,6 +226,20 @@ def transpile_py_file(src_filename, dst_filename=None, map_filename=None,
         map.write(json.dumps(es5_src_map))
 
 
+def evaljs(js_text, load_es6_polyfill=False, **kwargs):
+    """Evaluate JS code, like ``dukpy.evaljs()``, optionally loading the es6
+    polyfill before the actual code.
+    """
+    if isinstance(js_text, (str, bytes, bytearray)):
+        js_text = [js_text]
+    else:
+        list(js_text)
+    if load_es6_polyfill:
+        with open(BABEL_POLYFILL, 'r') as babel_poly:
+            js_text = [babel_poly.read()] + js_text
+    return dukpy.evaljs(js_text, **kwargs)
+
+
 def eval_object(py_obj, append=None, body_only=False, ret_code=False,
                 **kwargs):
     js_text, _ = translate_object(py_obj, body_only)
@@ -249,7 +264,7 @@ def eval_object_es6(py_obj, append=None, body_only=False, ret_code=False,
     es5_text, _ = transpile_object(py_obj, body_only, enable_stage3=enable_stage3)
     if append:
         es5_text += '\n' + append
-    res = dukpy.evaljs(es5_text, **kwargs)
+    res = evaljs(es5_text, load_es6_polyfill=True, **kwargs)
     if ret_code:
         res = (res, es5_text)
     return res
@@ -259,7 +274,7 @@ def evals_es6(py_text, body_only=False, ret_code=False, enable_stage3=False,
               **kwargs):
     es5_text, _ = transpile_pys(py_text, body_only=body_only,
                                 enable_stage3=enable_stage3)
-    res = dukpy.evaljs(es5_text, **kwargs)
+    res = evaljs(es5_text, load_es6_polyfill=True, **kwargs)
     if ret_code:
         res = (res, es5_text)
     return res
