@@ -318,9 +318,14 @@ def Compare_in(t, x):
     if not isinstance(x.ops[0], (ast.NotIn, ast.In)):
         return
     if t.enable_snippets:
-        from ..snippets import _in
-        t.add_snippet(_in)
-        result = JSCall(JSAttribute('_pj', '_in'), [x.left, x.comparators[0]])
+        from ..snippets import _in, _in_es6
+        if t.enable_es6:
+            t.add_snippet(_in_es6)
+            sname = '_in_es6'
+        else:
+            t.add_snippet(_in)
+            sname = '_in'
+        result = JSCall(JSAttribute('_pj', sname), [x.left, x.comparators[0]])
         if isinstance(x.ops[0], ast.NotIn):
             result = JSUnaryOp(JSOpNot(), result)
         return result

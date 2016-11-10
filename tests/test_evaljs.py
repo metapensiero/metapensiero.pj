@@ -472,3 +472,17 @@ def test_dict_copy():
         return b['first'], b['second']
 
     assert list(test()) == eval_object_es6(test_js_dc, 'test_js_dc();')
+
+
+def test_in_map():
+
+    def js_in_map():
+        from __globals__ import Map
+
+        m = Map();
+        o = {};
+        oo = {};
+        m.set(o, 'test')
+        return o in m, oo in o, m.get(o)
+
+    assert [True, False, 'test'] == eval_object_es6(js_in_map, 'js_in_map();')
