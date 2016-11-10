@@ -6,8 +6,6 @@
 # :License:  GNU General Public License version 3 or later
 #
 
-import ast
-from functools import reduce
 import json
 import re
 
