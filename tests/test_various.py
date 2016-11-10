@@ -426,3 +426,21 @@ def test_init_local_def_with_return():
         '}\n'
     )
     assert translate_object(Foo4, enable_es6=True)[0] == expected
+
+
+def test_isinstance():
+    """test for ``isinstance(foo, (Bar, Zoo))`` to return a concatenated or
+    instanceof expression.
+    """
+
+    def test_isi():
+        a = isinstance(foo, (Bar, Zoo))
+
+    expected = (
+        'function test_isi() {\n'
+        '    var a;\n'
+        '    a = ((foo instanceof Bar) || (foo instanceof Zoo));\n'
+        '}\n'
+    )
+
+    assert translate_object(test_isi, enable_es6=False)[0] == expected

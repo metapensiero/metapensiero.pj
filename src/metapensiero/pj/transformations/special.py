@@ -7,6 +7,7 @@
 #
 
 import ast
+from functools import reduce
 import re
 
 from ..js_ast import (
@@ -22,6 +23,7 @@ from ..js_ast import (
     JSNum,
     JSOpInstanceof,
     JSOpNot,
+    JSOpOr,
     JSOpStrongEq,
     JSOpStrongNotEq,
     JSOpTypeof,
@@ -74,12 +76,41 @@ def Call_typeof(t, x):
         return JSUnaryOp(JSOpTypeof(), x.args[0])
 
 
-# <code>isinstance(x, y)</code> &rarr; <code>(x instanceof y)</code>
+
 def Call_isinstance(t, x):
+    """Translates ``isinstance(foo, Bar)`` to ``foo instanceof Bar`` andrew
+    ``isinstance(Foo, (Bar, Zoo))`` to ``foo instanceof Bar || foo instanceof
+    Zoo``.
+
+    ast dump of the latter::
+
+      Call(args=[Name(ctx=Load(),
+                      id='foo'),
+                 Tuple(ctx=Load(),
+                       elts=[Name(ctx=Load(),
+                                  id='Bar'),
+                             Name(ctx=Load(),
+                                  id='Zoo')])],
+           func=Name(ctx=Load(),
+                     id='isinstance'),
+           keywords=[])
+
+    """
     if (isinstance(x.func, ast.Name) and x.func.id == 'isinstance'):
         assert len(x.args) == 2
-        return JSBinOp(x.args[0], JSOpInstanceof(), x.args[1])
+        if isinstance(x.args[1], ast.Name):
+            return JSBinOp(x.args[0], JSOpInstanceof(), x.args[1])
+        elif isinstance(x.args[1], (ast.Tuple, ast.List, ast.Set)):
+            classes = x.args[1].elts
+            target = x.args[0]
 
+            def _concatenate_expr(prev, cls):
+                atom = JSBinOp(target, JSOpInstanceof(), cls)
+                if prev:
+                    return JSBinOp(prev, JSOpOr(), atom)
+                return atom
+
+            return reduce(_concatenate_expr, classes, None)
 
 # <code>print(...)</code> &rarr; <code>console.log(...)</code>
 def Call_print(t, x):
