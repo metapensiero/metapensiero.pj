@@ -254,7 +254,7 @@ def test_class_super():
 
 def test_class_assigns():
 
-    def test_class():
+    def test_class_js():
 
         class Animal:
 
@@ -273,7 +273,26 @@ def test_class_assigns():
 
         return res
 
-    assert [False, True, False] == eval_object_es6(test_class, 'test_class();')
+    def test_class():
+
+        class Animal:
+
+            is_big = False
+
+            def __init__(self, name):
+                self.name = name
+
+        res = []
+        teddy = Animal('teddy')
+        res.append(teddy.is_big)
+        grizzly = Animal('Bigbear')
+        grizzly.is_big = True
+        res.append(grizzly.is_big)
+        res.append(teddy.is_big)
+
+        return res
+
+    assert test_class()  == eval_object_es6(test_class_js, 'test_class_js();')
 
 
 def test_try_except_simple():
@@ -389,3 +408,67 @@ def test_slices():
         return a
 
     assert test() == ['o', 'Foo', 'oFo', 'fooFo'] == eval_object(test, 'test();')
+
+
+def test_dict_update():
+
+    def test_js_du():
+
+        a = {
+            'first': 1,
+            'second': 'b'
+        }
+
+        b = {
+            'second': 'c',
+            'third': [],
+        }
+
+        dict(a).update(b)
+
+        return a['second'], a['third']
+
+    def test():
+
+        a = {
+            'first': 1,
+            'second': 'b'
+        }
+
+        b = {
+            'second': 'c',
+            'third': [],
+        }
+
+        a.update(b)
+
+        return a['second'], a['third']
+
+    assert list(test()) == eval_object_es6(test_js_du, 'test_js_du();')
+
+
+def test_dict_copy():
+
+    def test_js_dc():
+
+        a = {
+            'first': 1,
+            'second': 'b'
+        }
+
+        b  = dict(a).copy()
+
+        return b['first'], b['second']
+
+    def test():
+
+        a = {
+            'first': 1,
+            'second': 'b'
+        }
+
+        b = a.copy()
+
+        return b['first'], b['second']
+
+    assert list(test()) == eval_object_es6(test_js_dc, 'test_js_dc();')

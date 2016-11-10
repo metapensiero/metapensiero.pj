@@ -248,6 +248,8 @@ The rules of thumb to treat things especially are:
         foo[3:]
         foo[:3]
         list(foo).append(bar)
+        dict(foo).update(bar)
+        dict(foo).copy()
 
     - .. code:: javascript
 
@@ -282,7 +284,9 @@ The rules of thumb to treat things especially are:
 
         foo.slice(3);
         foo.slice(0, 3);
-        foo.push(bar)
+        foo.push(bar);
+        Object.assign(foo, bar);
+        Object.assign({}, foo);
 
 ``for`` statement
 ~~~~~~~~~~~~~~~~~

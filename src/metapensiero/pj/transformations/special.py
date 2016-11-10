@@ -15,6 +15,7 @@ from ..js_ast import (
     JSCall,
     JSCommentBlock,
     JSDependImport,
+    JSDict,
     JSName,
     JSNamedImport,
     JSNewCall,
@@ -133,10 +134,66 @@ def Call_type(t, x):
         return JSCall(JSAttribute(JSName('Object'), 'getPrototypeOf'), x.args)
 
 
+def Call_dict_update(t, x):
+    """Converts ``dict(foo).update(bar)`` to ``Object.assign(foo, bar)``.
+
+    requires ES6
+    ast dump:
+    Expr(value=Call(args=[Name(ctx=Load(),
+                               id='bar')],
+                    func=Attribute(attr='update',
+                                   ctx=Load(),
+                                   value=Call(args=[Name(ctx=Load(),
+                                                         id='foo')],
+                                              func=Name(ctx=Load(),
+                                                        id='dict'),
+                                              keywords=[])),
+                    keywords=[]))
+
+    """
+    if isinstance(x.func, ast.Attribute) and x.func.attr == 'update' and \
+       isinstance(x.func.value, ast.Call) and  \
+       isinstance(x.func.value.func, ast.Name) and \
+       x.func.value.func.id == 'dict' and  len(x.func.value.args) == 1:
+        t.es6_guard(x, "dict.update() requires ES6")
+        return JSCall(
+            JSAttribute(JSName('Object'), 'assign'),
+            [JSName(x.func.value.args[0].id)] + x.args
+            )
+
+
+def Call_dict_copy(t, x):
+    """Converts ``dict(foo).copy()`` to ``Object.assign({}, foo)``.
+
+    requires ES6
+    ast dump:
+    Expr(value=Call(args=[],
+                    func=Attribute(attr='copy',
+                                   ctx=Load(),
+                                   value=Call(args=[Name(ctx=Load(),
+                                                         id='foo')],
+                                              func=Name(ctx=Load(),
+                                                        id='dict'),
+                                              keywords=[])),
+                    keywords=[]))
+
+    """
+    if isinstance(x.func, ast.Attribute) and x.func.attr == 'copy' and \
+       isinstance(x.func.value, ast.Call) and  \
+       isinstance(x.func.value.func, ast.Name) and \
+       x.func.value.func.id == 'dict' and  len(x.func.value.args) == 1:
+        t.es6_guard(x, "dict.copy() requires ES6")
+        return JSCall(
+            JSAttribute(JSName('Object'), 'assign'),
+            (JSDict([], []), JSName(x.func.value.args[0].id))
+            )
+
+
 from .classes import Call_super
 from .obvious import Call_default
 Call = [Call_typeof, Call_isinstance, Call_print, Call_len,
-        Call_new, Call_super, Call_import, Call_str, Call_type, Call_default]
+        Call_new, Call_super, Call_import, Call_str, Call_type,
+        Call_dict_update, Call_dict_copy, Call_default]
 
 
 #### Ops
