@@ -76,9 +76,8 @@ def Call_typeof(t, x):
         return JSUnaryOp(JSOpTypeof(), x.args[0])
 
 
-
 def Call_isinstance(t, x):
-    """Translates ``isinstance(foo, Bar)`` to ``foo instanceof Bar`` andrew
+    """Translates ``isinstance(foo, Bar)`` to ``foo instanceof Bar`` and
     ``isinstance(Foo, (Bar, Zoo))`` to ``foo instanceof Bar || foo instanceof
     Zoo``.
 
@@ -111,6 +110,7 @@ def Call_isinstance(t, x):
                 return atom
 
             return reduce(_concatenate_expr, classes, None)
+
 
 # <code>print(...)</code> &rarr; <code>console.log(...)</code>
 def Call_print(t, x):
