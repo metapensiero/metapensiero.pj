@@ -252,6 +252,30 @@ def test_class_super():
     assert test_class() == eval_object_es6(test_class, 'test_class();')
 
 
+def test_class_assigns():
+
+    def test_class():
+
+        class Animal:
+
+            is_big = False
+
+            def __init__(self, name):
+                self.name = name
+
+        res = []
+        teddy = Animal('teddy')
+        list(res).append(teddy.is_big)
+        grizzly = Animal('Bigbear')
+        grizzly.is_big = True
+        list(res).append(grizzly.is_big)
+        list(res).append(teddy.is_big)
+
+        return res
+
+    assert [False, True, False] == eval_object_es6(test_class, 'test_class();')
+
+
 def test_try_except_simple():
 
     def test_try():

@@ -122,7 +122,7 @@ def Call_default(t, x):
     return JSCall(x.func, x.args, kwargs)
 
 
-def Attribute(t, x):
+def Attribute_default(t, x):
     return JSAttribute(x.value, str(x.attr))
 
 

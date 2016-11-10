@@ -247,6 +247,7 @@ The rules of thumb to treat things especially are:
 
         foo[3:]
         foo[:3]
+        list(foo).append(bar)
 
     - .. code:: javascript
 
@@ -281,6 +282,7 @@ The rules of thumb to treat things especially are:
 
         foo.slice(3);
         foo.slice(0, 3);
+        foo.push(bar)
 
 ``for`` statement
 ~~~~~~~~~~~~~~~~~
@@ -334,9 +336,21 @@ cycle is a list but has two special cases:
 Classes
 ~~~~~~~
 
-Classes with single inheritance are translated to ES6 classes, they
-can have only function members for now, with no generic class or
-method decorators, because the ES7 spec for them is being rediscussed.
+Classes with single inheritance are translated to ES6 classes, they can have
+only function or assignment members for now, with no generic class or method
+decorators, because the ES7 spec for them is being rediscussed.
+
+For assignments I mean something like:
+
+.. code:: python
+
+  class Foo:
+
+      bar = 'zoo' # or any kind of expression
+
+The assignments have a caveat though: those kind of members behave like in
+Python (they are shared by all the instances) but they aren't accessible
+through the class.
 
 Methods can be functions or async-functions.
 

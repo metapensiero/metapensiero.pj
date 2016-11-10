@@ -88,13 +88,13 @@ def Call_print(t, x):
 
 # <code>len(x)</code> &rarr; <code>x.length</code>
 def Call_len(t, x):
-    if (isinstance(x.func, ast.Name) and x.func.id == 'len' and \
+    if (isinstance(x.func, ast.Name) and x.func.id == 'len' and
         len(x.args) == 1):
         return JSAttribute(x.args[0], 'length')
 
 
 def Call_str(t, x):
-    if (isinstance(x.func, ast.Name) and x.func.id == 'str' and \
+    if (isinstance(x.func, ast.Name) and x.func.id == 'str' and
         len(x.args) == 1):
         return JSCall(JSAttribute(JSName(x.args[0]), 'toString'), [])
 
@@ -116,7 +116,7 @@ def Call_new(t, x):
 
     if NAME_STRING and re.search(r'^[A-Z]', NAME_STRING):
         # TODO: generalize args mangling and apply here
-        #assert not any([x.keywords, x.starargs, x.kwargs])
+        # assert not any([x.keywords, x.starargs, x.kwargs])
         return JSNewCall(x.func, x.args)
 
 
@@ -256,3 +256,29 @@ def Subscript_slice(t, x):
 from .obvious import Subscript_default
 
 Subscript = [Subscript_slice, Subscript_default]
+
+from .obvious import Attribute_default
+
+def Attribute_list_append(t, x):
+    """Converts ``list(foo).append(bar)`` to ``foo.push(bar)``.
+
+    ast dump:
+    Expr(value=Call(args=[Name(ctx=Load(),
+                               id='bar')],
+                    func=Attribute(attr='append',
+                                   ctx=Load(),
+                                   value=Call(args=[Name(ctx=Load(),
+                                                         id='foo')],
+                                              func=Name(ctx=Load(),
+                                                        id='list'),
+                                              keywords=[])),
+                    keywords=[]))
+
+    """
+    if x.attr == 'append' and isinstance(x.value, ast.Call) and \
+       isinstance(x.value.func, ast.Name) and x.value.func.id == 'list' and \
+       len(x.value.args) == 1:
+        return JSAttribute(JSName(x.value.args[0].id), 'push')
+
+
+Attribute = [Attribute_list_append, Attribute_default]

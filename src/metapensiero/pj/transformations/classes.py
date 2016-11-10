@@ -14,7 +14,10 @@ from ..js_ast import (
     JSAttribute,
     JSCall,
     JSClass,
+    JSDict,
+    JSExpressionStatement,
     JSName,
+    JSStatements,
     JSSuper,
 )
 
@@ -51,10 +54,13 @@ def _class_guards(t, x):
     t.unsupported(x, len(x.bases) > 1, "Multiple inheritance is not supported")
     body = x.body
     for node in body:
-        t.unsupported(x, not (isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) \
-                              or _isdoc(node) or isinstance(node, ast.Pass)) ,
-                      "Class' body members must be functions")
-
+        t.unsupported(x, not (isinstance(node, (ast.FunctionDef,
+                                                ast.AsyncFunctionDef,
+                                                ast.Assign)) or \
+                              _isdoc(node) or isinstance(node, ast.Pass)) ,
+                      "Class' body members must be functions or assignements")
+        t.unsupported(x, isinstance(node, ast.Assign) and len(node.targets) > 1,
+                      "Assignements must have only one target")
     if len(x.bases) > 0:
         assert len(x.bases) == 1
         assert isinstance(x.bases[0], ast.Name)
@@ -98,10 +104,15 @@ def ClassDef_exception(t, x):
         super_name = None
 
     # strip docs from body
-    body = [e for e in body if isinstance(e, (ast.FunctionDef, ast.AsyncFunctionDef))]
+    fn_body = [e for e in body if isinstance(e, (ast.FunctionDef,
+                                                 ast.AsyncFunctionDef))]
+
+    # all the other kind of members which are assigned stuff
+    assigns = [e for e in body if isinstance(e, ast.Assign)]
 
     # is this a simple definition of a subclass of Exception?
-    if len(body) > 0 or super_name not in ('Exception', 'Error'):
+    if len(fn_body) > 0 or len(assigns) > 0 or super_name not in \
+       ('Exception', 'Error'):
         return
     res = t.subtransform(EXC_TEMPLATE_ES5 % dict(name=name), remap_to=x)
     return res
@@ -119,21 +130,23 @@ def ClassDef_default(t, x):
         super_name = None
 
     # strip docs from body
-    body = [e for e in body if isinstance(e, (ast.FunctionDef, ast.AsyncFunctionDef))]
+    fn_body = [e for e in body if isinstance(e, (ast.FunctionDef,
+                                                 ast.AsyncFunctionDef))]
+
+    # all the other kind of members which are assigned stuff
+    assigns = [e for e in body if isinstance(e, ast.Assign)]
 
     # * Each FunctionDef must have self as its first arg
     # silly check for methods
-    for node in body:
+    for node in fn_body:
         arg_names = [arg.arg for arg in node.args.args]
         t.unsupported(node, len(arg_names) == 0 or arg_names[0] != 'self',
                       "First arg on method must be 'self'")
 
-    if len(body) > 0 and body[0].name == '__init__':
+    if len(fn_body) > 0 and fn_body[0].name == '__init__':
         init = body[0]
         # * __init__ may not contain a return statement
         # silly check
-        init_args = [arg.arg for arg in init.args.args]
-        init_body = init.body
         for stmt in controlled_ast_walk(init):
             assert not isinstance(stmt, ast.Return)
 
@@ -142,7 +155,29 @@ def ClassDef_default(t, x):
     else:
         superclass = None
 
-    return JSClass(JSName(name), superclass, body)
+    def _from_assign_to_dict_item(e):
+        key = e.targets[0]
+        value = e.value
+        if isinstance(key, ast.Name):
+            key = ast.Str(key.id)
+        return key, value
+
+    assigns = tuple(zip(*map(_from_assign_to_dict_item, assigns)))
+
+    stmts = [JSClass(JSName(name), superclass, fn_body)]
+    if assigns:
+        assigns = JSExpressionStatement(
+            JSCall(
+                JSAttribute(JSName('Object'), 'assign'),
+                (JSAttribute(
+                    JSName(name),
+                    'prototype'
+                ),
+                 JSDict(assigns[0], assigns[1])),
+            )
+        )
+        stmts.append(assigns)
+    return JSStatements(stmts)
 
 
 ClassDef = [ClassDef_exception, ClassDef_default]
