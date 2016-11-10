@@ -58,6 +58,7 @@ from ..js_ast import (
     JSSubscript,
     JSTrue,
     JSUnaryOp,
+    JSWhileStatement,
 )
 
 #### Statements
