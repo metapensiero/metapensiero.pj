@@ -8,38 +8,6 @@
 
 import ast
 
-from ..js_ast import *
-
-#### TryExcept, Raise
-# Example:
-#<pre>try:
-#    raise EpicFail('omg noes!')
-#except Exception as NAME:
-#    ...</pre>
-# becomes
-#<pre>try {
-#    throw {'name': 'EpicFail', 'message': 'omg noes!'};
-#}
-#catch(NAME) {
-#    ...
-#}</pre>
-#
-# This is the only form supported so far.
-def TryExcept(t, x):
-    assert not x.orelse
-    assert len(x.handlers) == 1
-    assert isinstance(x.handlers[0].type, ast.Name)
-    assert x.handlers[0].type.id == 'Exception'
-    assert x.handlers[0].name
-
-    NAME = x.handlers[0].name
-    TRY_BODY = x.body
-    CATCH_BODY = x.handlers[0].body
-
-    return JSTryCatchStatement(
-                TRY_BODY,
-                NAME,
-                CATCH_BODY)
 
 
 def Try(t, x):
