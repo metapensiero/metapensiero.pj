@@ -24,3 +24,12 @@ def _in_es6(left, right):
         return right.has(left)
     else:
         return left in right
+
+def set_decorators(cls, props):
+
+    for p in dict(props):
+        decos = props[p]
+        def reducer(val, deco):
+            return deco(val, cls, p)
+        deco = decos.reduce(reducer, cls.prototype[p])
+        cls.prototype[p] = deco

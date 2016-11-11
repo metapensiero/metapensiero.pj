@@ -16,8 +16,10 @@ from ..js_ast import (
     JSClass,
     JSDict,
     JSExpressionStatement,
+    JSList,
     JSName,
     JSStatements,
+    JSStr,
     JSSuper,
 )
 
@@ -150,6 +152,22 @@ def ClassDef_default(t, x):
         for stmt in controlled_ast_walk(init):
             assert not isinstance(stmt, ast.Return)
 
+    decos = {}
+    for fn in fn_body:
+        # make sure the function hasn't any decorator managed by the function
+        # transformer. This includes property, property, classmethod,
+        # staticmethod and property.setter:
+        if fn.decorator_list and not \
+           ((len(fn.decorator_list) == 1 and
+            isinstance(fn.decorator_list[0], ast.Name) and
+            fn.decorator_list[0].id in ['property', 'classmethod', 'staticmethod']) or
+            (isinstance(fn.decorator_list[0], ast.Attribute) and
+             fn.decorator_list[0].attr == 'setter')):
+
+            decos[JSStr(fn.name)] = fn.decorator_list
+            fn.decorator_list = [] # remove so that the function transformer
+            # will not complain
+
     if super_name:
         superclass = JSName(super_name)
     else:
@@ -177,6 +195,22 @@ def ClassDef_default(t, x):
             )
         )
         stmts.append(assigns)
+    if decos:
+        from ..snippets import set_decorators
+        t.add_snippet(set_decorators)
+        keys = []
+        values = []
+        for k, v in decos.items():
+            keys.append(k)
+            values.append(JSList(v))
+        decos = JSExpressionStatement(
+            JSCall(
+                JSAttribute(JSName('_pj'), 'set_decorators'),
+                (JSName(name),
+                 JSDict(keys, values)),
+            )
+        )
+        stmts.append(decos)
     return JSStatements(stmts)
 
 

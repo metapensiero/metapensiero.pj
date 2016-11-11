@@ -294,6 +294,49 @@ def test_class_assigns():
 
     assert test_class()  == eval_object_es6(test_class_js, 'test_class_js();')
 
+def test_class_decorators():
+
+    def test_deco():
+
+        def currency(func, cls, name):
+            def wrapper(tax):
+                return '€ ' + str(func.bind(self)(tax))
+            return wrapper
+
+        class Product:
+
+            def __init__(self, price):
+                self.price = price
+
+            @currency
+            def euro_price_with_tax(self, tax_rate_perc):
+                return self.price * (1 + (tax_rate_perc * 0.01))
+
+        foo = Product(80)
+        return foo.euro_price_with_tax(22)
+
+    def test_deco_py():
+
+        def currency(func):
+            def wrapper(self, tax):
+                return '€ ' + str(func(self, tax))
+            return wrapper
+
+        class Product:
+
+            def __init__(self, price):
+                self.price = price
+
+            @currency
+            def euro_price_with_tax(self, tax_rate_perc):
+                return self.price * (1 + (tax_rate_perc * 0.01))
+
+        foo = Product(80)
+        return foo.euro_price_with_tax(22)
+
+
+    assert test_deco_py()  == eval_object_es6(test_deco, 'test_deco();')
+
 
 def test_try_except_simple():
 
