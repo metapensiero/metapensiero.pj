@@ -15,7 +15,7 @@ def _in(left, right):
         return left in right
 
 
-def _in_es6(left, right):
+def in_es6(left, right):
     from __globals__ import Array, typeof, Map, Set, WeakMap, WeakSet
 
     if isinstance(right, Array) or typeof(right) == 'string':

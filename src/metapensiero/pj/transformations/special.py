@@ -318,10 +318,10 @@ def Compare_in(t, x):
     if not isinstance(x.ops[0], (ast.NotIn, ast.In)):
         return
     if t.enable_snippets:
-        from ..snippets import _in, _in_es6
+        from ..snippets import _in, in_es6
         if t.enable_es6:
-            t.add_snippet(_in_es6)
-            sname = '_in_es6'
+            t.add_snippet(in_es6)
+            sname = 'in_es6'
         else:
             t.add_snippet(_in)
             sname = '_in'
