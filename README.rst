@@ -381,7 +381,9 @@ __ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes#Mix
 __ http://exploringjs.com/es6/ch_classes.html#_simple-mixins
 
 
-Methods can be functions or async-functions.
+Methods can be functions or async-functions although the latters aren't
+officially supported yet by the JavaScript specification. You can disable them
+adding a ``--disable-stage3`` to the commandline utlity.
 
 Python`s ``super()`` calls are converted accordingly to the type of
 their surrounding method: ``super().__init__(foo)`` becomes
