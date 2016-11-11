@@ -33,3 +33,20 @@ def set_decorators(cls, props):
             return deco(val, cls, p)
         deco = decos.reduce(reducer, cls.prototype[p])
         cls.prototype[p] = deco
+
+def set_properties(cls, props):
+    from __globals__ import Object, Function
+
+    for p in dict(props):
+        value = props[p]
+        if isinstance(value, Object) and 'get' in value and \
+           isinstance(value.get, Function):
+            # the following condition raises a TypeError in dukpy, why?
+            # ('set' in value and isinstance(value.set, Function)):
+            desc = value
+        else:
+            desc = {
+                'value': value,
+                'writable': True
+            }
+        Object.defineProperty(cls.prototype, p, desc)

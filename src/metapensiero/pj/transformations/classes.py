@@ -184,13 +184,12 @@ def ClassDef_default(t, x):
 
     stmts = [JSClass(JSName(name), superclass, fn_body)]
     if assigns:
+        from ..snippets import set_properties
+        t.add_snippet(set_properties)
         assigns = JSExpressionStatement(
             JSCall(
-                JSAttribute(JSName('Object'), 'assign'),
-                (JSAttribute(
-                    JSName(name),
-                    'prototype'
-                ),
+                JSAttribute(JSName('_pj'), 'set_properties'),
+                (JSName(name),
                  JSDict(assigns[0], assigns[1])),
             )
         )
