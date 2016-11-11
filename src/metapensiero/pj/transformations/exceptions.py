@@ -8,6 +8,16 @@
 
 import ast
 
+from ..js_ast import (
+    JSBinOp,
+    JSIfStatement,
+    JSName,
+    JSNewCall,
+    JSOpInstanceof,
+    JSStatements,
+    JSThrowStatement,
+    JSTryCatchFinallyStatement,
+)
 
 
 def Try(t, x):
