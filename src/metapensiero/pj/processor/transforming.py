@@ -97,6 +97,9 @@ class Transformer:
     enable_es6 = False
     enable_let = False
     enable_stage3 = False
+
+    """Used in subtransformation to remap a node on a Transformer instance to the
+    ast produced by a substransform."""
     remap_to = None
 
     def __init__(self, py_ast_module, statements_class, snippets=True,
