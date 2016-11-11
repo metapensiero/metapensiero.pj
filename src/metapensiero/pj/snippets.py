@@ -47,6 +47,8 @@ def set_properties(cls, props):
         else:
             desc = {
                 'value': value,
+                'enumerable': False,
+                'configurable': True,
                 'writable': True
             }
         Object.defineProperty(cls.prototype, p, desc)
