@@ -340,21 +340,46 @@ cycle is a list but has two special cases:
 Classes
 ~~~~~~~
 
-Classes with single inheritance are translated to ES6 classes, they can have
-only function or assignment members for now, with no generic class or method
-decorators, because the ES7 spec for them is being rediscussed.
+Classes are translated to ES6 classes as much as they can support. This means:
 
-For assignments I mean something like:
+* no direct support multi-class inheritance, you have to come up with your own
+  solution for now. Many established frameworks support this in a way or
+  another so just use those facilities for now. I've read of some attempts,
+  see for example the suggestion on `Mozilla developer`__ or the other about
+  `simple mixins`__ on ``Exploring ES6``.
 
-.. code:: python
+* external implementation for class-level non assignment members. Assignement
+  members are those on the body of a class which are defined with: ``a_label =
+  an_expression`` like:
 
-  class Foo:
+  .. code:: python
 
-      bar = 'zoo' # or any kind of expression
+    class Foo:
 
-The assignments have a caveat though: those kind of members behave like in
-Python (they are shared by all the instances) but they aren't accessible
-through the class.
+        bar = 'zoo' # or any kind of expression
+
+  These members are removed from the translated body and submitted to a
+  snipped of code that will run after class creation in JS land. This serves
+  two purposes: if the value is *simple*, i.e. it isn't an instance of
+  ``Object``, it will be setup as a *data descriptor*, and it will work mostly
+  like you are used to in Python. The most noticeable caveat is that it will
+  not be accessible through the class as it is in Python, you will have to
+  access the class' *prototype*, so in the case above i mean
+  ``Foo.prototype.bar``.
+
+  The other purpose is to check for *accessor descriptors*. If the value on
+  the right side of the assignment implements a ``get`` function, it will be
+  installed as a property as-is, and its *get* and *set* members will be used
+  manage the value with the ``bar`` name.
+
+* external implementation for method decorators whose name is different from
+  ``property`` or ``classmethod`` (more on these later on), because these are
+  already supported by the ES6 class notation.
+
+
+__ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes#Mix-ins
+__ http://exploringjs.com/es6/ch_classes.html#_simple-mixins
+
 
 Methods can be functions or async-functions.
 
