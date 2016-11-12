@@ -90,6 +90,39 @@ def For_dict(t, x):
                         body, None
                     )
                 ]
+
+
+def For_iterable(t, x):
+    """Special 'for name in iterable(expr)' statement translation. It detects
+    the ``iterable()`` call and converts it to:
+
+    .. code:: javascript
+
+      var __iterable = expr;
+      for (var name of __iterable) {
+          ...
+      }
+    """
+    if (isinstance(x.iter, ast.Call) and
+        isinstance(x.iter.func, ast.Name) and
+        x.iter.func.id == 'iterable' and
+        len(x.iter.args) == 1) and (not x.orelse):
+
+        t.unsupported(x, not isinstance(x.target, ast.Name),
+                      "Target must be a name")
+
+        name = x.target
+        expr = x.iter.args[0]
+        body = x.body
+
+        __iterable = t.new_name()
+
+        return JSStatements([
+            JSVarStatement([__iterable], [expr]),
+            JSForofStatement(
+                name.id,
+                JSName(__iterable),
+                body,
             )
         ])
 
@@ -150,4 +183,4 @@ def For_default(t, x):
             ] + body)])
 
 
-For = [For_range, For_dict, For_default]
+For = [For_range, For_dict, For_iterable, For_default]

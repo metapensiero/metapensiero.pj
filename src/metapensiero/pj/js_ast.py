@@ -143,6 +143,13 @@ class JSForeachStatement(JSStatement):
         yield self.line('}')
 
 
+class JSForofStatement(JSStatement):
+    def emit(self, target, source, body):
+        yield self.line(['for (var ', target, ' of ', source, ') {'])
+        yield from self.lines(body, indent=True, delim=True)
+        yield self.line('}')
+
+
 class JSReturnStatement(JSStatement):
     def emit(self, value):
         if value:

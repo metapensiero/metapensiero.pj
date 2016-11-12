@@ -338,6 +338,31 @@ def test_class_decorators():
     assert test_deco_py()  == eval_object_es6(test_deco, 'test_deco();')
 
 
+
+
+def test_for_of():
+
+    def test_forof_js():
+
+        from __globals__ import iterable, Set
+
+        a = [1,2,3,4,5]
+
+        b = Set(['a', 'b'])
+
+        a_v = []
+        b_k = []
+
+        for v in iterable(a):
+            a_v.push(v)
+
+        # Objects are not iterable so this should be empty
+        for k in iterable(b):
+            b_k.push(k)
+
+        return a_v, b_k
+
+    assert [[1,2,3,4,5], ['a', 'b']] == eval_object_es6(test_forof_js, 'test_forof_js();')
 def test_try_except_simple():
 
     def test_try():
