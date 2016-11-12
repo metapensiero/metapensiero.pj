@@ -1,8 +1,8 @@
 .. -*- coding: utf-8 -*-
 .. :Project:  pj -- readme
-.. :Created:    mar 01 mar 2016 15:52:36 CET
-.. :Author:    Alberto Berti <alberto@metapensiero.it>
-.. :License:   GNU General Public License version 3 or later
+.. :Created:  mar 01 mar 2016 15:52:36 CET
+.. :Author:   Alberto Berti <alberto@metapensiero.it>
+.. :License:  GNU General Public License version 3 or later
 ..
 
 ======================================================
@@ -37,7 +37,7 @@ check and it does so by switching to ES6 construct when
 necessary. This allows to simplify the needs of polyfills for many of
 the expected Python behaviors.
 
-The interface with the js world is completely flat, import the modules
+The interface with the JS world is completely flat, just import the modules
 or use the expected globals (``window``, ``document``, etc...) as you
 would do in JavaScript.
 
@@ -51,7 +51,7 @@ __ https://github.com/amol-/dukpy
 Another goal is to just convert single modules or entire dir tree
 structures without emitting concatenated or minified files. This is
 left to the Javascript tooling of your choice. I use `webpack`__ which
-has BabelJS integration to getting this job done. Check out the bundled
+has BabelJS integration to get this job done. Check out the bundled
 example.
 
 __ http://webpack.github.io/
@@ -71,7 +71,7 @@ currently supported ones.
 Installation
 ------------
 
-Python 3.5 is required because Python's ast has changed between 3.4
+Python 3.5 is required because Python's AST has changed between 3.4
 and 3.5 and as of now supporting multiple Python versions is not one
 of my priorities.
 
@@ -128,7 +128,7 @@ A ``pj`` console script is also automatically installed:
 Conversions Rosetta Stone
 -------------------------
 
-Here are brief list of examples of the conversions the tool applies,
+Here is a brief list of examples of the conversions the tool applies,
 just some, but not all.
 
 Simple stuff
@@ -196,8 +196,8 @@ conversions. JavaScripthon cannot do a full trace of the sources, so
 some shortcuts are taken about the conversion of some core, specific
 Python's semantics. For example Python's ``self`` is always converted
 to JavaScript's ``this``, no matter where it's found. Or ``len(foo)``
-is always translated to ``foo.length``. Albeit this an api specific of
-just some objects (Strings, Arrays, etc...), it considered wide
+is always translated to ``foo.length``. Albeit this an API specific of
+just some objects (Strings, Arrays, etc...), it is considered wide
 adopted and something the user may consider obvious.
 
 The rules of thumb to treat things especially are:
@@ -205,7 +205,7 @@ The rules of thumb to treat things especially are:
 * Is it possible to think of a conversion that covers most of the use
   cases?
 
-* It's possible to find a convention widely used on the Python world
+* Is ts possible to find a convention widely used on the Python world
   to express this special case?
 
 .. list-table:: There are special cases
@@ -359,7 +359,7 @@ Classes are translated to ES6 classes as much as they can support. This means:
         bar = 'zoo' # or any kind of expression
 
   These members are removed from the translated body and submitted to a
-  snipped of code that will run after class creation in JS land. This serves
+  snippet of code that will run after class creation in JS land. This serves
   two purposes: if the value is *simple*, i.e. it isn't an instance of
   ``Object``, it will be setup as a *data descriptor*, and it will work mostly
   like you are used to in Python. The most noticeable caveat is that it will
@@ -370,7 +370,7 @@ Classes are translated to ES6 classes as much as they can support. This means:
   The other purpose is to check for *accessor descriptors*. If the value on
   the right side of the assignment implements a ``get`` function, it will be
   installed as a property as-is, and its *get* and *set* members will be used
-  manage the value with the ``bar`` name.
+  to manage the value with the ``bar`` name.
 
 * external implementation for method decorators whose name is different from
   ``property`` or ``classmethod`` (more on these later on), because these are
@@ -383,7 +383,7 @@ __ http://exploringjs.com/es6/ch_classes.html#_simple-mixins
 
 Methods can be functions or async-functions although the latters aren't
 officially supported yet by the JavaScript specification. You can disable them
-adding a ``--disable-stage3`` to the commandline utlity.
+adding a ``--disable-stage3`` to the command line utility.
 
 Python`s ``super()`` calls are converted accordingly to the type of
 their surrounding method: ``super().__init__(foo)`` becomes
@@ -490,7 +490,7 @@ implemented yet.
         }
 
 Only direct descendants of ``Exception`` are threated especially, but
-just for them to be meaningful in js-land and to be detectable with
+just for them to be meaningful in JS land and to be detectable with
 ``instanceof`` in catch statements.
 
 
