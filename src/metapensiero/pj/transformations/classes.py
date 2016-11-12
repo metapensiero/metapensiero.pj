@@ -11,6 +11,7 @@ import ast
 from ..processor.util import controlled_ast_walk
 
 from ..js_ast import (
+    JSAssignmentExpression,
     JSAttribute,
     JSCall,
     JSClass,
@@ -52,7 +53,6 @@ def _isdoc(el):
 
 def _class_guards(t, x):
     t.es6_guard(x, "'class' statement requires ES6")
-    t.unsupported(x, x.decorator_list, "Class decorators are unsupported")
     t.unsupported(x, len(x.bases) > 1, "Multiple inheritance is not supported")
     body = x.body
     for node in body:
@@ -210,6 +210,23 @@ def ClassDef_default(t, x):
             )
         )
         stmts.append(decos)
+    # there is any decorator list on the class
+    if x.decorator_list:
+        from ..snippets import set_class_decorators
+        t.add_snippet(set_class_decorators)
+        cls_decos = JSExpressionStatement(
+            JSExpressionStatement(
+                JSAssignmentExpression(
+                    JSName(name),
+                    JSCall(
+                        JSAttribute(JSName('_pj'), 'set_class_decorators'),
+                        (JSName(name),
+                         JSList(x.decorator_list)),
+                    )
+                )
+            )
+        )
+        stmts.append(cls_decos)
     return JSStatements(stmts)
 
 

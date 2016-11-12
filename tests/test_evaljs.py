@@ -294,7 +294,7 @@ def test_class_assigns():
 
     assert test_class()  == eval_object_es6(test_class_js, 'test_class_js();')
 
-def test_class_decorators():
+def test_method_decorators():
 
     def test_deco():
 
@@ -338,6 +338,37 @@ def test_class_decorators():
     assert test_deco_py()  == eval_object_es6(test_deco, 'test_deco();')
 
 
+def test_class_decorators():
+
+    def test_class_deco():
+
+        counter = 0
+        res = []
+
+        def deco(cls):
+            def wrapper(*args):
+                counter += 1
+                res.push(counter)
+                return cls.prototype.constructor.call(self, *args)
+            wrapper.prototype = cls.prototype
+            return wrapper
+
+        @deco
+        class DecoTest:
+
+            def __init__(self, res):
+                self.res = res
+
+            def foo(self):
+                return self.res
+
+        a = DecoTest()
+        b = DecoTest()
+        c = DecoTest('bar')
+
+        return res, isinstance(c, DecoTest), c.foo() == 'bar'
+
+    assert [[1, 2, 3], True, True]  == eval_object_es6(test_class_deco, 'test_class_deco();')
 
 
 def test_type():

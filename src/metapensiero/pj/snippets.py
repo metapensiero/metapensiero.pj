@@ -25,14 +25,21 @@ def in_es6(left, right):
     else:
         return left in right
 
-def set_decorators(cls, props):
 
+def set_decorators(cls, props):
     for p in dict(props):
         decos = props[p]
         def reducer(val, deco):
             return deco(val, cls, p)
         deco = decos.reduce(reducer, cls.prototype[p])
         cls.prototype[p] = deco
+
+def set_class_decorators(cls, decos):
+    def reducer(val, deco):
+        return deco(val, cls)
+    return decos.reduce(reducer, cls)
+
+
 
 def set_properties(cls, props):
     from __globals__ import Object, Function
