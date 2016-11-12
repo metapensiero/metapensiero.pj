@@ -65,7 +65,7 @@ def For_dict(t, x):
     if (isinstance(x.iter, ast.Call) and
         isinstance(x.iter.func, ast.Name) and
         x.iter.func.id == 'dict' and
-        len(x.iter.args) == 1) and (not x.orelse):
+        len(x.iter.args) <= 2) and (not x.orelse):
 
         t.unsupported(x, not isinstance(x.target, ast.Name),
                       "Target must be a name")
@@ -76,12 +76,11 @@ def For_dict(t, x):
 
         __dict = t.new_name()
 
-        return JSStatements([
-            JSVarStatement([__dict], [expr]),
-            JSForeachStatement(
-                name.id,
-                JSName(__dict),
-                [
+        # if not ``dict(foo, True)`` filter out inherited values
+        if not (len(x.iter.args) == 2 and
+            isinstance(x.iter.args[1], ast.NameConstant) and
+            x.iter.args[1].value):
+            body = [
                     JSIfStatement(
                         JSCall(
                             JSAttribute(JSName(__dict), 'hasOwnProperty'),
@@ -90,6 +89,15 @@ def For_dict(t, x):
                         body, None
                     )
                 ]
+
+        return JSStatements([
+            JSVarStatement([__dict], [expr]),
+            JSForeachStatement(
+                name.id,
+                JSName(__dict),
+                body
+            )
+        ])
 
 
 def For_iterable(t, x):

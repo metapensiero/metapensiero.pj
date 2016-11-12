@@ -363,6 +363,47 @@ def test_for_of():
         return a_v, b_k
 
     assert [[1,2,3,4,5], ['a', 'b']] == eval_object_es6(test_forof_js, 'test_forof_js();')
+
+def test_for_inherited():
+
+    def test_for_inh():
+
+        def Foo():
+            pass
+
+        Foo.prototype = {
+            'bar': 1
+        }
+
+        def Zoo():
+            pass
+
+        f = Foo()
+        f.bar2 = 2
+
+        Zoo.prototype = f
+
+        z = Zoo()
+
+        z_local = []
+        z_all = []
+        z_proto_local = []
+        z_proto_all = []
+
+
+        for k in dict(z, True):
+            z_all.push(k);
+
+        for k in dict(type(z)):
+            z_proto_local.push(k);
+
+        for k in dict(type(z), True):
+            z_proto_all.push(k);
+
+        return z_local, z_all, z_proto_local, z_proto_all
+
+    assert [[], ['bar2', 'bar'], ['bar2'], ['bar2', 'bar']] == eval_object_es6(test_for_inh, 'test_for_inh();')
+
 def test_try_except_simple():
 
     def test_try():
