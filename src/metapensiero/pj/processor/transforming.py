@@ -36,11 +36,20 @@ VAR_TEMPLATE = "_pj_%s"
 
 
 class TargetNode:
+    """This is the common ancestor of all the js ast nodes."""
+
+    """The associated Python ast node"""
+    py_node = None
+
+    """The Transformer instance which is managing this one"""
+    transformer = None
+
+    """The final arguments passed to the emit method defined on the subclasses"""
+    transformed_args = None
 
     def __init__(self, *args, **kwargs):
         self.args = args
         self.options = kwargs
-        self.transformed_args = None
 
     def __str__(self):
         return ''.join(
@@ -299,10 +308,10 @@ class Transformer:
     def next_args(self):
         return self._args_stack[-1]
 
-    def unsupported(self, node, cond, desc):
+    def unsupported(self, py_node, cond, desc):
         """Raise an exception if cond is False"""
         if cond:
-            raise UnsupportedSyntaxError(node, desc)
+            raise UnsupportedSyntaxError(py_node, desc)
 
     def warn(self, py_node, msg):
         """Append the given message to the warnings"""
