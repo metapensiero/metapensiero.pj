@@ -340,6 +340,33 @@ def test_class_decorators():
 
 
 
+def test_type():
+
+    def test_type_js():
+
+        class Foo:
+            pass
+
+        a = Foo()
+        b = Foo()
+
+        res = type(a) is type(b) and type(b) is Foo.prototype
+        return res
+
+    def test_type_py():
+
+        class Foo:
+            pass
+
+        a = Foo()
+        b = Foo()
+
+        res = type(a) is type(b) and type(b) is Foo
+        return res
+
+    assert test_type_py()  == eval_object_es6(test_type_js, 'test_type_js();')
+
+
 def test_for_of():
 
     def test_forof_js():

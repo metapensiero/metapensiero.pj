@@ -160,7 +160,7 @@ def Call_import(t, x):
 
 
 def Call_type(t, x):
-    if (isinstance(x.func, ast.Name) and x.func.id == '__import__'):
+    if (isinstance(x.func, ast.Name) and x.func.id == 'type'):
         assert len(x.args) == 1
         return JSCall(JSAttribute(JSName('Object'), 'getPrototypeOf'), x.args)
 
