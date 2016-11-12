@@ -180,7 +180,7 @@ def transpile_object(py_obj, body_only=False, es6_filename=None,
 
 
 def transpile_pys(src_text, dedent=True, src_filename=None, src_offset=None,
-                  body_only=False, es6_filename=None, enable_stage3=False):
+                  body_only=False, es6_filename=None, enable_stage3=False, **kw):
     """Transpile the given python Python 3 source text to ES5 Javascript
     using Dukpy and babeljs.
     """
