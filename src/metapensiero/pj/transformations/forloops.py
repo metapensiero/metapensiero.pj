@@ -8,7 +8,25 @@
 
 import ast
 
-from ..js_ast import *
+from ..js_ast import (
+    JSAssignmentExpression,
+    JSAttribute,
+    JSAugAssignStatement,
+    JSBinOp,
+    JSCall,
+    JSExpressionStatement,
+    JSForStatement,
+    JSForeachStatement,
+    JSForofStatement,
+    JSIfStatement,
+    JSName,
+    JSNum,
+    JSOpAdd,
+    JSOpLt,
+    JSStatements,
+    JSSubscript,
+    JSVarStatement,
+)
 
 
 def For_range(t, x):
