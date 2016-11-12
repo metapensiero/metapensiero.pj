@@ -24,6 +24,15 @@ JS_KEYWORDS = set([
     'private', 'protected', 'public', 'short', 'static', 'super',
     'synchronized', 'throws', 'transient', 'volatile'])
 
+JS_KEYWORDS_ES6 = JS_KEYWORDS - set(['delete'])
+
+def _check_keywords(target_node, name):
+    trans = target_node.transformer
+    trans.unsupported(
+        target_node.py_node,
+        name in JS_KEYWORDS_ES6 if trans.enable_es6 else name in JS_KEYWORDS,
+        "Name '%s' is reserved in JavaScript." % name)
+
 #### Misc
 
 
@@ -71,7 +80,7 @@ class JSVarDeclarer(JSStatement):
 
     def with_kind(self, kind, keys, values):
         for key in keys:
-            assert key not in JS_KEYWORDS, key
+            _check_keywords(self, key)
         assert len(keys) > 0
         assert len(keys) == len(values)
 
@@ -375,7 +384,7 @@ class JSNewCall(JSNode):
 class JSAttribute(JSNode):
     def emit(self, obj, s):
         assert re.search(r'^[a-zA-Z_][a-zA-Z_0-9]*$', s)
-        assert s not in JS_KEYWORDS
+        _check_keywords(self, s)
         yield self.part(obj, '.', s, name=True)
 
 
@@ -409,7 +418,7 @@ class JSStr(JSNode):
 
 class JSName(JSNode):
     def emit(self, name):
-        assert name not in JS_KEYWORDS, name
+        _check_keywords(self, name)
         yield self.part(name, name=True)
 
 
