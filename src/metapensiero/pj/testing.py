@@ -41,3 +41,11 @@ def ast_object_to_js(obj, es6=False):
     node = ast.parse(textwrap.dedent(src))
     t = Transformer(transformations, JSStatements, es6=es6)
     return t.transform_code(node)
+
+
+def ast_dump_file(fname):
+    """Dump an entire file."""
+    from meta.asttools import str_ast
+    with open(fname) as f:
+        node = ast.parse(f.read(), filename=fname)
+    return node, str_ast(node)
