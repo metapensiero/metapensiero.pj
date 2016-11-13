@@ -444,3 +444,19 @@ def test_isinstance():
     )
 
     assert translate_object(test_isi, enable_es6=False)[0] == expected
+
+
+def test_self_removed_on_function():
+
+    def test_self_removed():
+        def func(self, a, b):
+            pass
+
+    expected = (
+        'function test_self_removed() {\n'
+        '    function func(a, b) {\n'
+        '    }\n'
+        '}\n'
+    )
+
+    assert translate_object(test_self_removed, enable_es6=False)[0] == expected

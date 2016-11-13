@@ -74,7 +74,7 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
     else:
         kwargs = None
 
-    if is_method:
+    if is_method or (len(arg_names) > 0 and arg_names[0] == 'self'):
         arg_names = arg_names[1:]
 
     # be sure that the defaults equal in length the args list
