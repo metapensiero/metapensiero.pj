@@ -144,14 +144,38 @@ Simple stuff
 
         x < y <= z < 5
 
+    - .. code:: javascript
+
+        ((x < y) && (y <= z) && (z < 5))
+
+  * - .. code:: python
+
+
         def foo():
             return [True, False, None, 1729,
                     "foo", r"foo\bar", {}]
 
+    - .. code:: javascript
+
+        function foo() {
+            return [true, false, null, 1729,
+                    "foo", "foo\\bar", {}];
+        }
+
+
+  * - .. code:: python
 
         while len(foo) > 0:
             print(foo.pop())
 
+    - .. code:: javascript
+
+        while ((foo.length > 0)) {
+            console.log(foo.pop());
+        }
+
+
+  * - .. code:: python
 
         if foo > 0:
             ....
@@ -160,23 +184,7 @@ Simple stuff
         else:
             ....
 
-
-
-
-        str(x)
-
     - .. code:: javascript
-
-        ((x < y) && (y <= z) && (z < 5))
-
-        function foo() {
-            return [true, false, null, 1729,
-                    "foo", "foo\\bar", {}];
-        }
-
-        while ((foo.length > 0)) {
-            console.log(foo.pop());
-        }
 
         if ((foo > 0)) {
             ....
@@ -187,6 +195,13 @@ Simple stuff
                 ....
             }
         }
+
+
+  * - .. code:: python
+
+        str(x)
+
+    - .. code:: javascript
 
         x.toString()
 
@@ -217,76 +232,157 @@ The rules of thumb to treat things especially are:
   * - .. code:: python
 
         ==
-        !=
-        2**3
-        'docstring'
-
-        self
-        len(...)
-        print(...)
-        isinstance(x, y)
-        typeof(x)
-
-        FirstCharCapitalized(...)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        foo in bar
-
-        foo[3:]
-        foo[:3]
-        list(foo).append(bar)
-        dict(foo).update(bar)
-        dict(foo).copy()
 
     - .. code:: javascript
 
         ===
+
+  * - .. code:: python
+
+        !=
+
+    - .. code:: javascript
+
         !==
+
+  * - .. code:: python
+
+        2**3
+
+    - .. code:: javascript
+
         Math.pow(2, 3)
+
+  * - .. code:: python
+
+        'docstring'
+
+    - .. code:: javascript
+
         /* docstring */
 
+  * - .. code:: python
+
+        self
+
+    - .. code:: javascript
+
         this
+
+  * - .. code:: python
+
+        len(...)
+
+    - .. code:: javascript
+
         (...).length
+
+  * - .. code:: python
+
+        print(...)
+
+    - .. code:: javascript
+
         console.log(...)
+
+  * - .. code:: python
+
+        isinstance(x, y)
+        isinstance(x, (y, z))
+
+    - .. code:: javascript
+
         (x instanceof y)
+        (x instanceof y || x instanceof z)
+
+  * - .. code:: python
+
+        typeof(x)
+
+    - .. code:: javascript
+
         (typeof x)
 
+  * - .. code:: python
+
+        type(x)
+
+    - .. code:: javascript
+
+        Object.getPrototypeOf(x)
+
+  * - .. code:: python
+
+        FirstCharCapitalized(...)
+        new(any_function(...))
+
+    - .. code:: javascript
+
         new FirstCharCapitalized(...)
+        new any_function(...)
+
+  * - .. code:: python
+
+        foo in bar
+
+    - .. code:: javascript
 
         var _pj;
         function _pj_snippets(container) {
-            function _in(left, right) {
+            function in_es6(left, right) {
                 if (((right instanceof Array) || ((typeof right) === "string"))) {
                     return (right.indexOf(left) > (- 1));
                 } else {
-                    return (left in right);
+                    if (((right instanceof Map) || (right instanceof Set)
+                        || (right instanceof WeakMap)
+                        || (right instanceof WeakSet))) {
+                        return right.has(left);
+                    } else {
+                        return (left in right);
+                    }
                 }
             }
-            container["_in"] = _in;
+            container["in_es6"] = in_es6;
             return container;
         }
         _pj = {};
         _pj_snippets(_pj);
-        _pj._in(foo, bar);
+        _pj.in_es6(foo, bar);
+
+  * - .. code:: python
+
+        foo[3:]
+        foo[:3]
+
+    - .. code:: javascript
 
         foo.slice(3);
         foo.slice(0, 3);
+
+  * - .. code:: python
+
+        list(foo).append(bar)
+
+    - .. code:: javascript
+
         foo.push(bar);
+
+  * - .. code:: python
+
+        dict(foo).update(bar)
+
+    - .. code:: javascript
+
         Object.assign(foo, bar);
+
+  * - .. code:: python
+
+        dict(foo).copy()
+
+    - .. code:: javascript
+
         Object.assign({}, foo);
+
 
 ``for`` statement
 ~~~~~~~~~~~~~~~~~
@@ -294,29 +390,18 @@ The rules of thumb to treat things especially are:
 The ``for`` statement by default is translated as if the object of the
 cycle is a list but has two special cases:
 
+
 .. list-table:: ``for`` loops
   :header-rows: 1
 
   * - Python
     - JavaScript
+    - notes
 
   * - .. code:: python
 
         for el in dict(a_dict):
             print(el)
-
-
-
-
-
-        for el in an_array:
-            print(el)
-
-
-
-
-        for i in range(5):
-            print(i)
 
     - .. code:: javascript
 
@@ -327,15 +412,52 @@ cycle is a list but has two special cases:
             }
         }
 
+    - With this kind of loop if you use ``dict(a_dict, True)`` the check on
+      ``hasOwnProperty()`` will not be added, so the loop will include
+      *inherited* (and *enumerable*) properties.
+
+  * - .. code:: python
+
+        for el in an_array:
+            print(el)
+
+    - .. code:: javascript
+
         for (var el, _pj_c = 0, _pj_a = an_array, _pj_b = _pj_a.length;
               (_pj_c < _pj_b); _pj_c += 1) {
             el = _pj_a[_pj_c];
             console.log(el);
         }
 
+    -
+
+  * - .. code:: python
+
+        for i in range(5):
+            print(i)
+
+    - .. code:: javascript
+
         for (var i = 0, _pj_a = 5; (i < _pj_a); i += 1) {
             console.log(i);
         }
+
+    -
+
+  * - .. code:: python
+
+        for el in iterable(a_set):
+            print(el)
+
+    - .. code:: javascript
+
+        var _pj_a = a_set;
+        for (var el of  _pj_a) {
+            console.log(el);
+        }
+
+    - This will loop over all the iterables, like instances of ``Array``,
+      ``Map``, ``Set``, etc. **but not over normal objects**.
 
 Classes
 ~~~~~~~
@@ -375,6 +497,40 @@ Classes are translated to ES6 classes as much as they can support. This means:
 * external implementation for method decorators whose name is different from
   ``property`` or ``classmethod`` (more on these later on), because these are
   already supported by the ES6 class notation.
+
+* external implementation for class decorators. One caveat here is that the
+  return value of the decorator has always to be a function with a prototype:
+  unfortunately a ``new`` statement seems not to be *delegable* in any way. So
+  for example a class decorator implemented like the following:
+
+  .. code:: python
+
+    def test_class_deco():
+
+        counter = 0
+
+        def deco(cls):
+            def wrapper(self, *args):
+                counter += 1 # side effect
+                return cls(*args)
+            return wrapper
+
+        @deco
+        class Foo:
+            pass
+
+  will never work. This will work instead:
+
+  .. code:: python
+
+    def deco(cls):
+        def wrapper(self, *args):
+            counter += 1 # side effect
+            return cls.prototype.constructor.call(self, *args)
+        wrapper.prototype = cls.prototype
+        return wrapper
+
+  So either return the original class or setup the wrapper appropriately.
 
 
 __ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes#Mix-ins
@@ -591,6 +747,8 @@ top level is translated to ES6 exports.
         from . import foo
         from .foo import bar
 
+        from foo__bar import zoo
+
         from __globals__ import test_name
 
         # this should not trigger variable definition
@@ -612,6 +770,8 @@ top level is translated to ES6 exports.
         import {bar} from '../foo/zoo';
         import * as foo from './foo';
         import {bar} from './foo';
+
+        import {zoo} from 'foo-bar';
 
         test_name = 2;
         test_foo = true;
@@ -739,11 +899,7 @@ This is a brief list of what needs to be done:
 * convert *set* literals to ES6 ``Set`` objects. Also, update
   "foo in bar" to use bar.has(foo) for sets;
 * multi-line strings to ES6 template strings (does this make any sense?);
-* class and method decorators to ES7 class and method decorators;
 * implement *yield* and generator functions;
-* take advantage of new duckpy features to use a JS execution context
-  that lasts multiple calls. This way the BabelJS bootstrap affects
-  only the initial execution;
 
 Done
 ----
@@ -761,6 +917,11 @@ Stuff that was previously in the todo:
 * convert `*iterable` syntax to ES6 destructuring;
 * use arrow functions for functions created in functions;
 * properties to ES6 properties (getter and setter);
+* take advantage of new duckpy features to use a JS execution context
+  that lasts multiple calls. This way the BabelJS bootstrap affects
+  only the initial execution;
+* class and method decorators;
+
 
 External documentation
 ----------------------
