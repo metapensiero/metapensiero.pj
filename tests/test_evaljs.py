@@ -346,7 +346,7 @@ def test_class_decorators():
         res = []
 
         def deco(cls):
-            def wrapper(*args):
+            def wrapper(self, *args):
                 counter += 1
                 res.push(counter)
                 return cls.prototype.constructor.call(self, *args)
