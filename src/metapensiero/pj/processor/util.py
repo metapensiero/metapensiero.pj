@@ -235,7 +235,6 @@ class OutputSrc:
         return result
 
 
-
 class Line(OutputSrc):
 
     def __init__(self, node, item, indent=False, delim=False, name=None):
@@ -273,6 +272,7 @@ class Line(OutputSrc):
     def __repr__(self):
         return '<%s indent: %d, "%s">' % (self.__class__.__name__,
                                           self.indent, str(self))
+
 
 class Part(OutputSrc):
 
