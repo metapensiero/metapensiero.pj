@@ -17,6 +17,7 @@ from ..js_ast import (
     JSCommentBlock,
     JSDependImport,
     JSDict,
+    JSMultipleArgsOp,
     JSName,
     JSNamedImport,
     JSNewCall,
@@ -102,14 +103,8 @@ def Call_isinstance(t, x):
         elif isinstance(x.args[1], (ast.Tuple, ast.List, ast.Set)):
             classes = x.args[1].elts
             target = x.args[0]
-
-            def _concatenate_expr(prev, cls):
-                atom = JSBinOp(target, JSOpInstanceof(), cls)
-                if prev:
-                    return JSBinOp(prev, JSOpOr(), atom)
-                return atom
-
-            return reduce(_concatenate_expr, classes, None)
+            args = tuple((target, c) for c in classes)
+            return JSMultipleArgsOp(JSOpInstanceof(), JSOpOr(), *args)
 
 
 # <code>print(...)</code> &rarr; <code>console.log(...)</code>

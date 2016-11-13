@@ -405,6 +405,17 @@ class JSBinOp(JSNode):
         yield self.part('(', left, ' ', op, ' ', right, ')')
 
 
+class JSMultipleArgsOp(JSNode):
+    def emit(self, binop, conj, *args):
+        assert len(args) > 1
+        parts = []
+        for ix, arg in enumerate(args):
+            if ix > 0:
+                parts += [' ', conj, ' ']
+            parts += ['(', arg[0], ' ', binop, ' ', arg[1], ')']
+        yield self.part('(', *parts, ')')
+
+
 class JSUnaryOp(JSNode):
     def emit(self, op, right):
         assert isinstance(op, JSLeftSideUnaryOp)
