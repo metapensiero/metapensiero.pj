@@ -152,6 +152,18 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
                         [], body,
                         **cls_member_opts
                     )
+                elif name == '__get__':
+                    result = JSMethod(
+                        'get',
+                        [], body,
+                        **cls_member_opts
+                    )
+                elif name == '__set__':
+                    result = JSMethod(
+                        'set',
+                        [], body,
+                        **cls_member_opts
+                    )
                 else:
                     result = mwrapper(
                         name, args, body,
