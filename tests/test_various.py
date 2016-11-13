@@ -446,6 +446,21 @@ def test_isinstance():
     assert translate_object(test_isi, enable_es6=False)[0] == expected
 
 
+def test_new_func():
+
+    def test_new():
+        a = new(foo())
+
+    expected = (
+        'function test_new() {\n'
+        '    var a;\n'
+        '    a = new foo();\n'
+        '}\n'
+    )
+
+    assert translate_object(test_new, enable_es6=False)[0] == expected
+
+
 def test_self_removed_on_function():
 
     def test_self_removed():
