@@ -47,7 +47,12 @@ def body_top_names(body):
 def controlled_ast_walk(node):
     """Walk ast just like ast.walk(), but expect True on every branch to
     descend on sub-branches."""
-    l = [node]
+    if isinstance(node, list):
+        l = node.copy()
+    elif isinstance(node, tuple):
+        l = list(node)
+    else:
+        l = [node]
     while len(l) > 0:
         popped = l.pop()
         check_children = (yield popped)
@@ -61,12 +66,15 @@ CODE_BLOCK_STMTS = (ast.FunctionDef, ast.ClassDef,
 
 def walk_under_code_boundary(node):
     it = controlled_ast_walk(node)
+    traverse = None
     try:
         while True:
-            subn = next(it)
+            subn = it.send(traverse)
             yield subn
-            if not isinstance(subn, CODE_BLOCK_STMTS):
-                it.send(True) # continue traversing sub names
+            if isinstance(subn, CODE_BLOCK_STMTS):
+                traverse = False # continue traversing sub names
+            else:
+                traverse = True
     except StopIteration:
         pass
 
