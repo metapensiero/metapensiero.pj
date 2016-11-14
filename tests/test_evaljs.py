@@ -173,6 +173,17 @@ def test_for_range_less_simpler():
     assert dofor() == eval_object(dofor, 'dofor();')
 
 
+def test_for_range_step():
+
+    def dofor():
+        x = 0
+        for i in range(0, 10, 2):
+            x += i
+        return x
+
+    assert dofor() == eval_object(dofor, 'dofor();')
+
+
 def test_for_items_in_dict():
 
     def dofor():

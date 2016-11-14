@@ -44,16 +44,25 @@ def For_range(t, x):
         isinstance(x.iter, ast.Call) and
         isinstance(x.iter.func, ast.Name) and
         x.iter.func.id == 'range' and
-        len(x.iter.args) in [1, 2]) and (not x.orelse):
+        1 <= len(x.iter.args) < 4) and (not x.orelse):
 
         name = x.target
         body = x.body
         if len(x.iter.args) == 1:
             start = JSNum(0)
             bound = x.iter.args[0]
+            step = JSNum(1)
+        elif len(x.iter.args) == 2:
+            start = x.iter.args[0]
+            bound = x.iter.args[1]
+            step = JSNum(1)
         else:
             start = x.iter.args[0]
             bound = x.iter.args[1]
+            step = x.iter.args[2]
+
+
+        # TODO: as of now this doesn't support range(10, 0, -2)
 
         __bound = t.new_name()
 
@@ -63,7 +72,7 @@ def For_range(t, x):
                 [start, bound]),
             JSBinOp(JSName(name.id), JSOpLt(), JSName(__bound)),
             JSAugAssignStatement(
-                JSName(name.id), JSOpAdd(), JSNum(1)),
+                JSName(name.id), JSOpAdd(), step),
             body
         )
 
