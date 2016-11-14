@@ -103,16 +103,14 @@ def node_names(x):
 
 
 def rfilter(r, it, invert=False):
-    '''
-
+    """
     >>> list(rfilter(r'^.o+$', ['foo', 'bar']))
     ['foo']
 
     >>> list(rfilter(r'^.o+$', ['foo', 'bar'], invert=True))
     ['bar']
 
-    '''
-
+    """
     # Supports Python 2 and 3
     if isinstance(r, str):
         r = re.compile(r)

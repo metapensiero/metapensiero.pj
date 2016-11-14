@@ -63,6 +63,7 @@ from ..js_ast import (
     JSYieldStar,
 )
 
+
 #### Statements
 
 
@@ -126,6 +127,7 @@ def Delete(t, x):
 def Await(t, x):
     t.stage3_guard(x, "Async stuff requires 'stage3' to be enabled")
     return JSAwait(x.value)
+
 
 #### Expressions
 
@@ -208,6 +210,7 @@ def Compare_default(t, x):
         bools.append(JSBinOp(exps[i], x.ops[i], exps[i + 1]))
     return reduce(lambda x, y: JSBinOp(x, JSOpAnd(), y), bools)
 
+
 #### Atoms
 
 
@@ -248,7 +251,9 @@ def Yield(t, x):
 def YieldFrom(t, x):
     return JSYieldStar(x.value)
 
+
 #### Ops
+
 
 def In(t, x):
     return JSOpIn()
@@ -314,8 +319,10 @@ def Or(t, x):
 def Not(t, x):
     return JSOpNot()
 
-# <code>==</code> and <code>!=</code> are in [special.py](special.py)
-# because they transform to <code>===</code> and <code>!==</code>
+
+# == and != are in special.py
+# because they transform to === and !==
+
 
 def Lt(t, x):
     return JSOpLt()

@@ -33,8 +33,10 @@ from ..js_ast import (
 )
 from ..processor.util import body_local_names, walk_under_code_boundary
 
+
 def _isyield(el):
     return isinstance(el, (ast.Yield, ast.YieldFrom))
+
 
 def FunctionDef(t, x, fwrapper=None, mwrapper=None):
 
@@ -46,10 +48,8 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
                            isinstance(tuple(t.parents(x, stop_at=ast.ClassDef))[-1],
                                       ast.ClassDef) # Make sure a class is there
 
-
     is_generator = reduce(lambda prev, cur: _isyield(cur) or prev,
                           walk_under_code_boundary(x.body), False)
-
 
     t.unsupported(x, not is_method and x.decorator_list, "Function decorators are"
                   " unsupported yet")

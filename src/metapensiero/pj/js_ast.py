@@ -26,6 +26,7 @@ JS_KEYWORDS = set([
 
 JS_KEYWORDS_ES6 = JS_KEYWORDS - set(['delete'])
 
+
 def _check_keywords(target_node, name):
     trans = target_node.transformer
     trans.unsupported(
@@ -67,6 +68,7 @@ class JSCommentBlock(JSNode):
     def emit(self, text):
         assert text.find('*/') == -1
         yield self.part('/* ', text, ' */')
+
 
 #### Statements
 
@@ -333,6 +335,7 @@ class JSGenMethod(JSClassMember):
         yield from self.with_kind('* ' + name, args, body, acc, kwargs,
                                   static)
 
+
 class JSGetter(JSClassMember):
 
     def emit(self, name, body, static=False):
@@ -408,7 +411,8 @@ class JSAttribute(JSNode):
 
 class JSSubscript(JSNode):
     def emit(self, obj, key):
-        yield self.part(self.part(obj, name=True), '[', self.part(key, name=True), ']')
+        yield self.part(self.part(obj, name=True), '[',
+                        self.part(key, name=True), ']')
 
 
 class JSBinOp(JSNode):
@@ -436,13 +440,13 @@ class JSUnaryOp(JSNode):
 class JSYield(JSNode):
 
     def emit(self, expr):
-        yield self.part('yield ', expr);
+        yield self.part('yield ', expr)
 
 
 class JSYieldStar(JSNode):
 
     def emit(self, expr):
-        yield self.part('yield* ', expr);
+        yield self.part('yield* ', expr)
 
 
 #### Atoms
@@ -491,6 +495,7 @@ class JSNull(JSNode):
 class JSRest(JSNode):
     def emit(self, value):
         yield self.part('...', value)
+
 
 #### Ops
 
