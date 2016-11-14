@@ -26,6 +26,9 @@ It is based on previous work by `Andrew Schaaf <andrew@andrewschaaf.com>`_.
  :contact: alberto@metapensiero.it
  :license: GNU General Public License version 3 or later
 
+.. contents:: Table of Contents
+   :backlinks: top
+
 Goal
 ----
 
@@ -204,6 +207,16 @@ Simple stuff
     - .. code:: javascript
 
         x.toString()
+
+  * - .. code:: python
+
+        yield foo
+        yield from foo
+
+    - .. code:: javascript
+
+        yield foo
+        yield* foo
 
 
 Then there are special cases. Here you can see some of these
@@ -459,6 +472,146 @@ cycle is a list but has two special cases:
     - This will loop over all the iterables, like instances of ``Array``,
       ``Map``, ``Set``, etc. **but not over normal objects**.
 
+Functions
+~~~~~~~~~
+
+Functions are very well supported. This should be obvious, you can say. Really
+it is not so simple, if we mean functions in their broader meaning, including
+the  *async functions* and *generator functions*.
+
+.. list-table:: The various types of functions at play
+  :header-rows: 1
+
+  * - Python
+    - JavaScript
+    - notes
+
+  * - .. code:: python
+
+        def foo(a, b, c):
+            pass
+
+    - .. code:: javascript
+
+        function foo(a, b, c) {
+        }
+
+    - Normal functions
+
+  * - .. code:: python
+
+        def foo(a, b, c):
+            for i in range(a, b, c):
+                yield i
+
+        for i in iterable(foo(0, 5, 2)):
+            print(i)
+
+    - .. code:: javascript
+
+        function* foo(a, b, c) {
+            for ... { // loop control omitted for brevity
+                yield i;
+            }
+        }
+
+        for (var i of foo(0, 5, 2)) {
+            console.log(i);
+        }
+
+    - Generator functions. They return an iterable and to correctly loop over
+      it you should use the ``iterable(...)`` call, so that the Python's
+      ``for...in`` will be converted into a ``for...of``
+
+  * - .. code:: python
+
+        async def foo(a, b, c):
+            await some_promise_based_async
+
+
+    - .. code:: javascript
+
+        async function foo(a, b, c) {
+            await some_promised_base_async;
+        }
+
+    - Async functions. They make use of the new ``Promise`` class, which is
+      also available.
+
+
+Function's args and call parameters
++++++++++++++++++++++++++++++++++++
+
+Parmeters defaults and keyword parameters are supported and so is ``*foo``
+accumulator, which is translated into the ES6 rest expression (``...foo``).
+
+The only caveat is that JS support for keyword args sucks, so you will have to
+**remember to fill in all the arguments before specifying keywords**.
+
+On function definitions, ``**kwargs`` is supported if it's alone, i.e. without
+either keyword arguments or ``*args``.
+
+.. list-table:: function's args and call parameters
+  :header-rows: 1
+
+  * - Python
+    - JavaScript
+
+  * - .. code:: python
+
+        def foo(a=2, b=3, *args):
+            pass
+
+    - .. code:: javascript
+
+        function foo(a = 2, b = 3, ...args) {
+        }
+
+  * - .. code:: python
+
+        def bar(c, d, *, zoo=2):
+            pass
+
+    - .. code:: javascript
+
+        function bar(c, d, {zoo = 2}={}) {
+        }
+
+  * - .. code:: python
+
+        foo(5, *a_list)
+
+    - .. code:: javascript
+
+        foo(5, ...a_list);
+
+  * - .. code:: python
+
+        bar('a', 'b', zoo=5, another='c')
+
+    - .. code:: javascript
+
+        bar("a", "b", {zoo: 5, another: "c"});
+
+  * - .. code:: python
+
+        def zoo(e, **kwargs):
+            print(kwargs['bar'])
+
+    - .. code:: javascript
+
+        function zoo(e, kwargs = {}) {
+            console.log(kwargs['bar'])
+        }
+
+  * - .. code:: python
+
+        zoo(4, bar=6)
+
+    - .. code:: javascript
+
+        zoo(4, {bar: 6})
+
 Classes
 ~~~~~~~
 
@@ -581,6 +734,8 @@ implemented yet.
             async def something(self, a_promise):
                 result = await a_promise
 
+            def generator_method(self):
+                yield something
 
             @property
             def foo(self):
@@ -622,6 +777,10 @@ implemented yet.
             async something(a_promise) {
                 var result;
                 result = await a_promise;
+            }
+
+            * generator_method() {
+                yield something;
             }
 
             get foo() {
@@ -779,63 +938,6 @@ top level is translated to ES6 exports.
         export {test_name};
         export {test_foo};
 
-
-function's args and call parameters
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Parmeters defaults and keyword parameters are supported and so is
-``*foo`` accumulator, which is translated into the ES6 rest expression
-(``...foo``).
-
-The only caveat is that really JS support for keyword args sucks, so
-you will have to remember to fill in all the arguments before
-specifying keywords.
-
-On function definitions, ``**kwargs`` is supported if it's alone,
-i.e. without either keyword arguments or ``*args``.
-
-.. list-table:: function's args and call parameters
-  :header-rows: 1
-
-  * - Python
-    - JavaScript
-
-  * - .. code:: python
-
-        def foo(a=2, b=3, *args):
-            pass
-
-        def bar(c, d, *, zoo=2):
-            pass
-
-        foo(5, *a_list)
-
-        bar('a', 'b', zoo=5, another='c')
-
-        def zoo(e, **kwargs):
-            print(kwargs['bar'])
-
-
-        zoo(4, bar=6)
-
-    - .. code:: javascript
-
-        function foo(a = 2, b = 3, ...args) {
-        }
-
-        function bar(c, d, {zoo = 2}={}) {
-        }
-
-        foo(5, ...a_list);
-
-        bar("a", "b", {zoo: 5, another: "c"});
-
-        function zoo(e, kwargs = {}) {
-            console.log(kwargs['bar'])
-        }
-
-        zoo(4, {bar: 6})
-
 Examples
 --------
 
@@ -894,12 +996,10 @@ This is a brief list of what needs to be done:
 * refactor the comprehensions conversion to use the snippets facility;
 * refactor snippets rendering to write them as a module and import
   them in the module when tree conversion is enabled;
-* convert ``dict()`` calls to ES6 ``Map`` object creation. Also,
-  update "foo in bar" to use bar.has(foo) for maps;
+* convert ``dict()`` calls to ES6 ``Map`` object creation;
 * convert *set* literals to ES6 ``Set`` objects. Also, update
   "foo in bar" to use bar.has(foo) for sets;
 * multi-line strings to ES6 template strings (does this make any sense?);
-* implement *yield* and generator functions;
 
 Done
 ----
@@ -921,6 +1021,8 @@ Stuff that was previously in the todo:
   that lasts multiple calls. This way the BabelJS bootstrap affects
   only the initial execution;
 * class and method decorators;
+* implement *yield*, *yield from* and generator functions;
+* update "foo in bar" to use bar.has(foo) for maps;
 
 
 External documentation
