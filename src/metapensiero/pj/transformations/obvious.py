@@ -59,6 +59,8 @@ from ..js_ast import (
     JSTrue,
     JSUnaryOp,
     JSWhileStatement,
+    JSYield,
+    JSYieldStar,
 )
 
 #### Statements
@@ -229,6 +231,7 @@ def Name_default(t, x):
     else:
         return JSName(x.id)
 
+
 def NameConstant(t, x):
     cls = {
         True: JSTrue,
@@ -236,6 +239,14 @@ def NameConstant(t, x):
         None: JSNull,
     }[x.value]
     return cls()
+
+
+def Yield(t, x):
+    return JSYield(x.value)
+
+
+def YieldFrom(t, x):
+    return JSYieldStar(x.value)
 
 #### Ops
 

@@ -7,24 +7,34 @@
 #
 
 import ast
+from functools import reduce
 
 from ..js_ast import (
+    JSAttribute,
     JSArrowFunction,
     JSAssignmentExpression,
     JSAsyncFunction,
     JSAsyncMethod,
+    JSCall,
     JSClassConstructor,
     JSDict,
+    JSExpressionStatement,
     JSFunction,
+    JSGenFunction,
+    JSGenMethod,
     JSGetter,
     JSMethod,
+    JSName,
     JSRest,
     JSSetter,
     JSStatements,
+    JSThis,
     JSVarStatement,
 )
-from ..processor.util import body_local_names
+from ..processor.util import body_local_names, walk_under_code_boundary
 
+def _isyield(el):
+    return isinstance(el, (ast.Yield, ast.YieldFrom))
 
 def FunctionDef(t, x, fwrapper=None, mwrapper=None):
 
@@ -35,6 +45,11 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
                        for p in t.parents(x, stop_at=ast.ClassDef)) and \
                            isinstance(tuple(t.parents(x, stop_at=ast.ClassDef))[-1],
                                       ast.ClassDef) # Make sure a class is there
+
+
+    is_generator = reduce(lambda prev, cur: _isyield(cur) or prev,
+                          walk_under_code_boundary(x.body), False)
+
 
     t.unsupported(x, not is_method and x.decorator_list, "Function decorators are"
                   " unsupported yet")
@@ -102,6 +117,10 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
         body = [JSVarStatement(
                             local_vars,
                             [None] * len(local_vars))] + body
+
+    if is_generator:
+        fwrapper = JSGenFunction
+        mwrapper = JSGenMethod
 
     # If x is a method
     if is_method:
@@ -183,6 +202,21 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
                 JSVarStatement([str(name)], [None]),
                 JSArrowFunction(
                     name, args, body, acc, kwargs
+                )
+            ])
+        elif is_in_method and fwrapper is JSGenFunction:
+            result = JSStatements([
+                fwrapper(
+                    name, args, body, acc, kwargs
+                ),
+                JSExpressionStatement(
+                    JSAssignmentExpression(
+                        JSName(name),
+                        JSCall(
+                            JSAttribute(name, 'bind'),
+                            [JSThis()]
+                        )
+                    )
                 )
             ])
         else:

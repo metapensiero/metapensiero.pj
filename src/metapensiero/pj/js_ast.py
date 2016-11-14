@@ -262,6 +262,11 @@ class JSAsyncFunction(JSFunction):
     begin = 'async function '
 
 
+class JSGenFunction(JSFunction):
+
+    begin = 'function* '
+
+
 class JSArrowFunction(JSFunction):
 
     begin = ''
@@ -321,6 +326,12 @@ class JSAsyncMethod(JSClassMember):
         yield from self.with_kind('async ' + name, args, body, acc, kwargs,
                                   static)
 
+
+class JSGenMethod(JSClassMember):
+
+    def emit(self, name, args, body, acc=None, kwargs=None, static=False):
+        yield from self.with_kind('* ' + name, args, body, acc, kwargs,
+                                  static)
 
 class JSGetter(JSClassMember):
 
@@ -420,6 +431,19 @@ class JSUnaryOp(JSNode):
     def emit(self, op, right):
         assert isinstance(op, JSLeftSideUnaryOp)
         yield self.part('(', op, ' ', right, ')')
+
+
+class JSYield(JSNode):
+
+    def emit(self, expr):
+        yield self.part('yield ', expr);
+
+
+class JSYieldStar(JSNode):
+
+    def emit(self, expr):
+        yield self.part('yield* ', expr);
+
 
 #### Atoms
 

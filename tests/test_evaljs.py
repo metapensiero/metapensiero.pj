@@ -664,3 +664,72 @@ def test_in_map():
         return o in m, oo in o, m.get(o)
 
     assert [True, False, 'test'] == eval_object_es6(js_in_map, 'js_in_map();')
+
+
+def test_yield():
+
+    def test_y(r):
+
+        def gen():
+            for i in range(r):
+                yield i
+
+        return [*gen()]
+
+    assert test_y(5) == eval_object_es6(test_y, 'test_y(5);')
+
+
+def test_yield_from():
+
+    def test_yf(r):
+
+        def gen():
+            yield from gen2()
+
+        def gen2():
+            for i in range(r):
+                yield i
+
+        return [*gen()]
+
+    assert test_yf(5) == eval_object_es6(test_yf, 'test_yf(5);')
+
+
+def test_yield_method():
+
+    def test_ym(r):
+
+        class Demo:
+
+            def gen(self, r):
+                for i in range(r):
+                    yield i
+
+        d = Demo()
+
+        return [*d.gen(r)]
+
+    assert test_ym(5) == eval_object_es6(test_ym, 'test_ym(5);')
+
+
+def test_yield_in_method():
+
+    def test_yim(r):
+
+        class Demo:
+
+            def __init__(self, r):
+                self.r = r
+
+            def foo(self):
+
+                def gen():
+                    for i in range(self.r):
+                        yield i
+                return [*gen()]
+
+        d = Demo(r)
+
+        return d.foo()
+
+    assert test_yim(5) == eval_object_es6(test_yim, 'test_yim(5);')
