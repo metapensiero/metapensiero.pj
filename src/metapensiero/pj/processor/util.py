@@ -102,57 +102,7 @@ def node_names(x):
     return names
 
 
-def random_token(n):
-    while True:
-        token = ''.join(random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz') for i in range(n))
-        if not token.isdigit():
-            return token
-
-
-class CyclicGraphError(Exception):
-    pass
-
-
-class DirectedGraph:
-
-    def __init__(self):
-        self._graph = {}
-
-    def addNode(self, x):
-        if x not in self._graph:
-            self._graph[x] = set()
-
-    def addArc(self, x, y):
-        self.addNode(x)
-        self.addNode(y)
-        self._graph[x].add(y)
-
-    @property
-    def topologicalOrdering(self):
-
-        def topologicalOrderingDestructive(d):
-
-            if len(d) == 0:
-                return []
-
-            possibleInitialNodes = set(d.keys())
-            for k, v in d.items():
-                if len(v) > 0:
-                    possibleInitialNodes.discard(k)
-            if len(possibleInitialNodes) == 0:
-                raise CyclicGraphError(repr(d))
-            initialNode = possibleInitialNodes.pop()
-
-            for k, v in d.items():
-                v.discard(initialNode)
-            del d[initialNode]
-
-            return [initialNode] + topologicalOrderingDestructive(d)
-
-        return topologicalOrderingDestructive(copy.deepcopy(self._graph))
-
-
-def rfilter(r, it, propFilter={}, invert=False):
+def rfilter(r, it, invert=False):
     '''
 
     >>> list(rfilter(r'^.o+$', ['foo', 'bar']))
@@ -160,12 +110,6 @@ def rfilter(r, it, propFilter={}, invert=False):
 
     >>> list(rfilter(r'^.o+$', ['foo', 'bar'], invert=True))
     ['bar']
-
-    >>> list(rfilter(r'-(?P<x>[^-]+)-', ['fooo-baar-ooo', 'fooo-fooo-ooo'], propFilter={'x': r'o{3}'}))
-    ['fooo-fooo-ooo']
-
-    >>> list(rfilter(r'-(?P<x>[^-]+)-', ['fooo-.*-ooo', 'fooo-fooo-ooo', 'fooo-.+-ooo'], propFilter={'x': ['.*', '.+']}))
-    ['fooo-.*-ooo', 'fooo-.+-ooo']
 
     '''
 
@@ -183,19 +127,6 @@ def rfilter(r, it, propFilter={}, invert=False):
         ok = False
         if m:
             ok = True
-            if propFilter:
-                d = m.groupdict()
-                for k, v in propFilter.items():
-                    if k in d:
-                        if isinstance(v, basestring):
-                            if not re.search(v, d[k]):
-                                ok = False
-                                break
-                        else:
-                            if d[k] not in v:
-                                ok = False
-                                break
-
         if invert:
             if not ok:
                 yield x
@@ -270,7 +201,8 @@ class Line(OutputSrc):
         offset = self.indent * 4
         if isinstance(self.item, str):
             if src_line:
-                yield self._gen_mapping(self.item, src_line, src_offset, offset)
+                yield self._gen_mapping(self.item, src_line, src_offset,
+                                        offset)
         else:
             assert isinstance(self.item, Part)
             for m in self.item.src_mappings():
@@ -309,7 +241,7 @@ class Part(OutputSrc):
         for i in self.items:
             assert isinstance(i, (str, Part))
             if isinstance(i, str):
-               frag += i
+                frag += i
             elif isinstance(i, Part):
                 if frag and src_line:
                     yield self._gen_mapping(frag, src_line, src_offset, col)

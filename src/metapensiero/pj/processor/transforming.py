@@ -348,17 +348,18 @@ def load_transformations(py_ast_module):
     #     'NodeName': [...transformation functions...]
     # }
     d = {}
-    astNames = list(python_ast_names())
+    ast_names = list(python_ast_names())
     filenames = rfilter(
         r'^[^.]+\.py$',
         os.listdir(parent_of(py_ast_module.__file__)))
     for filename in filenames:
         if filename != '__init__.py':
-            modName = 'metapensiero.pj.transformations.%s' % filename.split('.')[0]
-            __import__(modName)
-            mod = sys.modules[modName]
+            mod_name = 'metapensiero.pj.transformations.%s' % \
+                       filename.split('.')[0]
+            __import__(mod_name)
+            mod = sys.modules[mod_name]
             for name in dir(mod):
-                if name in astNames:
+                if name in ast_names:
                     assert name not in d
                     value = getattr(mod, name)
                     if not isinstance(value, list) or isinstance(value, tuple):
