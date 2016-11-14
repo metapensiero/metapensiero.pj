@@ -259,7 +259,7 @@ class JSFunction(JSStatement):
 
 class JSAsyncFunction(JSFunction):
 
-    begin = 'async function'
+    begin = 'async function '
 
 
 class JSArrowFunction(JSFunction):
