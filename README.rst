@@ -86,7 +86,7 @@ Brief list of the supported Python semantics
 
 The fact that JavaScripthon doesn't *reinvent the wheel* by reimplementing in
 Python many of the features available with JavaScript translators/transpilers
-allow it to be lean while implementing quite a decent set of the core Python
+allows it to be lean while implementing quite a decent set of the core Python
 semanticts. These are, briefly:
 
 * Misc
@@ -100,6 +100,8 @@ semanticts. These are, briefly:
   - ``type(instance)``;
   - ``yield`` and ``yield from``;
   - ``async`` and ``await``;
+  - ``import`` and ``from...import`` to use any JS module (see `import
+    statements`_);
 
 * Comparisons (see section `Simple stuff`_ for the details)
 
@@ -136,6 +138,7 @@ semanticts. These are, briefly:
   - property descriptors;
   - special handling of ``property`` and ``classmethod`` descriptors;
   - async methods, generator methods;
+  - non-function body members (i.e. ``member_of_class_Foo = bar``);
 
 Installation
 ------------
