@@ -123,13 +123,17 @@ def ClassDef_exception(t, x):
 
 def ClassDef_default(t, x):
     """Converts a class to an ES6 class."""
+
+    # check if translatable
     _class_guards(t, x)
+
     name = x.name
     body = x.body
+
     if len(x.bases) > 0:
-        super_name = x.bases[0].id
+        superclass = JSNmae(x.bases[0].id)
     else:
-        super_name = None
+        superclass = None
 
     # strip docs from body
     fn_body = [e for e in body if isinstance(e, (ast.FunctionDef,
@@ -168,10 +172,6 @@ def ClassDef_default(t, x):
             fn.decorator_list = [] # remove so that the function transformer
             # will not complain
 
-    if super_name:
-        superclass = JSName(super_name)
-    else:
-        superclass = None
 
     def _from_assign_to_dict_item(e):
         key = e.targets[0]
