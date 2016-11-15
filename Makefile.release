@@ -40,7 +40,7 @@ help::
 	@printf "tag-release\n\tComplete the release tagging the working tree\n"
 
 .PHONY: tag-release
-tag-release: assert-master-branch
+tag-release:
 	git commit -a -m "Release $(VERSION)"
 	git tag -a -m "Version $(VERSION)" v$(VERSION)
 
