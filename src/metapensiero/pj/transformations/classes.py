@@ -130,7 +130,7 @@ def ClassDef_default(t, x):
     body = x.body
 
     if len(x.bases) > 0:
-        superclass = JSNmae(x.bases[0].id)
+        superclass = JSName(x.bases[0].id)
     else:
         superclass = None
 

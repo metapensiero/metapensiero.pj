@@ -22,6 +22,7 @@ def test_body_names_stop_at_func(astobj):
 
     assert body_local_names(astobj(outer).body) == {'yes', 'yes2'}
 
+
 def test_textwrap_behavior():
 
     txt = " " * 4 + "foo bar" + "\n" + " " * 4 + "bar foo" + "\n"
@@ -117,6 +118,7 @@ def test_exception():
         'MyError.prototype = Object.create(Error.prototype);\n'
         'MyError.prototype.constructor = MyError;\n'
         'class MySecondError extends MyError {\n'
+        '    /* A stupid error */\n'
         '}\n'
     )
 
@@ -153,6 +155,7 @@ def test_try_except_simple():
         'MyError.prototype = Object.create(Error.prototype);\n'
         'MyError.prototype.constructor = MyError;\n'
         'class MySecondError extends MyError {\n'
+        '    /* A stupid error */\n'
         '}\n'
         'try {\n'
         '    value = 0;\n'
@@ -167,6 +170,7 @@ def test_try_except_simple():
     )
 
     assert translate_object(func, body_only=True, enable_es6=True)[0] == expected
+
 
 def test_try_except_complex():
 
@@ -209,6 +213,7 @@ def test_try_except_complex():
         'MyError.prototype = Object.create(Error.prototype);\n'
         'MyError.prototype.constructor = MyError;\n'
         'class MySecondError extends MyError {\n'
+        '    /* A stupid error */\n'
         '}\n'
         'try {\n'
         '    value += 1;\n'
