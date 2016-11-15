@@ -172,6 +172,10 @@ def ClassDef_default(t, x):
             fn.decorator_list = [] # remove so that the function transformer
             # will not complain
 
+    # keep class doc if present
+    if _isdoc(body[0]):
+        fn_body = [body[0]] + fn_body
+
 
     def _from_assign_to_dict_item(e):
         key = e.targets[0]
