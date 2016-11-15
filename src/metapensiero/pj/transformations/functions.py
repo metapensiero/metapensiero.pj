@@ -198,17 +198,23 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
     # x is a function
     else:
         if is_in_method and fwrapper is None:
+            # set the incoming py_node for the sourcemap
+            fdef = JSArrowFunction(
+                name, args, body, acc, kwargs
+            )
+            fdef.py_node = x
             result = JSStatements([
                 JSVarStatement([str(name)], [None]),
-                JSArrowFunction(
-                    name, args, body, acc, kwargs
-                )
+                fdef
             ])
         elif is_in_method and fwrapper is JSGenFunction:
+            # set the incoming py_node for the sourcemap
+            fdef = fwrapper(
+                name, args, body, acc, kwargs
+            )
+            fdef.py_node = x
             result = JSStatements([
-                fwrapper(
-                    name, args, body, acc, kwargs
-                ),
+                fdef,
                 JSExpressionStatement(
                     JSAssignmentExpression(
                         JSName(name),
