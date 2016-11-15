@@ -67,7 +67,14 @@ class JSPass(JSNode):
 class JSCommentBlock(JSNode):
     def emit(self, text):
         assert text.find('*/') == -1
-        yield self.part('/* ', text, ' */')
+        lines = text.splitlines()
+        if len(lines) > 1:
+            yield self.line(self.part('/*', lines[0].strip()))
+            for l in lines[1:-1]:
+                yield self.line(l.strip())
+            yield self.line(self.part(lines[-1].strip(), ' */'))
+        else:
+            yield self.line(self.part('/* ', text, ' */'))
 
 
 #### Statements
