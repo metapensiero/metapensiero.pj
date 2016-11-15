@@ -19,10 +19,12 @@ from .processor.util import Block
 from .js_ast import JSStatements
 from . import transformations
 
-BABEL_COMPILER = os.path.join(os.path.dirname(__file__), 'data', 'babel-6.18.1.min.js')
-BABEL_POLYFILL = os.path.join(os.path.dirname(__file__), 'data', 'polyfill.min.js')
 log = logging.getLogger(__name__)
 
+BABEL_COMPILER = os.path.join(os.path.dirname(__file__), 'data',
+                              'babel-6.18.1.min.js')
+BABEL_POLYFILL = os.path.join(os.path.dirname(__file__), 'data',
+                              'polyfill.min.js')
 
 
 def _calc_file_names(src_filename, dst_filename=None, map_filename=None):

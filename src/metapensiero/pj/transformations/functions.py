@@ -227,7 +227,6 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
             ])
         else:
             fwrapper = fwrapper or JSFunction
-
             result = fwrapper(
                 name, args, body,
                 acc, kwargs

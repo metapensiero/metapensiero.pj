@@ -25,7 +25,7 @@ from ..js_ast import (
 )
 
 
-EXC_TEMPLATE="""\
+EXC_TEMPLATE = """\
 class %(name)s(Error):
 
     def __init__(self, message):
@@ -59,7 +59,7 @@ def _class_guards(t, x):
         t.unsupported(x, not (isinstance(node, (ast.FunctionDef,
                                                 ast.AsyncFunctionDef,
                                                 ast.Assign)) or \
-                              _isdoc(node) or isinstance(node, ast.Pass)) ,
+                              _isdoc(node) or isinstance(node, ast.Pass)),
                       "Class' body members must be functions or assignements")
         t.unsupported(x, isinstance(node, ast.Assign) and len(node.targets) > 1,
                       "Assignements must have only one target")
@@ -120,7 +120,6 @@ def ClassDef_exception(t, x):
     return res
 
 
-
 def ClassDef_default(t, x):
     """Converts a class to an ES6 class."""
 
@@ -142,20 +141,25 @@ def ClassDef_default(t, x):
     # all the other kind of members which are assigned stuff
     assigns = [e for e in body if isinstance(e, ast.Assign)]
 
-    # * Each FunctionDef must have self as its first arg
+    # Each FunctionDef must have self as its first arg
     # silly check for methods
     for node in fn_body:
         arg_names = [arg.arg for arg in node.args.args]
         t.unsupported(node, len(arg_names) == 0 or arg_names[0] != 'self',
                       "First arg on method must be 'self'")
 
+    # TODO: better express this... find if the constructor has to be the first
+    # as per ES6 doc
     if len(fn_body) > 0 and fn_body[0].name == '__init__':
         init = body[0]
-        # * __init__ may not contain a return statement
+        # __init__ should not contain a return statement
         # silly check
         for stmt in controlled_ast_walk(init):
             assert not isinstance(stmt, ast.Return)
 
+    # manage decorators. some are managed at class translation time and
+    # converted to equal ES6 syntax while the generic ones will be calculated
+    # at runtime
     decos = {}
     for fn in fn_body:
         # make sure the function hasn't any decorator managed by the function
@@ -164,12 +168,13 @@ def ClassDef_default(t, x):
         if fn.decorator_list and not \
            ((len(fn.decorator_list) == 1 and
             isinstance(fn.decorator_list[0], ast.Name) and
-            fn.decorator_list[0].id in ['property', 'classmethod', 'staticmethod']) or
+            fn.decorator_list[0].id in ['property', 'classmethod',
+                                        'staticmethod']) or
             (isinstance(fn.decorator_list[0], ast.Attribute) and
              fn.decorator_list[0].attr == 'setter')):
 
             decos[JSStr(fn.name)] = fn.decorator_list
-            fn.decorator_list = [] # remove so that the function transformer
+            fn.decorator_list = []  # remove so that the function transformer
             # will not complain
 
     # keep class doc if present
@@ -182,6 +187,7 @@ def ClassDef_default(t, x):
 
     stmts = [cls]
 
+    # prepare assignments mapping as js ast
     def _from_assign_to_dict_item(e):
         key = e.targets[0]
         value = e.value
@@ -191,7 +197,7 @@ def ClassDef_default(t, x):
 
     assigns = tuple(zip(*map(_from_assign_to_dict_item, assigns)))
 
-    stmts = [JSClass(JSName(name), superclass, fn_body)]
+    # render assignments as properties at runtime
     if assigns:
         from ..snippets import set_properties
         t.add_snippet(set_properties)
@@ -203,6 +209,8 @@ def ClassDef_default(t, x):
             )
         )
         stmts.append(assigns)
+
+    # calculate method decorators at runtime
     if decos:
         from ..snippets import set_decorators
         t.add_snippet(set_decorators)
@@ -219,6 +227,7 @@ def ClassDef_default(t, x):
             )
         )
         stmts.append(decos)
+
     # there is any decorator list on the class
     if x.decorator_list:
         from ..snippets import set_class_decorators

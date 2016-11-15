@@ -67,16 +67,19 @@ class Reporter:
 def transform(src_fname, dst_fname=None, transpile=False, enable_es6=False,
               enable_stage3=False, **kw):
     if transpile:
-        api.transpile_py_file(src_fname, dst_fname, enable_stage3=enable_stage3,
+        api.transpile_py_file(src_fname, dst_fname,
+                              enable_stage3=enable_stage3,
                               **kw)
     else:
         api.translate_file(src_fname, dst_fname, enable_es6=enable_es6,
                            enable_stage3=enable_stage3)
 
+
 def check_interpreter_supported():
     if sys.version_info < (3, 5):
         raise UnsupportedPythonError('JavaScripthon needs at least'
                                      ' Python 3.5 to run')
+
 
 def main(args=None, fout=None, ferr=None):
     result = 0
@@ -88,8 +91,8 @@ def main(args=None, fout=None, ferr=None):
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
     if args.output and len(args.files) > 1:
-        rep.print_err("Error: only one source file is allowed when --output is "
-                      "specified.")
+        rep.print_err("Error: only one source file is allowed when "
+                      "--output is specified.")
         result = 2
     else:
         try:

@@ -61,7 +61,6 @@ def For_range(t, x):
             bound = x.iter.args[1]
             step = x.iter.args[2]
 
-
         # TODO: as of now this doesn't support range(10, 0, -2)
 
         __bound = t.new_name()
@@ -75,6 +74,7 @@ def For_range(t, x):
                 JSName(name.id), JSOpAdd(), step),
             body
         )
+
 
 def For_dict(t, x):
     """Special 'for name in dict(expr)' statement translation. It detects
