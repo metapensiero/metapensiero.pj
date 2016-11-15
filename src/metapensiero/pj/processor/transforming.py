@@ -267,7 +267,7 @@ class Transformer:
         return res
 
     def _finalize_target_node(self, tnode, py_node=None):
-        tnode.py_node = self.remap_to or py_node
+        tnode.py_node = self.remap_to or py_node or tnode.py_node
         tnode.transformer = self
         if tnode.transformed_args is None:
             tnode.transformed_args = targs = []
