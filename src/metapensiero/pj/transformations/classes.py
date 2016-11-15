@@ -176,6 +176,11 @@ def ClassDef_default(t, x):
     if _isdoc(body[0]):
         fn_body = [body[0]] + fn_body
 
+    # assign incoming pynode to the JSClass for the sourcemap
+    cls = JSClass(JSName(name), superclass, fn_body)
+    cls.py_node = x
+
+    stmts = [cls]
 
     def _from_assign_to_dict_item(e):
         key = e.targets[0]

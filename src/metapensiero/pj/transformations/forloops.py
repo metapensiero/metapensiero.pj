@@ -116,14 +116,17 @@ def For_dict(t, x):
                         body, None
                     )
                 ]
+        # set the incoming py_node for the sourcemap
+        loop = JSForeachStatement(
+            name.id,
+            JSName(__dict),
+            body
+        )
+        loop.py_node = x
 
         return JSStatements([
             JSVarStatement([__dict], [expr]),
-            JSForeachStatement(
-                name.id,
-                JSName(__dict),
-                body
-            )
+            loop
         ])
 
 
@@ -152,13 +155,16 @@ def For_iterable(t, x):
 
         __iterable = t.new_name()
 
+        # set the incoming py_node for the sourcemap
+        loop = JSForofStatement(
+            name.id,
+            JSName(__iterable),
+            body,
+        )
+        loop.py_node = x
         return JSStatements([
             JSVarStatement([__iterable], [expr]),
-            JSForofStatement(
-                name.id,
-                JSName(__iterable),
-                body,
-            )
+            loop
         ])
 
 
