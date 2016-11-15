@@ -235,36 +235,35 @@ class Transformer:
         """Add a function to the snippets."""
         self.snippets.add(func)
 
-    def _transform_node(self, py_node):
+    def _transform_node(self, in_node):
         """This transforms a Python ast node to a JS ast node."""
 
-        if isinstance(py_node, list) or isinstance(py_node, tuple):
-            res = [self._transform_node(child) for child in py_node]
+        if isinstance(in_node, list) or isinstance(in_node, tuple):
+            res = [self._transform_node(child) for child in in_node]
 
-        elif isinstance(py_node, ast.AST):
+        elif isinstance(in_node, ast.AST):
             # prepare a context for the transformation if it's a
             # statement; it's used for example by try...catch stmts to
             # give hints to raise
-            with self.context_for(py_node):
+            with self.context_for(in_node):
                 # transformations can come in tuples or lists, take the
                 # first one
                 for transformation in self.transformations.get(
-                        py_node.__class__.__name__, []):
-                    transformed = transformation(self, py_node)
-                    if transformed is not None:
-                        self._finalize_target_node(transformed, py_node=py_node)
-                        res = transformed
+                        in_node.__class__.__name__, []):
+                    out_node = transformation(self, in_node)
+                    if out_node is not None:
+                        self._finalize_target_node(out_node, py_node=in_node)
+                        res = out_node
                         break
                 else:
-                    raise TransformationError(py_node, 'No transformation')
+                    raise TransformationError(in_node, 'No transformation')
 
-        elif isinstance(py_node, TargetNode):
-            self._finalize_target_node(py_node)
-            res = py_node
-
+        elif isinstance(in_node, TargetNode):
+            self._finalize_target_node(in_node)
+            res = in_node
         else:
             # e.g. an integer
-            res = py_node
+            res = in_node
         return res
 
     def _finalize_target_node(self, tnode, py_node=None):
