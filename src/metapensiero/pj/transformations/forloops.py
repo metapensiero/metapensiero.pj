@@ -198,30 +198,29 @@ def For_default(t, x):
     __bound = t.new_name()
     __i = t.new_name()
 
-    return JSStatements([
-        JSForStatement(
-            JSVarStatement(
-                [name.id, __i, __list,__bound],
-                [None, JSNum(0), expr,
-                 JSAttribute(JSName(__list), 'length')]
-            ),
-            JSBinOp(
+    return JSForStatement(
+        JSVarStatement(
+            [name.id, __i, __list,__bound],
+            [None, JSNum(0), expr,
+             JSAttribute(JSName(__list), 'length')]
+        ),
+        JSBinOp(
+            JSName(__i),
+            JSOpLt(),
+            JSName(__bound)),
+        JSExpressionStatement(
+            JSAugAssignStatement(
                 JSName(__i),
-                JSOpLt(),
-                JSName(__bound)),
+                JSOpAdd(),
+                JSNum(1))),
+        [
             JSExpressionStatement(
-                JSAugAssignStatement(
-                    JSName(__i),
-                    JSOpAdd(),
-                    JSNum(1))),
-            [
-                JSExpressionStatement(
-                    JSAssignmentExpression(
-                        JSName(name.id),
-                        JSSubscript(
-                            JSName(__list),
-                            JSName(__i))))
-            ] + body)])
+                JSAssignmentExpression(
+                    JSName(name.id),
+                    JSSubscript(
+                        JSName(__list),
+                        JSName(__i))))
+        ] + body)
 
 
 For = [For_range, For_dict, For_iterable, For_default]
