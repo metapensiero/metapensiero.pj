@@ -285,9 +285,12 @@ class Block(OutputSrc):
 
     def sourcemap(self, source, src_filename, src_offset=None):
         Token = sourcemaps.Token
-        tokens = [Token(m['dst_line'], m['dst_offset'], src_filename,
-                        m['src_line'], m['src_offset'], m['name']) for m in
-                  self.src_mappings(src_offset)]
+        tokens = []
+        for m in self.src_mappings(src_offset):
+            token = Token(m['dst_line'], m['dst_offset'], src_filename,
+                          m['src_line'], m['src_offset'], m['name'])
+            tokens.append(token)
+
         src_map = sourcemaps.SourceMap(
             sources_content={src_filename: source}
         )
