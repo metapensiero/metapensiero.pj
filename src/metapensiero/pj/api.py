@@ -8,6 +8,7 @@
 import ast
 import json
 import inspect
+import logging
 import os
 import textwrap
 
@@ -20,6 +21,8 @@ from . import transformations
 
 BABEL_COMPILER = os.path.join(os.path.dirname(__file__), 'data', 'babel-6.18.1.min.js')
 BABEL_POLYFILL = os.path.join(os.path.dirname(__file__), 'data', 'polyfill.min.js')
+log = logging.getLogger(__name__)
+
 
 
 def _calc_file_names(src_filename, dst_filename=None, map_filename=None):
@@ -144,6 +147,8 @@ def translates(src_text, dedent=True, src_filename=None, src_offset=None,
         js_text = snip_text + js_text
     src_map = js_code_block.sourcemap(complete_src or src_text, src_filename,
                                       (sline_offset, scol_offset))
+    for m in js_code_block.src_mappings((sline_offset, scol_offset)):
+        log.debug(m)
     return js_text, src_map
 
 

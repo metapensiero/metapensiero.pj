@@ -7,10 +7,13 @@
 
 import argparse
 from collections import deque
+import logging
 from pathlib import Path
 import sys
 
 from . import api
+
+log = logging.getLogger(__name__)
 
 
 class UnsupportedPythonError(Exception):
@@ -82,6 +85,8 @@ def main(args=None, fout=None, ferr=None):
     freeargs = {
         'truntime': args.truntime
     }
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
     if args.output and len(args.files) > 1:
         rep.print_err("Error: only one source file is allowed when --output is "
                       "specified.")
