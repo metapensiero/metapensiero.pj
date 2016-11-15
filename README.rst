@@ -29,47 +29,113 @@ It is based on previous work by `Andrew Schaaf <andrew@andrewschaaf.com>`_.
 .. contents:: Table of Contents
    :backlinks: top
 
-Goal
-----
+Introduction
+------------
 
-JavaScripthon is a small and simple Python 3.5+ translator to JavaScript
-which aims to be able to translate most of the Python's core semantics
-without providing a full python-in-js environment, as most existing
-translators do. It tries to emit code which is simple to read and
-check and it does so by switching to ES6 construct when
-necessary. This allows to simplify the needs of polyfills for many of
-the expected Python behaviors.
+JavaScripthon is a small and simple Python 3.5+ translator to JavaScript which
+aims to be able to translate most of the Python's core semantics without
+providing a full python-in-js environment, as most existing translators do. It
+tries to emit code which is simple to read and check. It does so by switching
+to ES6 construct when possible/required. This allows to simplify the needs of
+polyfills for many of the expected Python behaviors.
+
+It is designed to be the first step in a pipeline that translates your Pyhton
+code into something that a browser can understand. Usually it is used with
+tools like `BabelJS`__ and `Webpack`__ to prepare the final bundle that will
+be served to the browser. The steps from the source code to the bundle are the
+following:
+
+1) JavaScripthon converts your Python 3.5+ code to ES6 JavaScript modules;
+2) the BabelJS loader (configured inside Webpack or standalone) translates the
+   ES6 JavaScript to ES5 so that the browser can understand it;
+3) Webpack parses the resulting source code and packages your source code with
+   its dependencies by analyzing ``import`` statements and emits a
+   ``bundle.js`` ready to be served to the browser.
+
+Along this process the corresponding `source maps`__ are read and integrated at
+every step, allowing you to place breakpoints on your original Python source
+files when working with the developer tools of your browser.
+
+An example of such setup is provided in the ``examples`` directory.
+
+__ http://babeljs.io/
+__ http://webpack.github.io/
+__ http://blog.teamtreehouse.com/introduction-source-maps
+
+
+In addition to that, you can choose to do most these steps without using
+external JS tools. It comes with an `embedded js interpreter`__ that loads a
+standalone version of BabelJS and converts your code to ES5 JavaScript without
+the need to install anything else. In fact most of the the test you can find
+in ``tests/test_evaljs.py`` use the embedded interpreter to dual evaluate the
+source code (one time in Python, one time in JavaScript) and simply check that
+the results are the same.
+
+__ https://github.com/amol-/dukpy
+
+Thanks to that, JavaScripthon can also be used as a server-side library to
+translate single functions or classes that you want your browser to load and
+evaluate.
 
 The interface with the JS world is completely flat, just import the modules
 or use the expected globals (``window``, ``document``, etc...) as you
 would do in JavaScript.
 
-The ES6 code is then converted (if requested) to ES5 code with the aid
-of the popular `BabelJS`__ library together with the fantastic
-`dukpy`__ embedded js interpreter.
+Brief list of the supported Python semantics
+--------------------------------------------
 
-__ http://babeljs.io/
-__ https://github.com/amol-/dukpy
+The fact that JavaScripthon doesn't *reinvent the wheel* by reimplementing in
+Python many of the features available with JavaScript translators/transpilers
+allow it to be lean while implementing quite a decent set of the core Python
+semanticts. These are, briefly:
 
-Another goal is to just convert single modules or entire dir tree
-structures without emitting concatenated or minified files. This is
-left to the Javascript tooling of your choice. I use `webpack`__ which
-has BabelJS integration to get this job done. Check out the bundled
-example.
+* Misc
 
-__ http://webpack.github.io/
+  - list slices;
+  - list' ``append()``;
+  - dict's ``copy()``, ``update()``;
+  - ``len()``;
+  - ``print()``;
+  - ``str()``;
+  - ``type(instance)``;
+  - ``yield`` and ``yield from``;
+  - ``async`` and ``await``;
 
-JavaScripthon also generates `SourceMap`__ files with the higher detail
-possible in order to aid development. This means that while you are
-debugging some piece of translated JavaScript with the browser's
-tools, you can actually choose to follow the flow of the code on the
-original Pyhton 3 source.
+* Comparisons (see section `Simple stuff`_ for the details)
 
-__ http://blog.teamtreehouse.com/introduction-source-maps
+  - most of the basics;
+  - ``isinstance()``;
+  - ``element in container`` for use with lists, objects, strings and the new
+    ES6 collections like ``Map``, ``Set`` and so on;
+  - identity checks: ``foo is bar``;
+  - ternary comparisons like ``x < y <= z``;
 
-This project is far from complete, but it has achieved a good deal of
-features, please have a look at ``tests/test_evaljs.py`` file for the
-currently supported ones.
+* Statements (see section `Simple stuff`_ and `for statement`_ for the
+  details)
+
+  - ``if...elif...else``;
+  - ``while`` loop;
+  - ``for`` over list, over range, over plain js objects, over iterables (JS
+    iterables);
+  - ``try...except...finally`` with pythonesque behavior (see
+    `try...except...finally statement`_ section for the details);
+
+* Functions (see `Functions`_ section)
+
+  - standard functions, generator functions, async functions;
+  - parameters defaults;
+  - keyword parameters;
+  - parameters accumulators (``*args`` and ``**kwargs``), with some
+    restrictions;
+
+* Classes (see `Classes`_ section)
+
+  - single inheritance;
+  - Exception classes for use with ``except`` statement;
+  - class decorators and method decorators;
+  - property descriptors;
+  - special handling of ``property`` and ``classmethod`` descriptors;
+  - async methods, generator methods;
 
 Installation
 ------------
