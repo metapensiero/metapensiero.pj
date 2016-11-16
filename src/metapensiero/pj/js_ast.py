@@ -10,7 +10,7 @@ import json
 import re
 
 from .processor.transforming import TargetNode
-from .processor.util import delimited
+from .processor.util import delimited, delimited_multi_line
 
 
 JS_KEYWORDS = set([
@@ -67,14 +67,7 @@ class JSPass(JSNode):
 class JSCommentBlock(JSNode):
     def emit(self, text):
         assert text.find('*/') == -1
-        lines = text.splitlines()
-        if len(lines) > 1:
-            yield self.line(self.part('/*', lines[0].strip()))
-            for l in lines[1:-1]:
-                yield self.line(l.strip())
-            yield self.line(self.part(lines[-1].strip(), ' */'))
-        else:
-            yield self.line(self.part('/* ', text, ' */'))
+        yield from delimited_multi_line(self, text, '/*', '*/', True)
 
 
 #### Statements
@@ -499,9 +492,16 @@ class JSNull(JSNode):
     def emit(self):
         yield self.part('null')
 
+
 class JSRest(JSNode):
     def emit(self, value):
         yield self.part('...', value)
+
+
+class JSTemplateLiteral(JSNode):
+
+    def emit(self, value):
+        yield from delimited_multi_line(self, value, '`')
 
 
 #### Ops

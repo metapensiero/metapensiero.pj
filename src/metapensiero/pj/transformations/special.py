@@ -31,6 +31,7 @@ from ..js_ast import (
     JSPass,
     JSStarImport,
     JSStatements,
+    JSTemplateLiteral,
     JSThis,
     JSUnaryOp,
 )
@@ -220,11 +221,19 @@ def Call_dict_copy(t, x):
             )
 
 
+def Call_template(t, x):
+    if (isinstance(x.func, ast.Name) and x.func.id == 'tmpl') and \
+       len(x.args) > 0:
+        assert len(x.args) == 1
+        assert isinstance(x.args[0], ast.Str)
+        return JSTemplateLiteral(x.args[0].s)
+
+
 from .classes import Call_super
 from .obvious import Call_default
 Call = [Call_typeof, Call_isinstance, Call_print, Call_len,
         Call_new, Call_super, Call_import, Call_str, Call_type,
-        Call_dict_update, Call_dict_copy, Call_default]
+        Call_dict_update, Call_dict_copy, Call_template, Call_default]
 
 
 #### Ops

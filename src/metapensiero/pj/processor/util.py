@@ -32,6 +32,22 @@ def delimited(delimiter, arr, dest=None, at_end=False):
         dest.append(delimiter)
     return dest
 
+def delimited_multi_line(node, text, begin=None, end=None, add_space=False):
+    """Used to deal with single and multi line literals"""
+    begin = begin or ''
+    end = end or ''
+    if begin and not end:
+        end = begin
+    sp = ' ' if add_space else ''
+    lines = text.splitlines()
+    if len(lines) > 1:
+        yield node.line(node.part(begin, lines[0].strip()))
+        for l in lines[1:-1]:
+            yield node.line(l.strip())
+        yield node.line(node.part(lines[-1].strip(), end))
+    else:
+        yield node.line(node.part(begin, sp, text, sp, end))
+
 
 def parent_of(path):
     return '/'.join(path.rstrip('/').split('/')[:-1])
