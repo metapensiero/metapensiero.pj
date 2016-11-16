@@ -59,3 +59,22 @@ def set_properties(cls, props):
                 'writable': True
             }
         Object.defineProperty(cls.prototype, p, desc)
+
+
+def _assert(comp, msg):
+    from __globals__ import Error, Object, typeof
+
+    def AssertionError(self, message):
+        self.name = 'AssertionError'
+        self.message = message or 'Custom error AssertionError'
+        if typeof(Error.captureStackTrace) == 'function':
+            Error.captureStackTrace(self, self.constructor)
+        else:
+            self.stack = Error(message).stack
+
+    AssertionError.prototype = Object.create(Error.prototype)
+    AssertionError.prototype.constructor = AssertionError
+
+    msg = msg or 'Assertion failed.'
+    if not comp:
+        raise AssertionError(msg)

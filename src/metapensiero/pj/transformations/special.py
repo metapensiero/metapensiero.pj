@@ -396,3 +396,11 @@ def Attribute_list_append(t, x):
 
 
 Attribute = [Attribute_list_append, Attribute_default]
+
+
+def Assert(t, x):
+    """Converts asserts to just a snippet function call"""
+    if t.enable_snippets:
+        from ..snippets import _assert
+        t.add_snippet(_assert)
+        return JSCall(JSAttribute('_pj', '_assert'), [x.test, x.msg])
