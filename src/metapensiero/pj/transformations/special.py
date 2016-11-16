@@ -392,7 +392,7 @@ def Attribute_list_append(t, x):
     if x.attr == 'append' and isinstance(x.value, ast.Call) and \
        isinstance(x.value.func, ast.Name) and x.value.func.id == 'list' and \
        len(x.value.args) == 1:
-        return JSAttribute(JSName(x.value.args[0].id), 'push')
+        return JSAttribute(x.value.args[0], 'push')
 
 
 Attribute = [Attribute_list_append, Attribute_default]
