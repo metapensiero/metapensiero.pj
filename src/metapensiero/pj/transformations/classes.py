@@ -42,8 +42,8 @@ def %(name)s(message):
     else:
         self.stack = Error(message).stack
 
-%(name)s.prototype = Object.create(Error.prototype);
-%(name)s.prototype.constructor = %(name)s;
+%(name)s.prototype = Object.create(Error.prototype)
+%(name)s.prototype.constructor = %(name)s
 """
 
 
