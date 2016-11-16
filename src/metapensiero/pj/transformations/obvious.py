@@ -232,7 +232,12 @@ def Name_default(t, x):
     if cls:
         return cls()
     else:
-        return JSName(x.id)
+        n = x.id
+        if n.startswith('d_'):
+            n = n.replace('d_', '$')
+        elif n.startswith('dd_'):
+            n = n.replace('dd_', '$$')
+        return JSName(n)
 
 
 def NameConstant(t, x):
