@@ -116,12 +116,15 @@ def Return(t, x):
 
 
 def Delete(t, x):
+    js = []
     for t in x.targets:
-        assert isinstance(t, ast.Subscript)
-        assert isinstance(t.slice, ast.Index)
-    return JSStatements([
-                JSDeleteStatement(t.value, t.slice.value)
-                for t in x.targets])
+        jd = JSDeleteStatement(t)
+        if len(x.targets) == 1:
+            jd.py_node = x
+        else:
+            jd.py_node = t
+        js.append(jd)
+    return JSStatements(js)
 
 
 def Await(t, x):

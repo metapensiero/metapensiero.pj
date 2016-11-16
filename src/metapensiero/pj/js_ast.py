@@ -172,8 +172,8 @@ class JSContinueStatement(JSStatement):
 
 
 class JSDeleteStatement(JSStatement):
-    def emit(self, obj, key):
-        yield self.part('delete ', obj, '[', key, ']')
+    def emit(self, value):
+        yield self.line(['delete ', value], delim=True)
 
 
 class JSTryCatchFinallyStatement(JSStatement):
