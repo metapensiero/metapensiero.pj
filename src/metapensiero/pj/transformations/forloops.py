@@ -181,36 +181,37 @@ def For_default(t, x):
 
     .. code:: javascript
 
-      for(var name, __list=expr, __i=0, __bound=__list.length; __i < __bound: __i++) {
-          name = __list[__i];
+      for(var name, arr=expr, ix=0, length=arr.length; ix < length: ix++) {
+          name = arr[ix];
           //body ...
       }
 
     """
 
-    t.unsupported(x, not isinstance(x.target, ast.Name), "Target must be a name")
+    t.unsupported(x, not isinstance(x.target, ast.Name), "Target must be a name,"
+                  " Are you sure is only one?")
 
     name = x.target
     expr = x.iter
     body = x.body
 
-    __list = t.new_name()
-    __bound = t.new_name()
-    __i = t.new_name()
+    arr = t.new_name()
+    length = t.new_name()
+    ix = t.new_name()
 
     return JSForStatement(
         JSVarStatement(
-            [name.id, __i, __list,__bound],
+            [name.id, ix, arr, length],
             [None, JSNum(0), expr,
-             JSAttribute(JSName(__list), 'length')]
+             JSAttribute(JSName(arr), 'length')]
         ),
         JSBinOp(
-            JSName(__i),
+            JSName(ix),
             JSOpLt(),
-            JSName(__bound)),
+            JSName(length)),
         JSExpressionStatement(
             JSAugAssignStatement(
-                JSName(__i),
+                JSName(ix),
                 JSOpAdd(),
                 JSNum(1))),
         [
@@ -218,8 +219,8 @@ def For_default(t, x):
                 JSAssignmentExpression(
                     JSName(name.id),
                     JSSubscript(
-                        JSName(__list),
-                        JSName(__i))))
+                        JSName(arr),
+                        JSName(ix))))
         ] + body)
 
 
