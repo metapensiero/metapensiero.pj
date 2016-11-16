@@ -190,7 +190,7 @@ def Call_dict_update(t, x):
         t.es6_guard(x, "dict.update() requires ES6")
         return JSCall(
             JSAttribute(JSName('Object'), 'assign'),
-            [JSName(x.func.value.args[0].id)] + x.args
+            [x.func.value.args[0]] + x.args
             )
 
 
@@ -217,7 +217,7 @@ def Call_dict_copy(t, x):
         t.es6_guard(x, "dict.copy() requires ES6")
         return JSCall(
             JSAttribute(JSName('Object'), 'assign'),
-            (JSDict([], []), JSName(x.func.value.args[0].id))
+            (JSDict([], []), x.func.value.args[0])
             )
 
 
