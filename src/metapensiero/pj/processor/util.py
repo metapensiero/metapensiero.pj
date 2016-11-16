@@ -21,6 +21,9 @@ IGNORED_NAMES = ('__all__',)
 
 
 def delimited(delimiter, arr, dest=None, at_end=False):
+    """Similar to str.join(), but returns an array with an option to append the
+    delimiter at the end.
+    """
     if dest is None:
         dest = []
     if arr:

@@ -7,7 +7,6 @@
 #
 
 import ast
-from functools import reduce
 import re
 
 from ..js_ast import (
@@ -66,6 +65,7 @@ BinOp = [BinOp_pow, BinOp_default]
 def Name_self(t, x):
     if x.id == 'self':
         return JSThis()
+
 
 from .obvious import Name_default
 Name = [Name_self, Name_default]
@@ -213,7 +213,7 @@ def Call_dict_copy(t, x):
     if isinstance(x.func, ast.Attribute) and x.func.attr == 'copy' and \
        isinstance(x.func.value, ast.Call) and  \
        isinstance(x.func.value.func, ast.Name) and \
-       x.func.value.func.id == 'dict' and  len(x.func.value.args) == 1:
+       x.func.value.func.id == 'dict' and len(x.func.value.args) == 1:
         t.es6_guard(x, "dict.copy() requires ES6")
         return JSCall(
             JSAttribute(JSName('Object'), 'assign'),
@@ -255,9 +255,13 @@ def NotEq(t, x):
 
 #### Import
 
+
 INSIDE_DUNDER_RE = re.compile(r'([a-zA-Z0-9])__([a-zA-Z0-9])')
+
+
 def _replace_inside_dunder(name):
     return INSIDE_DUNDER_RE.sub(r'\1-\2', name)
+
 
 def Import(t, x):
     t.es6_guard(x, "'import' statement requires ES6")
@@ -276,6 +280,7 @@ def Import(t, x):
             JSStarImport(path_module, n.asname or n.name)
         )
     return JSStatements(result)
+
 
 def ImportFrom(t, x):
     names = []
@@ -322,6 +327,7 @@ def ImportFrom(t, x):
 
 from .obvious import Compare_default
 
+
 def Compare_in(t, x):
     if not isinstance(x.ops[0], (ast.NotIn, ast.In)):
         return
@@ -338,7 +344,9 @@ def Compare_in(t, x):
             result = JSUnaryOp(JSOpNot(), result)
         return result
 
+
 Compare = [Compare_in, Compare_default]
+
 
 def Subscript_slice(t, x):
 
@@ -355,11 +363,15 @@ def Subscript_slice(t, x):
 
         return JSCall(JSAttribute(x.value, 'slice'), args)
 
+
 from .obvious import Subscript_default
+
 
 Subscript = [Subscript_slice, Subscript_default]
 
+
 from .obvious import Attribute_default
+
 
 def Attribute_list_append(t, x):
     """Converts ``list(foo).append(bar)`` to ``foo.push(bar)``.
