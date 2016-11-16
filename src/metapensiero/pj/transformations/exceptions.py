@@ -60,7 +60,10 @@ def Try(t, x):
                 )
             prev_except = stmt
         t.ctx['ename'] = ename
-        return JSTryCatchFinallyStatement(x.body, ename, prev_except, x.finalbody)
+        result = JSTryCatchFinallyStatement(x.body, ename, prev_except, x.finalbody)
+    else:
+        result = JSTryCatchFinallyStatement(x.body, None, None, x.finalbody)
+    return result
 
 
 def Raise(t, x):
