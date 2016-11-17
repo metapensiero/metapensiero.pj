@@ -99,13 +99,14 @@ def Call_isinstance(t, x):
     """
     if (isinstance(x.func, ast.Name) and x.func.id == 'isinstance'):
         assert len(x.args) == 2
-        if isinstance(x.args[1], ast.Name):
-            return JSBinOp(x.args[0], JSOpInstanceof(), x.args[1])
-        elif isinstance(x.args[1], (ast.Tuple, ast.List, ast.Set)):
+        if isinstance(x.args[1], (ast.Tuple, ast.List, ast.Set)):
             classes = x.args[1].elts
             target = x.args[0]
             args = tuple((target, c) for c in classes)
             return JSMultipleArgsOp(JSOpInstanceof(), JSOpOr(), *args)
+        else:
+            return JSBinOp(x.args[0], JSOpInstanceof(), x.args[1])
+
 
 
 # <code>print(...)</code> &rarr; <code>console.log(...)</code>
