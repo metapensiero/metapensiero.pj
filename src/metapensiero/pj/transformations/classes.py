@@ -34,7 +34,7 @@ class %(name)s(Error):
 """
 
 EXC_TEMPLATE_ES5 = """\
-def %(name)s(message):
+def %(name)s(self, message):
     self.name = '%(name)s'
     self.message = message or 'Custom error %(name)s'
     if typeof(Error.captureStackTrace) == 'function':
