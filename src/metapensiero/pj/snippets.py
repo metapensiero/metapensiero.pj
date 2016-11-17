@@ -64,17 +64,17 @@ def set_properties(cls, props):
 def _assert(comp, msg):
     from __globals__ import Error, Object, typeof
 
-    def AssertionError(self, message):
-        self.name = 'AssertionError'
-        self.message = message or 'Custom error AssertionError'
+    def PJAssertionError(self, message):
+        self.name = 'PJAssertionError'
+        self.message = message or 'Custom error PJAssertionError'
         if typeof(Error.captureStackTrace) == 'function':
             Error.captureStackTrace(self, self.constructor)
         else:
             self.stack = Error(message).stack
 
-    AssertionError.prototype = Object.create(Error.prototype)
-    AssertionError.prototype.constructor = AssertionError
+    PJAssertionError.prototype = Object.create(Error.prototype)
+    PJAssertionError.prototype.constructor = PJAssertionError
 
     msg = msg or 'Assertion failed.'
     if not comp:
-        raise AssertionError(msg)
+        raise PJAssertionError(msg)

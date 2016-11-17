@@ -733,3 +733,16 @@ def test_yield_in_method():
         return d.foo()
 
     assert test_yim(5) == eval_object_es6(test_yim, 'test_yim(5);')
+
+
+def test_assert():
+
+    def test_ass():
+
+        try:
+            assert False, "Error raised"
+        except Exception as e:
+            return e
+        return True
+
+    assert {'message': 'Error raised', 'name': 'PJAssertionError'} == eval_object(test_ass, 'test_ass();')
