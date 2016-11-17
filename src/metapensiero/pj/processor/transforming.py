@@ -256,7 +256,8 @@ class Transformer:
                         res = out_node
                         break
                 else:
-                    raise TransformationError(in_node, 'No transformation')
+                    raise TransformationError(in_node,
+                                              "No transformation for the node")
 
         elif isinstance(in_node, TargetNode):
             self._finalize_target_node(in_node)
