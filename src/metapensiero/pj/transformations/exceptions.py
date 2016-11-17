@@ -67,7 +67,6 @@ def Try(t, x):
 
 
 def Raise(t, x):
-
     if x.exc is None:
         ename = t.ctx.get('ename')
         t.unsupported(x, not ename, "'raise' has no argument but failed obtaining"

@@ -34,11 +34,11 @@ def set_decorators(cls, props):
         deco = decos.reduce(reducer, cls.prototype[p])
         cls.prototype[p] = deco
 
+
 def set_class_decorators(cls, decos):
     def reducer(val, deco):
         return deco(val, cls)
     return decos.reduce(reducer, cls)
-
 
 
 def set_properties(cls, props):

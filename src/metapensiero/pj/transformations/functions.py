@@ -109,7 +109,6 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
         else:
             args.append(JSAssignmentExpression(k, v))
 
-
     # local function vars
     local_vars = list(set(body_local_names(body)) - set(arg_names))
     if len(local_vars) > 0:
