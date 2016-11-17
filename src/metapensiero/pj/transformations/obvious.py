@@ -194,8 +194,13 @@ def Attribute_default(t, x):
 
 
 def Subscript_default(t, x):
-    if isinstance(x.slice, ast.Index):
-        return JSSubscript(x.value, x.slice.value)
+    assert isinstance(x.slice, ast.Index)
+    v = x.slice.value
+    if isinstance(v, ast.UnaryOp) and isinstance(v.op, ast.USub):
+        return JSSubscript(
+            JSCall(JSAttribute(x.value, 'slice'), [v]),
+            JSNum(0))
+    return JSSubscript(x.value, v)
 
 
 def UnaryOp(t, x):
