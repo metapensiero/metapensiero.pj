@@ -20,6 +20,7 @@ from ..js_ast import (
     JSName,
     JSNamedImport,
     JSNewCall,
+    JSNull,
     JSNum,
     JSOpInstanceof,
     JSOpNot,
@@ -404,4 +405,4 @@ def Assert(t, x):
     if t.enable_snippets:
         from ..snippets import _assert
         t.add_snippet(_assert)
-        return JSCall(JSAttribute('_pj', '_assert'), [x.test, x.msg])
+        return JSCall(JSAttribute('_pj', '_assert'), [x.test, x.msg or JSNull()])
