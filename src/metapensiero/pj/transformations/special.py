@@ -319,7 +319,7 @@ def ImportFrom(t, x):
                 else:
                     # from .. import foo
                     result.append(
-                        JSStarImport('../' * x.level + n.name,
+                        JSStarImport('../' * (x.level -1) + n.name,
                                      n.asname or n.name)
                     )
             result = JSStatements(result)
