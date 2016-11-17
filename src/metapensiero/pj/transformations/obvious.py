@@ -64,6 +64,16 @@ from ..js_ast import (
 )
 
 
+def _normalize_name(n):
+    if n.startswith('d_'):
+        n = n.replace('d_', '$')
+    elif n.startswith('dd_'):
+        n = n.replace('dd_', '$$')
+    elif not n.startswith('_')  and n.endswith('_'):
+        n = n[:-1]
+    return n
+
+
 #### Statements
 
 
@@ -180,7 +190,7 @@ def Call_default(t, x):
 
 
 def Attribute_default(t, x):
-    return JSAttribute(x.value, str(x.attr))
+    return JSAttribute(x.value, _normalize_name(str(x.attr)))
 
 
 def Subscript_default(t, x):
@@ -236,10 +246,7 @@ def Name_default(t, x):
         return cls()
     else:
         n = x.id
-        if n.startswith('d_'):
-            n = n.replace('d_', '$')
-        elif n.startswith('dd_'):
-            n = n.replace('dd_', '$$')
+        n = _normalize_name(n)
         return JSName(n)
 
 
