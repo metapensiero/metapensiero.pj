@@ -254,6 +254,7 @@ Is = Eq
 def NotEq(t, x):
     return JSOpStrongNotEq()
 
+IsNot = NotEq
 
 #### Import
 
