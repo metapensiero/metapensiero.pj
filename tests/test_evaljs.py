@@ -763,3 +763,17 @@ def test_classmethod():
         return CMTest.creator().prop
 
     assert eval_object_es6(test_cm, 'test_cm();') == 1
+
+
+def test_in_weakset():
+
+    def test_in_ws():
+
+        w = WeakSet()
+        def prova():
+            pass
+
+        w.add(prova)
+        return prova in w
+
+    assert eval_object_es6(test_in_ws, 'test_in_ws();') == True
