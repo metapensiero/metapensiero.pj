@@ -41,7 +41,8 @@ def _isyield(el):
 def FunctionDef(t, x, fwrapper=None, mwrapper=None):
 
     is_method = isinstance(t.parent_of(x), ast.ClassDef)
-    is_in_method = all(lambda p: isinstance(p, (ast.FunctionDef,
+    is_in_method = not x.name.startswith('fn_') and \
+                   all(lambda p: isinstance(p, (ast.FunctionDef,
                                                 ast.AsyncFunctionDef,
                                                 ast.ClassDef)) \
                        for p in t.parents(x, stop_at=ast.ClassDef)) and \
