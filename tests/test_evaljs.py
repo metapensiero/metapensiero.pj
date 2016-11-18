@@ -746,3 +746,20 @@ def test_assert():
         return True
 
     assert {'message': 'Error raised', 'name': 'PJAssertionError'} == eval_object(test_ass, 'test_ass();')
+
+
+def test_classmethod():
+
+    def test_cm():
+
+        class CMTest:
+
+            prop = 1
+
+            @classmethod
+            def creator(self):
+                return new(self())
+
+        return CMTest.creator().prop
+
+    assert eval_object_es6(test_cm, 'test_cm();') == 1
