@@ -237,7 +237,7 @@ and evaluating the same statement:
 
 You can even try more fancy ES6 features, like destructuring assignment:
 
-.. code::
+.. code:: bash
 
    $ pj -s "a, b, c = (2, 3, 5) \na+b+c" -e
    10
