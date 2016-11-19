@@ -72,8 +72,12 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
                   "unsupported")
 
     name = x.name
-    arg_names = [arg.arg for arg in x.args.args]
     body = x.body
+    # get positional arg names and trim self if present
+    arg_names = [arg.arg for arg in x.args.args]
+    if is_method or (len(arg_names) > 0 and arg_names[0] == 'self'):
+        arg_names = arg_names[1:]
+
 
     acc = JSRest(x.args.vararg.arg) if x.args.vararg else None
     defaults = x.args.defaults
@@ -90,9 +94,6 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
     else:
         kwargs = None
 
-    if is_method or (len(arg_names) > 0 and arg_names[0] == 'self'):
-        arg_names = arg_names[1:]
-
     # be sure that the defaults equal in length the args list
     if isinstance(defaults, (list, tuple)) and len(defaults) < len(arg_names):
         defaults = ([None] * (len(arg_names) - len(defaults))) + list(defaults)
@@ -103,6 +104,7 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
         arg_names += [kw_acc.arg]
         defaults += [JSDict((), ())]
 
+    # render defaults of positional arguments and keywords accumulator
     args = []
     for k, v in zip(arg_names, defaults):
         if v is None:
@@ -213,6 +215,8 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
                 name, args, body, acc, kwargs
             )
             fdef.py_node = x
+            # arrow functions cannot be generators, render them as normal
+            # function and add a bind(self)
             result = JSStatements([
                 fdef,
                 JSExpressionStatement(
