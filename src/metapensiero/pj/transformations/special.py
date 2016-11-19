@@ -10,18 +10,21 @@ import ast
 import re
 
 from ..js_ast import (
+    JSAssignmentExpression,
     JSAttribute,
     JSBinOp,
     JSCall,
     JSCommentBlock,
     JSDependImport,
     JSDict,
+    JSExpressionStatement,
     JSMultipleArgsOp,
     JSName,
     JSNamedImport,
     JSNewCall,
     JSNull,
     JSNum,
+    JSOpIn,
     JSOpInstanceof,
     JSOpNot,
     JSOpOr,
@@ -31,6 +34,7 @@ from ..js_ast import (
     JSPass,
     JSStarImport,
     JSStatements,
+    JSSubscript,
     JSTemplateLiteral,
     JSThis,
     JSUnaryOp,
@@ -77,6 +81,13 @@ def Call_typeof(t, x):
     if (isinstance(x.func, ast.Name) and x.func.id == 'typeof'):
         assert len(x.args) == 1
         return JSUnaryOp(JSOpTypeof(), x.args[0])
+
+
+def Call_callable(t, x):
+    """Translates callable(foo) to foo instanceof Function"""
+    if (isinstance(x.func, ast.Name) and x.func.id == 'callable'):
+        assert len(x.args) == 1
+        return JSBinOp(x.args[0], JSOpInstanceof(), JSName('Function'))
 
 
 def Call_isinstance(t, x):
@@ -231,11 +242,46 @@ def Call_template(t, x):
         return JSTemplateLiteral(x.args[0].s)
 
 
+def Call_hasattr(t, x):
+    """Translates ``hasattr(foo, bar)`` to ``bar in foo``."""
+    if (isinstance(x.func, ast.Name) and x.func.id == 'hasattr') and \
+       len(x.args) == 2:
+        return JSBinOp(x.args[1], JSOpIn(), x.args[0])
+
+
+def Call_getattr(t, x):
+    """Translates ``getattr(foo, bar, default)`` to ``foo[bar] || default``."""
+    if (isinstance(x.func, ast.Name) and x.func.id == 'getattr') and \
+       2 <= len(x.args) < 4:
+        if len(x.args) == 2:
+            res = JSSubscript(x.args[0], x.args[1])
+        else:
+            res = JSBinOp(
+                JSSubscript(x.args[0], x.args[1]),
+                JSOpOr(),
+                x.args[2]
+            )
+        return res
+
+
+def Call_setattr(t, x):
+    """Translates ``setattr(foo, bar, value)`` to ``foo[bar] = value``."""
+    if (isinstance(x.func, ast.Name) and x.func.id == 'setattr') and \
+       len(x.args) == 3:
+        return JSExpressionStatement(
+            JSAssignmentExpression(
+                JSSubscript(x.args[0], x.args[1]),
+                x.args[2]
+            )
+        )
+
+
 from .classes import Call_super
 from .obvious import Call_default
-Call = [Call_typeof, Call_isinstance, Call_print, Call_len,
+Call = [Call_typeof, Call_callable, Call_isinstance, Call_print, Call_len,
         Call_new, Call_super, Call_import, Call_str, Call_type,
-        Call_dict_update, Call_dict_copy, Call_template, Call_default]
+        Call_dict_update, Call_dict_copy, Call_template, Call_hasattr,
+        Call_getattr, Call_setattr, Call_default]
 
 
 #### Ops
