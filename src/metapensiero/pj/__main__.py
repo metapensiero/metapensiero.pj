@@ -26,7 +26,7 @@ parser = argparse.ArgumentParser(
     description="A Python 3.5+ to ES6 JavaScript compiler",
     prog='pj'
 )
-parser.add_argument('files', metavar='file', type=str, nargs='+',
+parser.add_argument('files', metavar='file', type=str, nargs='*',
                     help="Python source file(s) or directory(ies) "
                     "to convert. When it is a directory it will be "
                     "converted recursively")
@@ -48,7 +48,15 @@ parser.add_argument('-d', '--debug', action='store_true',
                     help="Enable error reporting")
 parser.add_argument('--pdb', action='store_true',
                     help="Enter post-mortem debug when an error occurs")
-
+parser.add_argument('-s', '--string', type=str,
+                    help="Convert a string, useful for small snippets. If the string"
+                    " is '-' will be read from the standard input.")
+parser.add_argument('-e', '--eval', action='store_true',
+                    help="Evaluate the string supplied with the -s  using the"
+                    " embedded interpreter and return the last result. This will "
+                    "convert the input string with all the extensions enabled "
+                    "(comparable to adding the '-5' option) and so it will take"
+                    " some time because of BabelJS load times.")
 
 class Reporter:
     def __init__(self, fout=None, ferr=None):
@@ -75,6 +83,16 @@ def transform(src_fname, dst_fname=None, transpile=False, enable_es6=False,
                            enable_stage3=enable_stage3)
 
 
+def transform_string(input, transpile=False, enable_es6=False,
+                     enable_stage3=False, **kw):
+    if transpile:
+        res = api.transpile_pys(input, enable_stage3=enable_stage3)[0]
+    else:
+        res = api.translates(input, enable_es6=enable_es6,
+                             enable_stage3=enable_stage3)[0]
+    return res
+
+
 def check_interpreter_supported():
     if sys.version_info < (3, 5):
         raise UnsupportedPythonError('JavaScripthon needs at least'
@@ -90,7 +108,43 @@ def main(args=None, fout=None, ferr=None):
     }
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
-    if args.output and len(args.files) > 1:
+    if not (args.files or args.string):
+        rep.print_err("Error: You have to supply either a string with -s or a "
+                      "filename")
+        result = 3
+    if args.eval and not args.string:
+        rep.print_err("Error: You have to supply a string with -s when using "
+                      "evaluation")
+    elif args.string:
+        check_interpreter_supported()
+        input = args.string
+        if input == '-':
+            input = sys.stdin.read()
+        if args.eval:
+            es6 = es5 = stage3 = True
+        else:
+            es5 = args.es5
+            es6 = args.es6
+            stage3 = args.stage3
+        try:
+            res = transform_string(input, es5, es6, stage3,
+                                   **freeargs)
+            if args.eval:
+                res = api.evaljs(res, load_es6_polyfill=True)
+            rep.print(res)
+        except Exception as e:
+            if args.pdb:
+                import pdb
+                pdb.post_mortem(e.__traceback__)
+            elif args.debug:
+                raise
+            else:
+                error = "%s: %s" % (e.__class__.__name__, e)
+                rep.print_err("An error occurred while compiling source "
+                              "from string")
+                rep.print_err(error)
+            result = 1
+    elif args.output and len(args.files) > 1:
         rep.print_err("Error: only one source file is allowed when "
                       "--output is specified.")
         result = 2
