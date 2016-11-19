@@ -92,7 +92,7 @@ semanticts. These are, briefly:
 * Misc
 
   - list slices;
-  - list' ``append()``;
+  - list's ``append()``;
   - dict's ``copy()``, ``update()``;
   - ``len()``;
   - ``print()``;
@@ -102,6 +102,13 @@ semanticts. These are, briefly:
   - ``async`` and ``await``;
   - ``import`` and ``from...import`` to use any JS module (see `import
     statements`_);
+  - ``callable()``;
+  - ``hasattr()``, ``getattr()``, ``setattr()``;
+  - template literals with ``tmpl('a string with ${substitution}')``;
+  - names starting with ``d_`` and ``dd_`` will have that part replaced with
+    ``$`` and ``$$``, respectively;
+  - names ending with an underscore will have it removed. Useful for example
+    with the AVA ES6 test runner which has a check named ``is``;
 
 * Comparisons (see section `Simple stuff`_ for the details)
 
@@ -121,6 +128,7 @@ semanticts. These are, briefly:
     iterables);
   - ``try...except...finally`` with pythonesque behavior (see
     `try...except...finally statement`_ section for the details);
+  - ``assert`` statement;
 
 * Functions (see `Functions`_ section)
 
@@ -129,6 +137,10 @@ semanticts. These are, briefly:
   - keyword parameters;
   - parameters accumulators (``*args`` and ``**kwargs``), with some
     restrictions;
+  - functions in methods are usually converted to "arrow functions" (the new
+    ES6 syntax like ``(foo, bar) => foo * bar;``) because they automatically
+    keep ``this`` from the enclosing scope. Appending ``_fn`` to a function
+    declaration will force the translation to a normal function;
 
 * Classes (see `Classes`_ section)
 
@@ -174,10 +186,11 @@ A ``pj`` console script is also automatically installed:
 
 .. code:: bash
 
+
   $ pj --help
-  usage: pj [-h] [--disable-es6] [--disable-stage3] [-5] [-o OUTPUT] [-d]
-            [--pdb]
-            file [file ...]
+  usage: pj [-h] [--disable-es6] [--disable-stage3] [-5] [--transform-runtime]
+            [-o OUTPUT] [-d] [--pdb] [-s STRING] [-e]
+            [file [file ...]]
 
   A Python 3.5+ to ES6 JavaScript compiler
 
@@ -192,10 +205,43 @@ A ``pj`` console script is also automatically installed:
                           --es5 is specified)
     --disable-stage3      Disable ES7 stage3 features during conversion
     -5, --es5             Also transpile to ES5 using BabelJS.
+    --transform-runtime   Add trasform runtime as plugin during transpile
     -o OUTPUT, --output OUTPUT
                           Output file/directory where to save the generated code
     -d, --debug           Enable error reporting
     --pdb                 Enter post-mortem debug when an error occurs
+    -s STRING, --string STRING
+                          Convert a string, useful for small snippets. If the
+                          string is '-' will be read from the standard input.
+    -e, --eval            Evaluate the string supplied with the -s using the
+                          embedded interpreter and return the last result. This
+                          will convert the input string with all the extensions
+                          enabled (comparable to adding the '-5' option) and so
+                          it will take some time because of BabelJS load times.
+
+This offers many ways to test the framework, both the string conversion and
+the evaluation using the embedded JavaScript interpreter are very handy. For
+example:
+
+.. code:: bash
+
+  $ pj -s '"foo" if True else "bar"'
+  (true ? "foo" : "bar");
+
+and evaluating the same statement:
+
+.. code:: bash
+
+  $ pj -s '"foo" if True else "bar"' -e
+  foo
+
+You can even try more fancy ES6 features, like destructuring assignment:
+
+.. code::
+
+   $ pj -s "a, b, c = (2, 3, 5) \na+b+c" -e
+   10
+
 
 Conversions Rosetta Stone
 -------------------------
