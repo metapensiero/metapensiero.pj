@@ -57,6 +57,10 @@ parser.add_argument('-e', '--eval', action='store_true',
                     "convert the input string with all the extensions enabled "
                     "(comparable to adding the '-5' option) and so it will take"
                     " some time because of BabelJS load times.")
+parser.add_argument('--dump-ast', action='store_true',
+                    help="Dump the Python ast. You need to have the package"
+                    " metapensiero.pj[test] installed")
+
 
 class Reporter:
     def __init__(self, fout=None, ferr=None):
@@ -120,6 +124,9 @@ def main(args=None, fout=None, ferr=None):
         input = args.string
         if input == '-':
             input = sys.stdin.read()
+        if args.dump_ast:
+            from .testing import ast_dumps
+            rep.print(ast_dumps(input)[1])
         if args.eval:
             es6 = es5 = stage3 = True
         else:

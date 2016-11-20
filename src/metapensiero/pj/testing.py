@@ -45,7 +45,21 @@ def ast_object_to_js(obj, es6=False):
 
 def ast_dump_file(fname):
     """Dump an entire file."""
-    from meta.asttools import str_ast
     with open(fname) as f:
-        node = ast.parse(f.read(), filename=fname)
-    return node, str_ast(node)
+        return ast_dumps(f.read(), filename=fname)
+
+
+def ast_dumps(input, filename='', first_stmt_only=False):
+    """Ast dump a string"""
+    try:
+        from meta.asttools import str_ast
+    except ImportError:
+        str_ast = None
+    node = ast.parse(input, filename=filename)
+    if first_stmt_only:
+        node = node.body[0]
+    if str_ast:
+        dump = str_ast(node)
+    else:
+        dump = ""
+    return node, dump
