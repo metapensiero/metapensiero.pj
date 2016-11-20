@@ -138,18 +138,24 @@ class JSForStatement(JSStatement):
         yield self.line('}')
 
 
-class JSForeachStatement(JSStatement):
+class JSForIterableStatement(JSStatement):
+
+    operator = ' of '
+
     def emit(self, target, source, body):
-        yield self.line(['for (var ', target, ' in ', source, ') {'])
+        yield self.line(['for (var ', self.part(target), self.operator,
+                         source, ') {'])
         yield from self.lines(body, indent=True, delim=True)
         yield self.line('}')
 
 
-class JSForofStatement(JSStatement):
-    def emit(self, target, source, body):
-        yield self.line(['for (var ', target, ' of ', source, ') {'])
-        yield from self.lines(body, indent=True, delim=True)
-        yield self.line('}')
+class JSForeachStatement(JSForIterableStatement):
+
+    operator = ' in '
+
+
+class JSForofStatement(JSForIterableStatement):
+    pass
 
 
 class JSReturnStatement(JSStatement):

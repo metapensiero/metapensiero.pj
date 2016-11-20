@@ -146,24 +146,20 @@ def For_iterable(t, x):
         x.iter.func.id == 'iterable' and
         len(x.iter.args) == 1) and (not x.orelse):
 
-        t.unsupported(x, not isinstance(x.target, ast.Name),
-                      "Target must be a name")
-
-        name = x.target
         expr = x.iter.args[0]
         body = x.body
-
-        __iterable = t.new_name()
+        target = x.target
+        iterable = t.new_name()
 
         # set the incoming py_node for the sourcemap
         loop = JSForofStatement(
-            name.id,
-            JSName(__iterable),
+            target,
+            JSName(iterable),
             body,
         )
         loop.py_node = x
         return JSStatements([
-            JSVarStatement([__iterable], [expr]),
+            JSVarStatement([iterable], [expr]),
             loop
         ])
 
