@@ -109,15 +109,33 @@ def body_local_names(body):
     return names
 
 
-def node_names(x):
+def node_names(py_node):
+    """Extract 'names' from a Python node. Names are all those interesting for the
+    enclosing scope.
+
+    Returns a set containing them. The nodes considered are the Assign and the
+    ones that defines namespaces, the function and class definitions.
+
+    The assignment can be something like:
+
+    .. code:: python
+      a = b # 'a' is the target
+      a = b = c # 'a' and 'b' are the targets
+      a1, a2 = b = c # ('a1', 'a2') and 'b' are the targets
+    """
     names = set()
-    if isinstance(x, ast.Assign):
-        for target in x.targets:
-            if isinstance(target, ast.Name) and target.id not in \
+    if isinstance(py_node, ast.Assign):
+        for el in py_node.targets:
+            if isinstance(el, ast.Name) and el.id not in \
                IGNORED_NAMES:
-                names.add(target.id)
-    elif isinstance(x, (ast.FunctionDef, ast.ClassDef)):
-        names.add(x.name)
+                names.add(el.id)
+            elif isinstance(el, ast.Tuple):
+                for elt in el.elts:
+                    if isinstance(elt, ast.Name) and elt.id not in \
+                       IGNORED_NAMES:
+                        names.add(elt.id)
+    elif isinstance(py_node, (ast.FunctionDef, ast.ClassDef)):
+        names.add(py_node.name)
     return names
 
 
