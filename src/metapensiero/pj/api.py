@@ -143,15 +143,20 @@ def translates(src_text, dedent=True, src_filename=None, src_offset=None,
     jsast = t.transform_code(pyast)
     js_code_block = Block(jsast)
     js_text = js_code_block.read()
+    dline_offset = dcol_offset = 0
     if t.snippets:
         snip_text = Block(t.transform_snippets()).read()
-        sline_offset += len(snip_text.splitlines())
+        dline_offset += len(snip_text.splitlines())
         js_text = snip_text + js_text
-    src_map = js_code_block.sourcemap(complete_src or src_text, src_filename,
-                                      (sline_offset, scol_offset))
-    for m in js_code_block.src_mappings((sline_offset, scol_offset)):
-        log.debug(m)
-    return js_text, src_map
+    enc_src_map, src_map = js_code_block.sourcemap(complete_src or src_text,
+                                                   src_filename,
+                                                   (sline_offset, scol_offset),
+                                                   (dline_offset, dcol_offset))
+    for t in src_map.tokens:
+        log.debug("js: (%d, %d)\t\t py: (%d, %d)\t txt: '%s'",
+                  t.dst_line, t.dst_col, t.src_line - sline_offset,
+                  t.src_col - scol_offset, t.mapping['text'])
+    return js_text, enc_src_map
 
 
 def transpile_es6s(es6_text, es6_filename=None, es6_sourcemap=None,

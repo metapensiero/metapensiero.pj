@@ -185,7 +185,7 @@ class OutputSrc:
         <https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k>`_.
         """
         return {
-            'src_line': src_line - 1 if src_line else None,
+            'src_line': src_line,
             'src_offset': src_offset,
             'dst_line': None,
             'dst_offset': dst_offset,
@@ -202,8 +202,16 @@ class OutputSrc:
             # multi-line comments have an offset of -1
             if offset < 0:
                 offset = 0
-            result = (getattr(py_node, 'lineno', None),
-                      offset)
+
+            # special handling of nodes that are decorable. Those nodes expose
+            # a 'lineno' that starts with the first decorator. for now, take
+            # the last decorator lineno and add one
+            if isinstance(py_node, (ast.FunctionDef, ast.AsyncFunctionDef,
+                                    ast.ClassDef)) and py_node.decorator_list:
+                result = (py_node.decorator_list[-1].lineno + 1, offset)
+            else:
+                result = (getattr(py_node, 'lineno', None),
+                          offset)
         else:
             result = (None, None)
         return result
@@ -280,10 +288,15 @@ class Part(OutputSrc):
             elif isinstance(i, Part):
                 if frag and src_line:
                     yield self._gen_mapping(frag, src_line, src_offset, col)
-                    col += len(frag)
-                    frag = ''
+                col += len(frag)
+                frag = ''
                 psrc = str(i)
-                yield from i._translate_src_mappings(i, src, psrc, col)
+                # ... then , ask the subpart to produce a src mapping and
+                # maybe relocate it if necessary
+                # yield from i._translate_src_mappings(i, src, psrc, col)
+                for m in i.src_mappings():
+                    m['dst_offset'] += col
+                    yield m
                 col += len(psrc)
         else:
             if frag and src_line:
@@ -308,11 +321,13 @@ class Block(OutputSrc):
         super().__init__(None)
         self.lines = list(node.serialize())
 
-    def src_mappings(self, src_offset=None):
+    def src_mappings(self, src_offset=None, dst_offset=None):
         sline_offset, scol_offset = src_offset or (0, 0)
-        for ix, line in enumerate(self.lines, start=0):
+        dline_offset, dcol_offset = dst_offset or (0, 0)
+        for ix, line in enumerate(self.lines, start=1):
             for m in line.src_mappings():
-                m['dst_line'] = ix
+                m['dst_line'] = ix + dline_offset
+                m['dst_offset'] += dcol_offset
                 m['src_line'] += sline_offset
                 m['src_offset'] += scol_offset
                 yield m
@@ -320,12 +335,12 @@ class Block(OutputSrc):
     def read(self):
         return ''.join(str(l) for l in self.lines)
 
-    def sourcemap(self, source, src_filename, src_offset=None):
+    def sourcemap(self, source, src_filename, src_offset=None, dst_offset=None):
         Token = sourcemaps.Token
         tokens = []
-        for m in self.src_mappings(src_offset):
-            token = Token(m['dst_line'], m['dst_offset'], src_filename,
-                          m['src_line'], m['src_offset'], m['name'])
+        for m in self.src_mappings(src_offset, dst_offset):
+            token = Token(m['dst_line'] - 1, m['dst_offset'], src_filename,
+                          m['src_line'] - 1, m['src_offset'], m['name'], m)
             tokens.append(token)
 
         src_map = sourcemaps.SourceMap(
@@ -333,7 +348,7 @@ class Block(OutputSrc):
         )
         for t in tokens:
             src_map.add_token(t)
-        return sourcemaps.encode(src_map)
+        return sourcemaps.encode(src_map), src_map
 
 
 def obj_source(obj):

@@ -258,12 +258,13 @@ def strip(content):
 
 # namedtuples have a nice repr and they support comparison (useful for
 # bisect search)
-class Token(namedtuple('TokenBase', 'dst_line dst_col src src_line src_col name')):
+class Token(namedtuple('TokenBase', 'dst_line dst_col src src_line src_col name'
+                       ' mapping')):
     __slots__ = ()
     def __new__(cls, dst_line=0, dst_col=0, src='', src_line=0, src_col=0,
-                name=None):
+                name=None, mapping=None):
         return super(Token, cls).__new__(cls, dst_line, dst_col,
-                                         src, src_line, src_col, name)
+                                         src, src_line, src_col, name, mapping)
 
 def shift_tokens(tokens, dst_line=0, dst_col=0, src_line=0, src_col=0):
     return [t._replace(dst_line=t.dst_line + dst_line,
