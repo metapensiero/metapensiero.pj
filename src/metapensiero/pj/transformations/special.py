@@ -361,15 +361,16 @@ def ImportFrom(t, x):
             for n in x.names:
                 if x.level == 1:
                     # from . import foo
-                    result.append(
-                        JSStarImport('./' + n.name, n.asname or n.name)
-                    )
+                    imp = JSStarImport('./' + n.name, n.asname or n.name)
                 else:
                     # from .. import foo
-                    result.append(
-                        JSStarImport('../' * (x.level -1) + n.name,
-                                     n.asname or n.name)
-                    )
+                    imp = JSStarImport('../' * (x.level -1) + n.name,
+                                       n.asname or n.name)
+                if len(x.names) == 1:
+                    imp.py_node = x
+                else:
+                    imp.py_node = n
+                result.append(imp)
             result = JSStatements(result)
     return result
 
