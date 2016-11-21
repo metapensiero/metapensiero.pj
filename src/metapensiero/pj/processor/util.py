@@ -278,15 +278,25 @@ class Part(OutputSrc):
 
     def src_mappings(self):
         src = str(self)
+        # optional position in source file, if this is missing, there's no
+        # reason for generate a source mapping. (not all python ast elements
+        # can be source located)
         src_line, src_offset = self._pos_in_src()
+        # accumulator for string text
         frag = ''
         col = 0
+        # for every item that composes this part...
         for i in self.items:
             assert isinstance(i, (str, Part))
             if isinstance(i, str):
+                # if it's a string, just add it to the accumulator (usually
+                # comma, parens, etc...)
                 frag += i
             elif isinstance(i, Part):
+                # if the item is a part
                 if frag and src_line:
+                    # .. and if there is accumulated text and a src location
+                    # emit a src mapping for the accumulated text and reset it
                     yield self._gen_mapping(frag, src_line, src_offset, col)
                 col += len(frag)
                 frag = ''
@@ -299,6 +309,8 @@ class Part(OutputSrc):
                     yield m
                 col += len(psrc)
         else:
+            # at the end of the loop, if there is still a fragment and a src
+            # location, emit a mapping for it
             if frag and src_line:
                 yield self._gen_mapping(frag, src_line, src_offset, col)
 
