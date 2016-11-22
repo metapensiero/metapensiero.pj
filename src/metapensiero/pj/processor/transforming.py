@@ -168,12 +168,12 @@ class Transformer:
 
         self.node_parent_map = build_node_parent_map(top)
 
-        local_vars = body_local_names(body) - self._globals
+        local_vars = body_local_names(body)
         self.ctx['vars'] = local_vars
         result = self.statements_class(body)
         self._finalize_target_node(result)
 
-        local_vars = list(local_vars)
+        local_vars = list(local_vars - self._globals)
         if len(local_vars) > 0:
             local_vars.sort()
             vars = JSVarStatement(local_vars,
