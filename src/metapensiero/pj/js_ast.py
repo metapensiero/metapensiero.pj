@@ -18,7 +18,7 @@ JS_KEYWORDS = set([
     'finally', 'for', 'function', 'if', 'in', 'instanceof', 'new', 'return',
     'switch', 'this', 'throw', 'try', 'typeof', 'var', 'void', 'while', 'with',
 
-    'abstract', 'boolean', 'byte', 'char', 'class', 'const', 'debugger',
+    'abstract', 'boolean', 'byte', 'char', 'class', 'const',
     'double', 'enum', 'export', 'extends', 'final', 'float', 'goto',
     'implements', 'import', 'int', 'interface', 'long', 'native', 'package',
     'private', 'protected', 'public', 'short', 'static', 'super',
