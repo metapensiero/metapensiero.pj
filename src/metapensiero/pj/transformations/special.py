@@ -33,6 +33,7 @@ from ..js_ast import (
     JSPass,
     JSStarImport,
     JSStatements,
+    JSStr,
     JSSubscript,
     JSTemplateLiteral,
     JSThis,
@@ -86,7 +87,15 @@ def Call_callable(t, x):
     """Translates callable(foo) to foo instanceof Function"""
     if (isinstance(x.func, ast.Name) and x.func.id == 'callable'):
         assert len(x.args) == 1
-        return JSBinOp(x.args[0], JSOpInstanceof(), JSName('Function'))
+        return JSBinOp(
+            JSBinOp(x.args[0], JSOpInstanceof(), JSName('Function')),
+            JSOpOr(),
+            JSBinOp(
+                JSUnaryOp(JSOpTypeof(), x.args[0]),
+                JSOpStrongEq(),
+                JSStr('function')
+            )
+        )
 
 
 def Call_isinstance(t, x):
