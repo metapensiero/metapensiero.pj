@@ -173,7 +173,7 @@ def ClassDef_default(t, x):
             (isinstance(fn.decorator_list[0], ast.Attribute) and
              fn.decorator_list[0].attr == 'setter')):
 
-            decos[JSStr(fn.name)] = fn.decorator_list
+            decos[fn.name] = (JSStr(fn.name), fn.decorator_list)
             fn.decorator_list = []  # remove so that the function transformer
             # will not complain
 
@@ -192,10 +192,15 @@ def ClassDef_default(t, x):
         key = e.targets[0]
         value = e.value
         if isinstance(key, ast.Name):
-            key = ast.Str(key.id)
-        return key, value
+            rendered_key = ast.Str(key.id)
+            sort_key = key.id
+        else:
+            rendered_key = key
+            sort_key = '~'
+        return sort_key, rendered_key, value
 
-    assigns = tuple(zip(*map(_from_assign_to_dict_item, assigns)))
+    assigns = tuple(zip(*sorted(map(_from_assign_to_dict_item, assigns),
+                                key=lambda e: e[0])))
 
     # render assignments as properties at runtime
     if assigns:
@@ -205,7 +210,7 @@ def ClassDef_default(t, x):
             JSCall(
                 JSAttribute(JSName('_pj'), 'set_properties'),
                 (JSName(name),
-                 JSDict(assigns[0], assigns[1])),
+                 JSDict(assigns[1], assigns[2])),
             )
         )
         stmts.append(assigns)
@@ -216,9 +221,10 @@ def ClassDef_default(t, x):
         t.add_snippet(set_decorators)
         keys = []
         values = []
-        for k, v in decos.items():
-            keys.append(k)
-            values.append(JSList(v))
+        for k, v in sorted(decos.items(), key=lambda i: i[0]):
+            rendered_key, dlist = v
+            keys.append(rendered_key)
+            values.append(JSList(dlist))
         decos = JSExpressionStatement(
             JSCall(
                 JSAttribute(JSName('_pj'), 'set_decorators'),
