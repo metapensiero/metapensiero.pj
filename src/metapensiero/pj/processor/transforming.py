@@ -282,7 +282,7 @@ class Transformer:
             self._args_stack.pop()
 
     def transform_snippets(self):
-        snippets = tuple(self.snippets)
+        snippets = tuple(sorted(self.snippets, key=lambda e: e.__name__))
         srcs = [obj_source(s) for s in snippets]
         src = textwrap.indent('\n'.join(srcs), ' ' * 4)
         names = [s.__name__ for s in snippets]
