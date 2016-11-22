@@ -21,7 +21,6 @@ from ..js_ast import (
     JSMultipleArgsOp,
     JSName,
     JSNamedImport,
-    JSNewCall,
     JSNull,
     JSNum,
     JSOpIn,
@@ -155,15 +154,16 @@ def Call_new(t, x):
 
     NAME_STRING = getNameString(x.func)
 
-    res = None
-
     if (NAME_STRING and re.search(r'^[A-Z]', NAME_STRING)):
         # TODO: generalize args mangling and apply here
         # assert not any([x.keywords, x.starargs, x.kwargs])
-        res = JSNewCall(x.func, x.args)
+        subj = x
     elif isinstance(x.func, ast.Name) and x.func.id == 'new':
-        res = JSNewCall(x.args[0].func, x.args[0].args)
-    return res
+        subj = x.args[0]
+    else:
+        subj = None
+    if subj:
+        return Call_default(t, subj, operator='new ')
 
 def Call_import(t, x):
     if (isinstance(x.func, ast.Name) and x.func.id == '__import__'):

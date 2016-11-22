@@ -389,9 +389,13 @@ class JSIfExp(JSNode):
 
 
 class JSCall(JSNode):
-    def emit(self, func, args, kwargs=None):
+
+    operator = ''
+
+    def emit(self, func, args, kwargs=None, operator=None):
+        operator = operator or self.operator
         kwargs = kwargs or []
-        arr = [func, '(']
+        arr = [operator, func, '(']
         fargs = args.copy()
         if kwargs:
             fargs.append(kwargs)
@@ -400,12 +404,9 @@ class JSCall(JSNode):
         yield self.part(*arr)
 
 
-class JSNewCall(JSNode):
-    def emit(self, func, args):
-        arr = ['new ', func, '(']
-        delimited(', ', args, dest=arr)
-        arr.append(')')
-        yield self.part(*arr)
+class JSNewCall(JSCall):
+
+    operator = 'new '
 
 
 class JSAttribute(JSNode):

@@ -175,7 +175,7 @@ def IfExp(t, x):
     return JSIfExp(x.test, x.body, x.orelse)
 
 
-def Call_default(t, x):
+def Call_default(t, x, operator=None):
     # See [pj.transformations.special](special.py) for special cases
     kwargs = []
     if x.keywords:
@@ -186,7 +186,7 @@ def Call_default(t, x):
         kwargs = JSDict(*zip(*kwargs))
     else:
         kwargs = None
-    return JSCall(x.func, x.args, kwargs)
+    return JSCall(x.func, x.args, kwargs, operator)
 
 
 def Attribute_default(t, x):
