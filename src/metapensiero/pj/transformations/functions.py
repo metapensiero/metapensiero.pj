@@ -113,7 +113,13 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
             args.append(JSAssignmentExpression(k, v))
 
     # local function vars
-    local_vars = list(set(body_local_names(body)) - set(arg_names))
+    if 'vars' in t.ctx:
+        upper_vars = t.ctx['vars']
+    else:
+        upper_vars = set()
+    local_vars = list((set(body_local_names(body)) - set(arg_names)) -
+                      upper_vars)
+    t.ctx['vars'] = upper_vars | set(local_vars)
     if len(local_vars) > 0:
         local_vars.sort()
         body = [JSVarStatement(
