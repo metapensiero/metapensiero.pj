@@ -9,6 +9,15 @@
 JavaScripthon: a Python 3 to ES6 JavaScript translator
 ======================================================
 
+.. image:: https://travis-ci.org/azazel75/metapensiero.pj.svg?branch=master
+   :target: https://travis-ci.org/azazel75/metapensiero.pj
+   :align: left
+
+.. image:: https://badges.gitter.im/javascripthon/Lobby.svg
+   :alt: Join the chat at https://gitter.im/javascripthon/Lobby
+   :target: https://gitter.im/javascripthon/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+   :align: left
+
 .. figure:: http://s3.amazonaws.com/fossbytes.content/wp-content/uploads/2016/04/Javascripthon-python-js-converter.jpg
    :alt: JavaScripthon
    :align: center
@@ -1091,13 +1100,6 @@ These are the terse guidelines::
 
   Have fun
 
-
-Build status
-------------
-
-.. image:: https://travis-ci.org/azazel75/metapensiero.pj.svg?branch=master
-    :target: https://travis-ci.org/azazel75/metapensiero.pj
-
 Contributing
 ------------
 
@@ -1204,8 +1206,3 @@ __ http://kangax.github.io/compat-table/es6/
 * `A story`__ about ES6 crazyest stuff... symbols
 
 __ http://blog.keithcirkel.co.uk/metaprogramming-in-es6-symbols/
-
-
-.. image:: https://badges.gitter.im/javascripthon/Lobby.svg
-   :alt: Join the chat at https://gitter.im/javascripthon/Lobby
-   :target: https://gitter.im/javascripthon/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
