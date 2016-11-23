@@ -1204,3 +1204,8 @@ __ http://kangax.github.io/compat-table/es6/
 * `A story`__ about ES6 crazyest stuff... symbols
 
 __ http://blog.keithcirkel.co.uk/metaprogramming-in-es6-symbols/
+
+
+.. image:: https://badges.gitter.im/javascripthon/Lobby.svg
+   :alt: Join the chat at https://gitter.im/javascripthon/Lobby
+   :target: https://gitter.im/javascripthon/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
