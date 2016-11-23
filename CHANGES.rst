@@ -3,6 +3,35 @@
 Changes
 -------
 
+0.5 (2016-11-23)
+~~~~~~~~~~~~~~~~
+
+- translate ``tmpl("A string with js ${interpolation}")`` to ES6 template
+  literals;
+- preliminary support to translate names like ``d_foo`` and ``dd_bar`` to
+  ``$foo`` and ``$$bar``;
+- addded translation of the ``assert`` statement;
+- fixed a bug in ``try...except...finally`` statement when there's no
+  ``except`` section;
+- added translation for ``foo is not bar`` that seems to have dedicated ast
+  node;
+- if the function is defined in a method but starts with ``fn_`` do not convert
+  it to an arrow function. Useful to *not* maintain ``this``;
+- added translation for ``callable`` and ``hasattr/getattr/setattr``;
+- updated for loops to support more than one target, so now its possible to
+  write loops like ``for k, v in iterable(a_map):``;
+- updated documentation;
+- added a new cli option ``-s`` to translate source from the command line or
+  the standard input;
+- fixed a pair of bugs on sourcemaps;
+- added a new cli option ``--eval`` to also evaluate the produced JavaScript
+  using the embedded interpreter;
+- added a new cli option ``--dump-ast`` to print out the ast tree of the
+  passed in string;
+- added sorting to the rendered snippets/decorators/assignments so that their
+  order does not change at every ricompilation;
+- do not re-declare variables declare in outer scopes;
+
 
 0.4 (2016-11-15)
 ~~~~~~~~~~~~~~~~
