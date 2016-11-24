@@ -77,8 +77,7 @@ def test_imports():
 
         __all__ = ['test_name', 'test_foo']
 
-    expected = ('var test_foo;\n'
-                "import * as foo from 'foo';\n"
+    expected = ("import * as foo from 'foo';\n"
                 "import * as bar from 'bar';\n"
                 "import * as b from 'foo/bar';\n"
                 "import {hello as h, bye as bb} from 'foo/bar';\n"
@@ -87,6 +86,7 @@ def test_imports():
                 "import {bar} from './foo';\n"
                 "import {zoo} from 'foo-bar';\n"
                 "import * as fb from 'foo-bar';\n"
+                'var test_foo;\n'
                 'test_name = 2;\n'
                 'test_foo = true;\n'
                 'export {test_name};\n'
