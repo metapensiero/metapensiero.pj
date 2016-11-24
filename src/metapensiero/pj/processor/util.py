@@ -237,6 +237,8 @@ class Line(OutputSrc):
         yield self
 
     def src_mappings(self):
+        if self.node.transformer.disable_srcmap:
+            return
         src_line, src_offset = self._pos_in_src()
         offset = self.indent * 4
         if isinstance(self.item, str):
@@ -274,7 +276,8 @@ class Part(OutputSrc):
         yield self
 
     def src_mappings(self):
-        src = str(self)
+        if self.node.transformer.disable_srcmap:
+            return
         # optional position in source file, if this is missing, there's no
         # reason for generate a source mapping. (not all python ast elements
         # can be source located)

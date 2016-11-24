@@ -106,6 +106,7 @@ class Transformer:
     enable_es6 = False
     enable_let = False
     enable_stage3 = False
+    disable_srcmap = False
 
     """Used in subtransformation to remap a node on a Transformer instance to the
     ast produced by a substransform."""
@@ -294,6 +295,7 @@ class Transformer:
         t = self.new_from(self)
         t.snippets = None
         t.enable_snippets = False
+        t.disable_srcmap = True
         return t.transform_code(trans_src)
 
     def add_globals(self, *items):
