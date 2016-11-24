@@ -327,6 +327,13 @@ class Part(OutputSrc):
                                str(self))
 
 
+def linecounter(iterable, start=1):
+    count = start
+    for line in iterable:
+        yield count, line
+        count += len(re.findall('\n', str(line)))
+
+
 class Block(OutputSrc):
 
     def __init__(self, node):
@@ -334,9 +341,10 @@ class Block(OutputSrc):
         self.lines = list(node.serialize())
 
     def src_mappings(self, src_offset=None, dst_offset=None):
+
         sline_offset, scol_offset = src_offset or (0, 0)
         dline_offset, dcol_offset = dst_offset or (0, 0)
-        for ix, line in enumerate(self.lines, start=1):
+        for ix, line in linecounter(self.lines, start=1):
             for m in line.src_mappings():
                 m['dst_line'] = ix + dline_offset
                 m['dst_offset'] += dcol_offset

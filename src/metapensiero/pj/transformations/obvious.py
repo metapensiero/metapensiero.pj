@@ -90,7 +90,7 @@ def Assign_all(t, x):
         t.es6_guard(x, "'__all__' assignement requires ES6")
         elements = x.value.elts
         result = [JSExport(el.s) for el in elements]
-        return JSStatements(result)
+        return JSStatements(*result)
 
 Assign = [Assign_all, Assign_default]
 
@@ -134,7 +134,7 @@ def Delete(t, x):
         else:
             jd.py_node = t
         js.append(jd)
-    return JSStatements(js)
+    return JSStatements(*js)
 
 
 def Await(t, x):

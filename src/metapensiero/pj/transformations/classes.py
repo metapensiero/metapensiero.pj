@@ -251,7 +251,7 @@ def ClassDef_default(t, x):
             )
         )
         stmts.append(cls_decos)
-    return JSStatements(stmts)
+    return JSStatements(*stmts)
 
 
 ClassDef = [ClassDef_exception, ClassDef_default]

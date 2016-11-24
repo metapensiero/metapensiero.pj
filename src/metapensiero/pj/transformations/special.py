@@ -337,7 +337,7 @@ def Import(t, x):
         result.append(
             JSStarImport(path_module, n.asname or n.name)
         )
-    return JSStatements(result)
+    return JSStatements(*result)
 
 
 def ImportFrom(t, x):
@@ -380,7 +380,7 @@ def ImportFrom(t, x):
                 else:
                     imp.py_node = n
                 result.append(imp)
-            result = JSStatements(result)
+            result = JSStatements(*result)
     return result
 
 

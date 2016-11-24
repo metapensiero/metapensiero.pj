@@ -47,7 +47,7 @@ def Try(t, x):
             # threat 'except Exception:' as a catchall
             if (ix == 0 and h.type is None or (isinstance(h.type, ast.Name) and
                                    h.type.id == 'Exception')):
-                prev_except = JSStatements(h.body)
+                prev_except = JSStatements(*h.body)
                 continue
             else:
                 if ix == 0:

@@ -170,7 +170,7 @@ class Transformer:
 
         local_vars = body_local_names(body)
         self.ctx['vars'] = local_vars
-        result = self.statements_class(body)
+        result = self.statements_class(*body)
         self._finalize_target_node(result)
 
         local_vars = list(local_vars - self._globals)
@@ -179,7 +179,7 @@ class Transformer:
             vars = JSVarStatement(local_vars,
                                   [None] * len(local_vars))
             self._finalize_target_node(vars)
-            result.transformed_args[0].insert(0, vars)
+            result.transformed_args.insert(0, vars)
 
         self.node_parent_map = None
 

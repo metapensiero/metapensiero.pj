@@ -124,10 +124,9 @@ def For_dict(t, x):
         )
         loop.py_node = x
 
-        return JSStatements([
             JSVarStatement([__dict], [expr]),
             loop
-        ])
+        )
 
 
 def For_iterable(t, x):

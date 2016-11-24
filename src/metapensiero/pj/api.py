@@ -141,13 +141,13 @@ def translates(src_text, dedent=True, src_filename=None, src_offset=None,
         if isinstance(pyast.body[-1], ast.Return):
             pyast.body.pop()
     jsast = t.transform_code(pyast)
-    js_code_block = Block(jsast)
-    js_text = js_code_block.read()
     dline_offset = dcol_offset = 0
     if t.snippets:
-        snip_text = Block(t.transform_snippets()).read()
-        dline_offset += len(snip_text.splitlines())
-        js_text = snip_text + js_text
+        snipast = t.transform_snippets()
+        snipast  += jsast
+        jsast = snipast
+    js_code_block = Block(jsast)
+    js_text = js_code_block.read()
     enc_src_map, src_map = js_code_block.sourcemap(complete_src or src_text,
                                                    src_filename,
                                                    (sline_offset, scol_offset),

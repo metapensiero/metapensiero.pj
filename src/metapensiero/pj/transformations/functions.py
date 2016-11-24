@@ -122,9 +122,10 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
     t.ctx['vars'] = upper_vars | set(local_vars)
     if len(local_vars) > 0:
         local_vars.sort()
-        body = [JSVarStatement(
-                            local_vars,
-                            [None] * len(local_vars))] + body
+        body = JSStatements(
+            JSVarStatement(local_vars, [None] * len(local_vars)),
+            *body
+        )
 
     if is_generator:
         fwrapper = JSGenFunction
@@ -211,10 +212,10 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
                 name, args, body, acc, kwargs
             )
             fdef.py_node = x
-            result = JSStatements([
+            result = JSStatements(
                 JSVarStatement([str(name)], [None]),
                 fdef
-            ])
+            )
         elif is_in_method and fwrapper is JSGenFunction:
             # set the incoming py_node for the sourcemap
             fdef = fwrapper(
@@ -223,7 +224,7 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
             fdef.py_node = x
             # arrow functions cannot be generators, render them as normal
             # function and add a bind(self)
-            result = JSStatements([
+            result = JSStatements(
                 fdef,
                 JSExpressionStatement(
                     JSAssignmentExpression(
@@ -234,7 +235,7 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
                         )
                     )
                 )
-            ])
+            )
         else:
             fwrapper = fwrapper or JSFunction
             result = fwrapper(
