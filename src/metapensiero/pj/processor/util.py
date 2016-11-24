@@ -7,10 +7,7 @@
 #
 
 import ast
-import copy
 import inspect
-import itertools
-import random
 import re
 import textwrap
 
