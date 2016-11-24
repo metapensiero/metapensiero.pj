@@ -143,23 +143,18 @@ def For_iterable(t, x):
         isinstance(x.iter.func, ast.Name) and
         x.iter.func.id == 'iterable' and
         len(x.iter.args) == 1) and (not x.orelse):
+        t.es6_guard(x, 'for...of statement requires ES6')
 
         expr = x.iter.args[0]
         body = x.body
         target = x.target
-        iterable = t.new_name()
 
         # set the incoming py_node for the sourcemap
-        loop = JSForofStatement(
+        return JSForofStatement(
             target,
-            JSName(iterable),
+            expr,
             body,
         )
-        loop.py_node = x
-        return JSStatements([
-            JSVarStatement([iterable], [expr]),
-            loop
-        ])
 
 
 def For_default(t, x):
