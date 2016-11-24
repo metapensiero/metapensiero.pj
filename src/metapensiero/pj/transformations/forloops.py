@@ -35,7 +35,7 @@ def For_range(t, x):
 
     .. code:: javascript
 
-      for (var name = 0, __bound = bound; name < __bound; name++) {
+      for (var name = 0, bound = bound; name < bound; name++) {
           // ...
       }
 
@@ -61,15 +61,13 @@ def For_range(t, x):
             bound = x.iter.args[1]
             step = x.iter.args[2]
 
-        # TODO: as of now this doesn't support range(10, 0, -2)
-
-        __bound = t.new_name()
+        bound_name = t.new_name()
 
         return JSForStatement(
             JSVarStatement(
-                [name.id, __bound],
+                [name.id, bound_name],
                 [start, bound]),
-            JSBinOp(JSName(name.id), JSOpLt(), JSName(__bound)),
+            JSBinOp(JSName(name.id), JSOpLt(), JSName(bound_name)),
             JSAugAssignStatement(
                 JSName(name.id), JSOpAdd(), step),
             body
@@ -110,7 +108,7 @@ def For_dict(t, x):
             body = [
                     JSIfStatement(
                         JSCall(
-                            JSAttribute(JSName(__dict), 'hasOwnProperty'),
+                            JSAttribute(JSName(dict_), 'hasOwnProperty'),
                             [JSName(name.id)]
                         ),
                         body, None
