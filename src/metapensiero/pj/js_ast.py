@@ -108,7 +108,7 @@ class JSPass(JSNode):
 class JSCommentBlock(JSNode):
     def emit(self, text):
         assert text.find('*/') == -1
-        yield from delimited_multi_line(self, text, '/*', '*/', True)
+        yield from self.lines(delimited_multi_line(self, text, '/*', '*/', True))
 
 
 #### Statements

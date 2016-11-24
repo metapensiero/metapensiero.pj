@@ -49,7 +49,7 @@ def delimited_multi_line(node, text, begin=None, end=None, add_space=False):
             yield node.line(l.strip())
         yield node.line(node.part(lines[-1].strip(), end))
     else:
-        yield node.line(node.part(begin, sp, text, sp, end))
+        yield node.part(begin, sp, text, sp, end)
 
 
 def parent_of(path):
@@ -231,7 +231,7 @@ class Line(OutputSrc):
         line = str(self.item)
         if self.delim:
             line += ';'
-        if self.indent:
+        if self.indent and line.strip():
             line = (' ' * 4 * self.indent) + line
         line += '\n'
         return line
