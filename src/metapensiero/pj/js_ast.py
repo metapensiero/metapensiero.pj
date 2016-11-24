@@ -139,12 +139,12 @@ class JSVarDeclarer(JSStatement):
 
 
 class JSVarStatement(JSVarDeclarer):
-    def emit(self, keys, values):
+    def emit(self, keys, values, unmovable=False):
         yield from self.with_kind('var', keys, values)
 
 
 class JSLetStatement(JSVarDeclarer):
-    def emit(self, keys, values):
+    def emit(self, keys, values, unmovable=True):
         yield from self.with_kind('let', keys, values)
 
 

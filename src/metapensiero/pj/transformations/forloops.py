@@ -82,9 +82,9 @@ def For_dict(t, x):
 
     .. code:: javascript
 
-      var __dict = expr;
-      for (var name in __dict) {
-          if (__dict.hasOwnProperty(name)) {
+      var dict_ = expr;
+      for (var name in dict_) {
+          if (dict_.hasOwnProperty(name)) {
           // ...
           }
       }
@@ -101,7 +101,7 @@ def For_dict(t, x):
         expr = x.iter.args[0]
         body = x.body
 
-        __dict = t.new_name()
+        dict_ = t.new_name()
 
         # if not ``dict(foo, True)`` filter out inherited values
         if not (len(x.iter.args) == 2 and
@@ -119,12 +119,13 @@ def For_dict(t, x):
         # set the incoming py_node for the sourcemap
         loop = JSForeachStatement(
             name.id,
-            JSName(__dict),
+            JSName(dict_),
             body
         )
         loop.py_node = x
 
-            JSVarStatement([__dict], [expr]),
+        return JSStatements(
+            JSVarStatement([dict_], [expr], unmovable=True),
             loop
         )
 
@@ -198,7 +199,8 @@ def For_default(t, x):
         JSVarStatement(
             [name.id, ix, arr, length],
             [None, JSNum(0), expr,
-             JSAttribute(JSName(arr), 'length')]
+             JSAttribute(JSName(arr), 'length')],
+            unmovable=True
         ),
         JSBinOp(
             JSName(ix),
