@@ -125,7 +125,24 @@ def Call_isinstance(t, x):
             args = tuple((target, c) for c in classes)
             return JSMultipleArgsOp(JSOpInstanceof(), JSOpOr(), *args)
         else:
-            return JSBinOp(x.args[0], JSOpInstanceof(), x.args[1])
+            tgt = x.args[0]
+            cls = x.args[1]
+            if isinstance(cls, ast.Name) and cls.id == 'str':
+                return JSMultipleArgsOp(
+                    (JSOpStrongEq(), JSOpInstanceof()),
+                    JSOpOr(),
+                    (JSUnaryOp(JSOpTypeof(), tgt), JSStr('string')),
+                    (tgt, JSName('String'))
+                )
+            elif isinstance(cls, ast.Name) and cls.id in ['int', 'float']:
+                return JSMultipleArgsOp(
+                    (JSOpStrongEq(), JSOpInstanceof()),
+                    JSOpOr(),
+                    (JSUnaryOp(JSOpTypeof(), tgt), JSStr('number')),
+                    (tgt, JSName('Number'))
+                )
+            else:
+                return JSBinOp(tgt, JSOpInstanceof(), cls)
 
 
 

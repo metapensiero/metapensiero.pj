@@ -477,9 +477,13 @@ class JSMultipleArgsOp(JSNode):
         assert len(args) > 1
         parts = []
         for ix, arg in enumerate(args):
+            if isinstance(binop, (tuple, list)):
+                op = binop[ix]
+            else:
+                op = binop
             if ix > 0:
                 parts += [' ', conj, ' ']
-            parts += ['(', arg[0], ' ', binop, ' ', arg[1], ')']
+            parts += ['(', arg[0], ' ', op, ' ', arg[1], ')']
         yield self.part('(', *parts, ')')
 
 
@@ -499,6 +503,12 @@ class JSYieldStar(JSNode):
 
     def emit(self, expr):
         yield self.part('yield* ', expr)
+
+
+class JSExpression(JSNode):
+
+    def emit(self, expr):
+        yield self.part('(', expr, ')')
 
 
 #### Atoms

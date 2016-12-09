@@ -480,3 +480,20 @@ def test_self_removed_on_function():
     )
 
     assert translate_object(test_self_removed, enable_es6=False)[0] == expected
+
+
+def test_isinstance_str_int_float():
+
+    def func():
+
+        isinstance(foo, str)
+        isinstance(bar, int)
+        isinstance(zoo, float)
+
+    expected = (
+        '(((typeof foo) === "string") || (foo instanceof String));\n'
+        '(((typeof bar) === "number") || (bar instanceof Number));\n'
+        '(((typeof zoo) === "number") || (zoo instanceof Number));\n'
+    )
+
+    assert translate_object(func, body_only=True, enable_es6=True)[0] == expected
