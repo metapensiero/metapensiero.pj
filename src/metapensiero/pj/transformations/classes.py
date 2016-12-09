@@ -65,7 +65,6 @@ def _class_guards(t, x):
                       "Assignements must have only one target")
     if len(x.bases) > 0:
         assert len(x.bases) == 1
-        assert isinstance(x.bases[0], ast.Name)
     assert not x.keywords, x.keywords
 
 
@@ -100,7 +99,7 @@ def ClassDef_exception(t, x):
     _class_guards(t, x)
     name = x.name
     body = x.body
-    if len(x.bases) > 0:
+    if len(x.bases) > 0 and isinstance(x.bases[0], ast.Name):
         super_name = x.bases[0].id
     else:
         super_name = None
@@ -130,7 +129,7 @@ def ClassDef_default(t, x):
     body = x.body
 
     if len(x.bases) > 0:
-        superclass = JSName(x.bases[0].id)
+        superclass = x.bases[0]
     else:
         superclass = None
 

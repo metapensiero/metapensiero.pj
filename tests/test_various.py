@@ -482,6 +482,22 @@ def test_self_removed_on_function():
     assert translate_object(test_self_removed, enable_es6=False)[0] == expected
 
 
+def test_superclass_complex():
+
+    def func():
+
+        class Bar(foo(1, 2)):
+            pass
+
+        class Bar2(Foo.Zoo):
+            pass
+
+    expected = ('class Bar extends foo(1, 2) {\n}\n'
+                'class Bar2 extends Foo.Zoo {\n}\n')
+
+    assert translate_object(func, body_only=True, enable_es6=True)[0] == expected
+
+
 def test_isinstance_str_int_float():
 
     def func():
