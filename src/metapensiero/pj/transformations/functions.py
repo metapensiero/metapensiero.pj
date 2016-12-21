@@ -216,7 +216,7 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
                 JSVarStatement([str(name)], [None]),
                 fdef
             )
-        elif is_in_method and fwrapper is JSGenFunction:
+        elif is_in_method and fwrapper in [JSGenFunction, JSAsyncFunction]:
             # set the incoming py_node for the sourcemap
             fdef = fwrapper(
                 name, args, body, acc, kwargs
