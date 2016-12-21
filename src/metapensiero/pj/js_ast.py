@@ -560,6 +560,14 @@ class JSRest(JSNode):
         yield self.part('...', value)
 
 
+class JSTaggedTemplate(JSNode):
+
+    def emit(self, value, func):
+        text = list(delimited_multi_line(self, value, '`'))
+        func = list(func.serialize())
+        yield self.part(*func, *text)
+
+
 class JSTemplateLiteral(JSNode):
 
     def emit(self, value):

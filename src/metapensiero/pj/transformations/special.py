@@ -35,6 +35,7 @@ from ..js_ast import (
     JSStatements,
     JSStr,
     JSSubscript,
+    JSTaggedTemplate,
     JSTemplateLiteral,
     JSThis,
     JSUnaryOp,
@@ -265,7 +266,21 @@ def Call_template(t, x):
        len(x.args) > 0:
         assert len(x.args) == 1
         assert isinstance(x.args[0], ast.Str)
+        t.es6_guard(x, "template literals require ES6")
         return JSTemplateLiteral(x.args[0].s)
+
+
+def Call_tagged_template(t, x):
+    if (isinstance(x.func, ast.Name) and x.func.id == '__') and \
+       len(x.args) > 0 and t.parent_of(x) is not ast.Attribute:
+        assert 3 > len(x.args) >= 1
+        assert isinstance(x.args[0], ast.Str)
+        t.es6_guard(x, "tagged templates require ES6")
+        if len(x.args) == 2:
+            tag = x.args[1]
+        else:
+            tag = JSName('__')
+        return JSTaggedTemplate(x.args[0].s, tag)
 
 
 def Call_hasattr(t, x):
@@ -306,8 +321,8 @@ from .classes import Call_super
 from .obvious import Call_default
 Call = [Call_typeof, Call_callable, Call_isinstance, Call_print, Call_len,
         Call_new, Call_super, Call_import, Call_str, Call_type,
-        Call_dict_update, Call_dict_copy, Call_template, Call_hasattr,
-        Call_getattr, Call_setattr, Call_default]
+        Call_dict_update, Call_dict_copy, Call_tagged_template, Call_template,
+        Call_hasattr, Call_getattr, Call_setattr, Call_default]
 
 
 #### Ops
