@@ -456,7 +456,7 @@ class JSNewCall(JSCall):
 
 class JSAttribute(JSNode):
     def emit(self, obj, s):
-        assert re.search(r'^[a-zA-Z_][a-zA-Z_0-9]*$', s)
+        assert re.search(r'^[a-zA-Z$_][a-zA-Z$_0-9]*$', s)
         _check_keywords(self, s)
         yield self.part(obj, '.', s, name=True)
 
