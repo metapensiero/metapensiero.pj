@@ -60,9 +60,9 @@ def _class_guards(t, x):
                                                 ast.AsyncFunctionDef,
                                                 ast.Assign)) or \
                               _isdoc(node) or isinstance(node, ast.Pass)),
-                      "Class' body members must be functions or assignements")
+                      "Class' body members must be functions or assignments")
         t.unsupported(x, isinstance(node, ast.Assign) and len(node.targets) > 1,
-                      "Assignements must have only one target")
+                      "Assignments must have only one target")
     if len(x.bases) > 0:
         assert len(x.bases) == 1
     assert not x.keywords, x.keywords

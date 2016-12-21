@@ -747,7 +747,7 @@ Classes are translated to ES6 classes as much as they can support. This means:
   see for example the suggestion on `Mozilla developer`__ or the other about
   `simple mixins`__ on ``Exploring ES6``.
 
-* external implementation for class-level non assignment members. Assignement
+* external implementation for class-level non assignment members. Assignment
   members are those on the body of a class which are defined with: ``a_label =
   an_expression`` like:
 
@@ -1090,7 +1090,7 @@ These are the terse guidelines::
 
   An exception to this rules are the function names inside
   ``metapensiero.pj.transformations`` subpackage. Those are matched
-  against names of the ast objects coming from the ``ast`` module in
+  against names of the AST objects coming from the ``ast`` module in
   standard lib, so they have to to match even in case.
 
   Try to keep lines lengths under 79 chars, more or less ;-)
@@ -1150,7 +1150,7 @@ the book `Exploring ES6`__ by Axel Rauschmayer (donate if you can).
 
 __ http://exploringjs.com/es6/
 
-An `extensive documentation`__ about Python's ast objects, very handy.
+An `extensive documentation`__ about Python's AST objects, very handy.
 
 __ https://greentreesnakes.readthedocs.org/en/latest/
 

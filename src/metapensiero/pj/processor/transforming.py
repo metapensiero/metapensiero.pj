@@ -19,10 +19,10 @@ from .exceptions import TransformationError, UnsupportedSyntaxError
 from .util import (rfilter, parent_of, Line, Part, obj_source,
                    body_local_names, walk_under_code_boundary)
 
-SNIPPETS_TEMPLATE ="""\
+SNIPPETS_TEMPLATE = """\
 def _pj_snippets(container):
 %(snippets)s
-%(assignements)s
+%(assignments)s
     return container
 
 _pj = {}
@@ -36,9 +36,9 @@ VAR_TEMPLATE = "_pj_%s"
 
 
 class TargetNode:
-    """This is the common ancestor of all the js ast nodes."""
+    """This is the common ancestor of all the JS AST nodes."""
 
-    """The associated Python ast node"""
+    """The associated Python AST node"""
     py_node = None
 
     """The Transformer instance which is managing this one"""
@@ -109,7 +109,7 @@ class Transformer:
     disable_srcmap = False
 
     """Used in subtransformation to remap a node on a Transformer instance to the
-    ast produced by a substransform."""
+    AST produced by a substransform."""
     remap_to = None
 
     def __init__(self, py_ast_module, statements_class, snippets=True,
@@ -160,7 +160,7 @@ class Transformer:
         return new
 
     def transform_code(self, ast_tree):
-        """Convert the given Python ast dump into JavaScript ast."""
+        """Convert the given Python AST dump into JavaScript AST."""
         from ..js_ast import JSVarStatement
 
         top = ast.parse(ast_tree)
@@ -200,7 +200,7 @@ class Transformer:
             parent = self.node_parent_map.get(parent)
 
     def find_parent(self, node, cls):
-        """Retrieve the first parent of the given ast node that is an instance
+        """Retrieve the first parent of the given AST node that is an instance
         of the given class."""
         parent = self.parent_of(node)
         if parent is not None:
@@ -239,7 +239,7 @@ class Transformer:
         self.snippets.add(func)
 
     def _transform_node(self, in_node):
-        """This transforms a Python ast node to a JS ast node."""
+        """This transforms a Python AST node to a JS AST node."""
 
         if isinstance(in_node, list) or isinstance(in_node, tuple):
             res = [self._transform_node(child) for child in in_node]
@@ -290,7 +290,7 @@ class Transformer:
         assign_src = '\n'.join([ASSIGN_TEMPLATE % {'name': n} for n in names])
         trans_src = SNIPPETS_TEMPLATE % {
             'snippets': src,
-            'assignements': assign_src
+            'assignments': assign_src
         }
         t = self.new_from(self)
         t.snippets = None

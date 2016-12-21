@@ -40,7 +40,7 @@ parser.add_argument('--disable-stage3', dest='stage3', action='store_false',
 parser.add_argument('-5', '--es5', dest='es5', action='store_true',
                     help="Also transpile to ES5 using BabelJS.")
 parser.add_argument('--transform-runtime', action='store_true', dest='truntime',
-                    help="Add trasform runtime as plugin during transpile")
+                    help="Add transform runtime as plugin during transpile")
 parser.add_argument('-o', '--output', type=str,
                     help="Output file/directory where to save the generated "
                     "code")
@@ -58,7 +58,7 @@ parser.add_argument('-e', '--eval', action='store_true',
                     "(comparable to adding the '-5' option) and so it will take"
                     " some time because of BabelJS load times.")
 parser.add_argument('--dump-ast', action='store_true',
-                    help="Dump the Python ast. You need to have the package"
+                    help="Dump the Python AST. You need to have the package"
                     " metapensiero.pj[test] installed")
 
 

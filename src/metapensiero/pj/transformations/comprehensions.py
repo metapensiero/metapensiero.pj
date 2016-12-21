@@ -8,7 +8,25 @@
 
 import ast
 
-from ..js_ast import *
+from ..js_ast import (
+    JSAttribute,
+    JSAugAssignStatement,
+    JSBinOp,
+    JSCall,
+    JSExpressionStatement,
+    JSForStatement,
+    JSFunction,
+    JSIfStatement,
+    JSList,
+    JSName,
+    JSNum,
+    JSOpAdd,
+    JSOpLt,
+    JSReturnStatement,
+    JSSubscript,
+    JSThis,
+    JSVarStatement,
+)
 
 #### ListComp
 # Transform
