@@ -50,7 +50,7 @@ def test_rshift():
     assert rshift() == eval_object(rshift, 'rshift();')
 
 
-def test_multiple_assignement_and_sum():
+def test_multiple_assignment_and_sum():
 
     def sum():
         x = y = 2
@@ -91,6 +91,7 @@ def test_list_in():
     )
     assert translate_object(list_in)[0] == expected
 
+
 def test_if_else_elif():
 
     def test_if():
@@ -106,7 +107,7 @@ def test_if_else_elif():
     assert test_if() == eval_object(test_if, 'test_if();')
 
 
-def test_while_and_aug_assignement():
+def test_while_and_aug_assignment():
 
     def _while():
         x = 0
@@ -310,7 +311,7 @@ def test_method_decorators():
     def test_deco():
 
         def currency(func, cls, name):
-            def wrapper(tax):
+            def wrapper(self, tax):
                 return '€ ' + str(func.bind(self)(tax))
             return wrapper
 

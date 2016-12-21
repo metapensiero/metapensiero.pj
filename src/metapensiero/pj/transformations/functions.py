@@ -60,7 +60,7 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
 
     if x.args.vararg or x.args.kwonlyargs or x.args.defaults or \
        x.args.kw_defaults or x.args.kwarg:
-        t.es6_guard(x, "Arguments definitions other tha plain params require "
+        t.es6_guard(x, "Arguments definitions other than plain params require "
                     "ES6 to be enabled")
 
     t.unsupported(x, x.args.kwarg and x.args.kwonlyargs,

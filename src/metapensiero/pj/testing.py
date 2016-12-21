@@ -15,7 +15,7 @@ from .processor.transforming import Transformer
 
 
 def ast_object(obj):
-    """Convert a Python object to its ast representation."""
+    """Convert a Python object to its AST representation."""
     src = inspect.getsource(obj)
     # ast wraps always into a module
     node = ast.parse(textwrap.dedent(src)).body[0]
@@ -23,7 +23,7 @@ def ast_object(obj):
 
 
 def ast_dump_object(obj, first_stmt_only=False):
-    """Convert a Python object to its ast representation and the serialization of
+    """Convert a Python object to its AST representation and the serialization of
     this to a string, optionally serializing the first element in its body.
     """
     from meta.asttools import str_ast

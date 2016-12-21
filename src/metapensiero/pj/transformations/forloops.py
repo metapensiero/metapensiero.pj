@@ -31,7 +31,7 @@ from ..js_ast import (
 
 def For_range(t, x):
     """Special conversion for ``for name in range(n)``, which detects
-    ``range()`` calls and convert the statement to:
+    ``range()`` calls and converts the statement to:
 
     .. code:: javascript
 

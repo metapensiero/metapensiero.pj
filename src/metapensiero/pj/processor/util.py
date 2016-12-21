@@ -61,7 +61,7 @@ def body_top_names(body):
 
 
 def controlled_ast_walk(node):
-    """Walk ast just like ast.walk(), but expect True on every branch to
+    """Walk AST just like ast.walk(), but expect True on every branch to
     descend on sub-branches."""
     if isinstance(node, list):
         l = node.copy()
@@ -279,7 +279,7 @@ class Part(OutputSrc):
         if self.node.transformer.disable_srcmap:
             return
         # optional position in source file, if this is missing, there's no
-        # reason for generate a source mapping. (not all python ast elements
+        # reason for generate a source mapping. (not all python AST elements
         # can be source located)
         src_line, src_offset = self._pos_in_src()
         # accumulator for string text

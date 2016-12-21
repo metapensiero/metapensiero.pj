@@ -87,7 +87,7 @@ def Assign_default(t, x):
 def Assign_all(t, x):
     if len(x.targets) == 1 and isinstance(x.targets[0], ast.Name) and \
        x.targets[0].id == '__all__':
-        t.es6_guard(x, "'__all__' assignement requires ES6")
+        t.es6_guard(x, "'__all__' assignment requires ES6")
         elements = x.value.elts
         result = [JSExport(el.s) for el in elements]
         return JSStatements(*result)

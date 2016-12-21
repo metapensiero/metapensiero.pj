@@ -103,7 +103,7 @@ def Call_isinstance(t, x):
     ``isinstance(Foo, (Bar, Zoo))`` to ``foo instanceof Bar || foo instanceof
     Zoo``.
 
-    ast dump of the latter::
+    AST dump of the latter::
 
       Call(args=[Name(ctx=Load(),
                       id='foo'),
@@ -208,7 +208,7 @@ def Call_dict_update(t, x):
     """Converts ``dict(foo).update(bar)`` to ``Object.assign(foo, bar)``.
 
     requires ES6
-    ast dump::
+    AST dump::
 
       Expr(value=Call(args=[Name(ctx=Load(),
                                  id='bar')],
@@ -237,7 +237,7 @@ def Call_dict_copy(t, x):
     """Converts ``dict(foo).copy()`` to ``Object.assign({}, foo)``.
 
     requires ES6
-    ast dump::
+    AST dump::
 
       Expr(value=Call(args=[],
                       func=Attribute(attr='copy',
@@ -452,7 +452,7 @@ from .obvious import Attribute_default
 def Attribute_list_append(t, x):
     """Converts ``list(foo).append(bar)`` to ``foo.push(bar)``.
 
-    ast dump::
+    AST dump::
 
       Expr(value=Call(args=[Name(ctx=Load(),
                                  id='bar')],
