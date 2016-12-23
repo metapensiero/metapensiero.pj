@@ -199,15 +199,15 @@ class Transformer:
                 break
             parent = self.node_parent_map.get(parent)
 
-    def find_parent(self, node, cls):
+    def find_parent(self, node, *classes):
         """Retrieve the first parent of the given AST node that is an instance
         of the given class."""
         parent = self.parent_of(node)
         if parent is not None:
-            if isinstance(parent, cls):
+            if isinstance(parent, classes):
                 return parent
             else:
-                return self.find_parent(parent, cls)
+                return self.find_parent(parent, *classes)
 
     def find_child(self, node, cls):
         """Find any child of node that is an instance of cls. The walk will
