@@ -19,6 +19,7 @@ from ..js_ast import (
     JSExpressionStatement,
     JSList,
     JSName,
+    JSSubscript,
     JSStatements,
     JSStr,
     JSSuper,
@@ -262,7 +263,7 @@ def Call_super(t, x):
          x.func.value.func.id == 'super':
         sup_args = x.func.value.args
         # Are we in a FuncDef and is it a method and super() has no args?
-        method = t.find_parent(x, ast.FunctionDef)
+        method = t.find_parent(x, ast.FunctionDef, ast.AsyncFunctionDef)
         if method and isinstance(t.parent_of(method), ast.ClassDef) and \
            len(sup_args) == 0:
             # if in class constructor, this becomes ``super(x, y)``
@@ -275,4 +276,63 @@ def Call_super(t, x):
                     JSAttribute(JSSuper(), sup_method),
                     x.args
                 )
+            return result
+
+def Attribute_super(t, x):
+    """Translates ``super().foo`` into ``super.foo` if the method isn't a constructor,
+    where it's invalid.
+
+    AST is::
+
+      Attribute(attr='foo',
+                ctx=Load(),
+                value=Call(args=[],
+                           func=Name(ctx=Load(),
+                                     id='super'),
+                           keywords=[]))
+
+    """
+    if isinstance(x.value, ast.Call) and len(x.value.args) == 0 and \
+       isinstance(x.value.func, ast.Name) and x.value.func.id == 'super':
+        sup_args = x.value.args
+        # Are we in a FuncDef and is it a method and super() has no args?
+        method = t.find_parent(x, ast.FunctionDef, ast.AsyncFunctionDef)
+        if method and isinstance(t.parent_of(method), ast.ClassDef) and \
+           len(sup_args) == 0:
+            if method.name == '__init__':
+                t.unsupported(x, True, "'super().attr' cannot be used in "
+                              "constructors")
+            else:
+                sup_method = x.attr
+                # this becomes super.method
+                result = JSAttribute(JSSuper(), sup_method)
+            return result
+
+def Subscript_super(t, x):
+    """Same as per attribute: translates ``super()[foo]`` into ``super[foo]``,
+    AST is::
+
+         Subscript(ctx=Load(),
+                   slice=Index(value=Name(ctx=Load(),
+                                          id='foo')),
+                   value=Call(args=[],
+                              func=Name(ctx=Load(),
+                                        id='super'),
+                              keywords=[]))
+
+    """
+    if isinstance(x.value, ast.Call) and isinstance(x.value.func, ast.Name) and \
+       x.value.func.id == 'super':
+        sup_args = x.value.args
+        # Are we in a FuncDef and is it a method and super() has no args?
+        method = t.find_parent(x, ast.FunctionDef, ast.AsyncFunctionDef)
+        if method and isinstance(t.parent_of(method), ast.ClassDef) and \
+           len(sup_args) == 0:
+            if method.name == '__init__':
+                t.unsupported(x, True, "'super()[expr]' cannot be used in "
+                              "constructors")
+            else:
+                sup_method = x.slice.value
+                # this becomes super[expr]
+                result = JSSubscript(JSSuper(), sup_method)
             return result

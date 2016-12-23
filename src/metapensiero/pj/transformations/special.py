@@ -456,13 +456,13 @@ def Subscript_slice(t, x):
 
 
 from .obvious import Subscript_default
+from .classes import Subscript_super
 
-
-Subscript = [Subscript_slice, Subscript_default]
+Subscript = [Subscript_slice, Subscript_super, Subscript_default]
 
 
 from .obvious import Attribute_default
-
+from .classes import Attribute_super
 
 def Attribute_list_append(t, x):
     """Converts ``list(foo).append(bar)`` to ``foo.push(bar)``.
@@ -486,7 +486,7 @@ def Attribute_list_append(t, x):
         return JSAttribute(x.value.args[0], 'push')
 
 
-Attribute = [Attribute_list_append, Attribute_default]
+Attribute = [Attribute_super, Attribute_list_append, Attribute_default]
 
 
 def Assert(t, x):
