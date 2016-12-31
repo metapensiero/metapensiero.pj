@@ -27,12 +27,20 @@ def in_es6(left, right):
 
 
 def set_decorators(cls, props):
+    from __globals__ import Function, Map, WeakMap, Object
+
     for p in dict(props):
         decos = props[p]
         def reducer(val, deco):
             return deco(val, cls, p)
         deco = decos.reduce(reducer, cls.prototype[p])
-        cls.prototype[p] = deco
+        if not isinstance(deco, (Function, Map, WeakMap)) and \
+            isinstance(deco, Object) and (('value' in deco) or
+                                          ('get' in deco)):
+            del cls.prototype[p]
+            Object.defineProperty(cls.prototype, p, deco)
+        else:
+            cls.prototype[p] = deco
 
 
 def set_class_decorators(cls, decos):
