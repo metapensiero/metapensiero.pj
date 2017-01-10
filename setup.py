@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# :Project:   raccoon.rocky.node -- A base object for publishing WAMP resources
-# :Created:   dom 09 ago 2015 12:57:35 CEST
-# :Author:    Alberto Berti <alberto@arstecnica.it>
+# :Project:   pj -- A Python 3 to ES6 Javascript translator
+# :Created:   lun 22 feb 2016 16:00:00 CET
+# :Author:    Alberto Berti <alberto@metapensiero.it>
 # :License:   GNU General Public License version 3 or later
-# :Copyright: Copyright (C) 2016 Arstecnica s.r.l.
+# :Copyright: Copyright (C) 2016 Alberto Berti
 #
 
 import os
