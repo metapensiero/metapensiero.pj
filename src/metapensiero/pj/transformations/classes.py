@@ -13,16 +13,23 @@ from ..processor.util import controlled_ast_walk
 from ..js_ast import (
     JSAssignmentExpression,
     JSAttribute,
+    JSBinOp,
     JSCall,
     JSClass,
     JSDict,
     JSExpressionStatement,
     JSList,
+    JSMultipleArgsOp,
     JSName,
+    JSOpInstanceof,
+    JSOpOr,
+    JSOpStrongEq,
+    JSOpTypeof,
     JSSubscript,
     JSStatements,
     JSStr,
     JSSuper,
+    JSUnaryOp,
 )
 
 
@@ -278,6 +285,7 @@ def Call_super(t, x):
                 )
             return result
 
+
 def Attribute_super(t, x):
     """Translates ``super().foo`` into ``super.foo` if the method isn't a constructor,
     where it's invalid.
@@ -308,6 +316,7 @@ def Attribute_super(t, x):
                 result = JSAttribute(JSSuper(), sup_method)
             return result
 
+
 def Subscript_super(t, x):
     """Same as per attribute: translates ``super()[foo]`` into ``super[foo]``,
     AST is::
@@ -336,3 +345,65 @@ def Subscript_super(t, x):
                 # this becomes super[expr]
                 result = JSSubscript(JSSuper(), sup_method)
             return result
+
+
+def Call_isinstance(t, x):
+    """Translates ``isinstance(foo, Bar)`` to ``foo instanceof Bar`` and
+    ``isinstance(Foo, (Bar, Zoo))`` to ``foo instanceof Bar || foo instanceof
+    Zoo``.
+
+    AST dump of the latter::
+
+      Call(args=[Name(ctx=Load(),
+                      id='foo'),
+                 Tuple(ctx=Load(),
+                       elts=[Name(ctx=Load(),
+                                  id='Bar'),
+                             Name(ctx=Load(),
+                                  id='Zoo')])],
+           func=Name(ctx=Load(),
+                     id='isinstance'),
+           keywords=[])
+
+    """
+    if (isinstance(x.func, ast.Name) and x.func.id == 'isinstance'):
+        assert len(x.args) == 2
+        if isinstance(x.args[1], (ast.Tuple, ast.List, ast.Set)):
+            classes = x.args[1].elts
+            target = x.args[0]
+            args = tuple((target, c) for c in classes)
+            return JSMultipleArgsOp(JSOpInstanceof(), JSOpOr(), *args)
+        else:
+            tgt = x.args[0]
+            cls = x.args[1]
+            if isinstance(cls, ast.Name) and cls.id == 'str':
+                return JSMultipleArgsOp(
+                    (JSOpStrongEq(), JSOpInstanceof()),
+                    JSOpOr(),
+                    (JSUnaryOp(JSOpTypeof(), tgt), JSStr('string')),
+                    (tgt, JSName('String'))
+                )
+            elif isinstance(cls, ast.Name) and cls.id in ['int', 'float']:
+                return JSMultipleArgsOp(
+                    (JSOpStrongEq(), JSOpInstanceof()),
+                    JSOpOr(),
+                    (JSUnaryOp(JSOpTypeof(), tgt), JSStr('number')),
+                    (tgt, JSName('Number'))
+                )
+            else:
+                return JSBinOp(tgt, JSOpInstanceof(), cls)
+
+
+def Call_issubclass(t, x):
+    """Translates ``issubclass(Foo, Bar)`` to ``Foo.prototype instanceof Bar``.
+    """
+    if (isinstance(x.func, ast.Name) and x.func.id == 'issubclass'):
+        assert len(x.args) == 2
+        target = x.args[0]
+        if isinstance(x.args[1], (ast.Tuple, ast.List, ast.Set)):
+            classes = x.args[1].elts
+            args = tuple((JSAttribute(target, 'prototype'), c) for c in classes)
+            return JSMultipleArgsOp(JSOpInstanceof(), JSOpOr(), *args)
+        else:
+            cls = x.args[1]
+            return JSBinOp(JSAttribute(target, 'prototype'), JSOpInstanceof(), cls)
