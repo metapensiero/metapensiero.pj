@@ -32,6 +32,7 @@ from ..js_ast import (
     JSUnaryOp,
 )
 
+from .obvious import _normalize_name
 
 EXC_TEMPLATE = """\
 class %(name)s(Error):
@@ -199,7 +200,7 @@ def ClassDef_default(t, x):
         key = e.targets[0]
         value = e.value
         if isinstance(key, ast.Name):
-            rendered_key = ast.Str(key.id)
+            rendered_key = ast.Str(_normalize_name(key.id))
             sort_key = key.id
         else:
             rendered_key = key
