@@ -513,3 +513,35 @@ def test_isinstance_str_int_float():
     )
 
     assert translate_object(func, body_only=True, enable_es6=True)[0] == expected
+
+
+def test_async_super():
+
+    def func():
+
+        class A:
+
+            async def method(self):
+                pass
+
+        class B(A):
+
+            async def method(self):
+                await super().method()
+
+    dump = translate_object(func, body_only=True, enable_es6=True,
+                            enable_stage3=True)[0]
+
+    expected = (
+        'class A {\n'
+        '    async method() {\n'
+        '    }\n'
+        '}\n'
+        'class B extends A {\n'
+        '    async method() {\n'
+        '        await '
+        'Object.getPrototypeOf(Object.getPrototypeOf(this)).method.call(this);\n'
+        '    }\n'
+        '}\n'
+    )
+    assert dump == expected

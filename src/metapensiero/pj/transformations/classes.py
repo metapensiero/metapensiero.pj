@@ -29,6 +29,7 @@ from ..js_ast import (
     JSStatements,
     JSStr,
     JSSuper,
+    JSThis,
     JSUnaryOp,
 )
 
@@ -279,11 +280,30 @@ def Call_super(t, x):
                 result = JSCall(JSSuper(), x.args)
             else:
                 sup_method = x.func.attr
+                if isinstance(method, ast.AsyncFunctionDef):
+                    # temporary fix for babel's bug
+                    # https://github.com/babel/babel/issues/3930
+                    # converts to
+                    # O.getPrototypeOf(O.getPrototypeOf(this)).method.call(this,
+                    # x, y)
+                    result = JSCall(
+                        JSAttribute(
+                            JSAttribute(
+                                JSCall(JSAttribute(JSName('Object'),
+                                                   'getPrototypeOf'),
+                                       [JSCall(JSAttribute(JSName('Object'),
+                                                          'getPrototypeOf'),
+                                               [JSThis()])]),
+                                sup_method),
+                            'call'),
+                        [JSThis()] + x.args)
+                    result.pippo = [JSThis()] + x.args
+                else:
                 # this becomes super.method(x, y)
-                result = JSCall(
-                    JSAttribute(JSSuper(), sup_method),
-                    x.args
-                )
+                    result = JSCall(
+                        JSAttribute(JSSuper(), sup_method),
+                        x.args
+                    )
             return result
 
 
