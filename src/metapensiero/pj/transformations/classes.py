@@ -297,7 +297,6 @@ def Call_super(t, x):
                                 sup_method),
                             'call'),
                         [JSThis()] + x.args)
-                    result.pippo = [JSThis()] + x.args
                 else:
                 # this becomes super.method(x, y)
                     result = JSCall(
