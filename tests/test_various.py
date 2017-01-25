@@ -69,6 +69,9 @@ def test_imports():
 
         from foo__bar import zoo
         import foo__bar as fb
+        from __foo.bar import zoo
+        import __foo.bar as fb
+
         # this should not trigger variable definition
         test_name = 2
 
@@ -86,6 +89,8 @@ def test_imports():
                 "import {bar} from './foo';\n"
                 "import {zoo} from 'foo-bar';\n"
                 "import * as fb from 'foo-bar';\n"
+                "import {zoo} from '@foo/bar';\n"
+                "import * as fb from '@foo/bar';\n"
                 'var test_foo;\n'
                 'test_name = 2;\n'
                 'test_foo = true;\n'

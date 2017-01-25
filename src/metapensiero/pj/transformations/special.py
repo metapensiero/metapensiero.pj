@@ -297,11 +297,14 @@ IsNot = NotEq
 #### Import
 
 
+AT_PREFIX_RE = re.compile(r'^__([a-zA-Z0-9])')
 INSIDE_DUNDER_RE = re.compile(r'([a-zA-Z0-9])__([a-zA-Z0-9])')
 
-
-def _replace_inside_dunder(name):
-    return INSIDE_DUNDER_RE.sub(r'\1-\2', name)
+def _replace_dunder(name):
+    """Replacae dunder (``__``) in module names with an ``@`` symbol if its at the
+    start and with ``-`` if its on the middle."""
+    res = AT_PREFIX_RE.sub(r'@\1', name)
+    return INSIDE_DUNDER_RE.sub(r'\1-\2', res)
 
 
 def Import(t, x):
@@ -313,7 +316,7 @@ def Import(t, x):
     result = []
     for n in x.names:
         old_name = n.name
-        n.name = _replace_inside_dunder(n.name)
+        n.name = _replace_dunder(n.name)
         t.unsupported(x, (old_name != n.name) and not n.asname,
         "A module name cannot contain dashes, use 'as' to give it a new name.")
         path_module = '/'.join(n.name.split('.'))
@@ -337,7 +340,7 @@ def ImportFrom(t, x):
         t.add_globals(*names)
         result = JSPass()
         if x.module:
-            path_module = '/'.join(_replace_inside_dunder(x.module).split('.'))
+            path_module = '/'.join(_replace_dunder(x.module).split('.'))
             if x.level == 1:
                 # from .foo import bar
                 path_module = './' + path_module
