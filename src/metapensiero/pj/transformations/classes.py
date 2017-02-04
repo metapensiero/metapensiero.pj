@@ -286,14 +286,12 @@ def Call_super(t, x):
                     # converts to
                     # O.getPrototypeOf(O.getPrototypeOf(this)).method.call(this,
                     # x, y)
+                    sup_cls = t.parent_of(method).bases[0]
                     result = JSCall(
                         JSAttribute(
                             JSAttribute(
-                                JSCall(JSAttribute(JSName('Object'),
-                                                   'getPrototypeOf'),
-                                       [JSCall(JSAttribute(JSName('Object'),
-                                                          'getPrototypeOf'),
-                                               [JSThis()])]),
+                                JSAttribute(JSName(sup_cls),
+                                                   'prototype'),
                                 sup_method),
                             'call'),
                         [JSThis()] + x.args)
