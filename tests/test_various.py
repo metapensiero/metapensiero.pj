@@ -544,8 +544,7 @@ def test_async_super():
         '}\n'
         'class B extends A {\n'
         '    async method() {\n'
-        '        await '
-        'Object.getPrototypeOf(Object.getPrototypeOf(this)).method.call(this);\n'
+        '        await A.prototype.method.call(this);\n'
         '    }\n'
         '}\n'
     )
