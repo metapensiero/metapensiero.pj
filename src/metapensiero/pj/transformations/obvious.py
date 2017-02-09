@@ -11,6 +11,7 @@ from functools import reduce
 
 from ..js_ast import (
     JSAssignmentExpression,
+    JSArrowFunction,
     JSAttribute,
     JSAugAssignStatement,
     JSAwait,
@@ -23,7 +24,6 @@ from ..js_ast import (
     JSExport,
     JSExpressionStatement,
     JSFalse,
-    JSFunction,
     JSIfExp,
     JSIfStatement,
     JSList,
@@ -165,7 +165,7 @@ def Dict(t, x):
 def Lambda(t, x):
     assert not any(getattr(x.args, k) for k in [
             'vararg', 'kwonlyargs', 'kwarg', 'defaults', 'kw_defaults'])
-    return JSFunction(
+    return JSArrowFunction(
                 None,
                 [arg.arg for arg in x.args.args],
                 [JSReturnStatement(x.body)])

@@ -326,13 +326,20 @@ class JSArrowFunction(JSFunction):
     bet_args_n_body = '=> '
 
     def emit(self, name, args, body, acc=None, kwargs=None):
-        line = [name, ' = ']
+        if name:
+            # TODO: split this into an assignment + arrow function
+            line = [name, ' = ']
+        else:
+            line = []
         line += self.fargs(args, acc, kwargs)
         line += self.bet_args_n_body
         line += ['{']
         yield self.line(line)
         yield from self.lines(body, indent=True, delim=True)
-        yield self.line('}', delim=True)
+        if name:
+            yield self.line('}', delim=True)
+        else:
+            yield self.part('}')
 
 
 class JSClass(JSStatement):
