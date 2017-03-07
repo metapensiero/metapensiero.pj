@@ -1,0 +1,3 @@
+def func():
+
+    str(x)
