@@ -292,13 +292,13 @@ def Call_super(t, x):
                             JSAttribute(
                                 JSAttribute(JSName(sup_cls),
                                                    'prototype'),
-                                sup_method),
+                                _normalize_name(sup_method)),
                             'call'),
                         [JSThis()] + x.args)
                 else:
                 # this becomes super.method(x, y)
                     result = JSCall(
-                        JSAttribute(JSSuper(), sup_method),
+                        JSAttribute(JSSuper(), _normalize_name(sup_method)),
                         x.args
                     )
             return result
@@ -331,7 +331,7 @@ def Attribute_super(t, x):
             else:
                 sup_method = x.attr
                 # this becomes super.method
-                result = JSAttribute(JSSuper(), sup_method)
+                result = JSAttribute(JSSuper(), _normalize_name(sup_method))
             return result
 
 
@@ -361,7 +361,7 @@ def Subscript_super(t, x):
             else:
                 sup_method = x.slice.value
                 # this becomes super[expr]
-                result = JSSubscript(JSSuper(), sup_method)
+                result = JSSubscript(JSSuper(), _normalize_name(sup_method))
             return result
 
 
