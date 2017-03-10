@@ -1,0 +1,10 @@
+def func():
+
+    def afunc(a, b, *args, foo=None, **kwargs):
+        acall(a, b, *args, foo=None, **kwargs)
+
+        def bfunc(a, b, *, foo=None, **kwargs):
+            pass
+
+        def cfunc(a=1, b=2, *,foo=None):
+            pass
