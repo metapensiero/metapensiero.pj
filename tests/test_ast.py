@@ -11,7 +11,7 @@ from conftest import load_tests_from_directory
 
 
 @pytest.mark.parametrize('name, py_code,js_src',
-                         load_tests_from_directory('test_ast_dump'))
+                         load_tests_from_directory('test_ast_dump', '.ast'))
 def test_ast_dump(name, py_code, js_src, astdump):
     node, dump = astdump(py_code)
     dump = '\n'.join(line.rstrip() for line in dump.splitlines()).rstrip()
@@ -19,7 +19,7 @@ def test_ast_dump(name, py_code, js_src, astdump):
 
 
 @pytest.mark.parametrize('name, py_code,js_src',
-                         load_tests_from_directory('test_ast_dump_first'))
+                         load_tests_from_directory('test_ast_dump_first', '.ast'))
 def test_ast_dump_first(name, py_code, js_src, astdump):
     node, dump = astdump(py_code, first_stmt_only=True)
     dump = '\n'.join(line.rstrip() for line in dump.splitlines()).rstrip()
