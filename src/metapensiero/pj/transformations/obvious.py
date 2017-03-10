@@ -9,6 +9,8 @@
 import ast
 from functools import reduce
 
+from . import _normalize_name
+
 from ..js_ast import (
     JSAssignmentExpression,
     JSArrowFunction,
@@ -62,16 +64,6 @@ from ..js_ast import (
     JSYield,
     JSYieldStar,
 )
-
-
-def _normalize_name(n):
-    if n.startswith('d_'):
-        n = n.replace('d_', '$')
-    elif n.startswith('dd_'):
-        n = n.replace('dd_', '$$')
-    elif not n.startswith('_') and n.endswith('_'):
-        n = n[:-1]
-    return n
 
 
 #### Statements

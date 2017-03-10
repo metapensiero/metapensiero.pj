@@ -33,7 +33,7 @@ from ..js_ast import (
     JSUnaryOp,
 )
 
-from .obvious import _normalize_name
+from . import _normalize_name
 
 EXC_TEMPLATE = """\
 class %(name)s(Error):

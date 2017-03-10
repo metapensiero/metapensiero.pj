@@ -33,6 +33,8 @@ from ..js_ast import (
 )
 from ..processor.util import body_local_names, walk_under_code_boundary
 
+from . import _normalize_name
+
 
 def _isyield(el):
     return isinstance(el, (ast.Yield, ast.YieldFrom))
@@ -71,7 +73,7 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
                   "Having both param accumulator and keyword args is "
                   "unsupported")
 
-    name = x.name
+    name = _normalize_name(x.name)
     body = x.body
     # get positional arg names and trim self if present
     arg_names = [arg.arg for arg in x.args.args]
