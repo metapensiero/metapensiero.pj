@@ -25,7 +25,7 @@ setup(
 
     description="Javascript for refined palates:"
     " a Python 3 to ES6 Javascript translator",
-    long_description=README + u'\n\n' + CHANGES,
+    long_description=README + '\n\n' + CHANGES,
 
     author="Alberto Berti",
     author_email="alberto@arstecnica.it",
