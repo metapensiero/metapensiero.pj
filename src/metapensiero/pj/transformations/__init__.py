@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# :Project:  metapensiero.pj --
-# :Created:    gio 09 mar 2017 19:43:11 CET
-# :Author:    Alberto Berti <alberto@metapensiero.it>
-# :License:   GNU General Public License version 3 or later
+# :Project:  metapensiero.pj
+# :Created:  gio 09 mar 2017 19:43:11 CET
+# :Author:   Alberto Berti <alberto@metapensiero.it>
+# :License:  GNU General Public License version 3 or later
 #
 
 def _normalize_name(n):

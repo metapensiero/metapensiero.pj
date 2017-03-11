@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# :Project:   pj -- examples makefile
+# :Project:   metapensiero.pj -- examples makefile
 # :Created:   lun 07 mar 2016 01:43:23 CET
 # :Author:    Alberto Berti <alberto@metapensiero.it>
 # :License:   GNU General Public License version 3 or later

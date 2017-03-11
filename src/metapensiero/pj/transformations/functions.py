@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# :Project:  pj -- function transformations
+# :Project:  metapensiero.pj -- function transformations
 # :Created:  mer 09 nov 2016 12:59:00 CET
 # :Authors:  Andrew Schaaf <andrew@andrewschaaf.com>,
 #            Alberto Berti <alberto@metapensiero.it>

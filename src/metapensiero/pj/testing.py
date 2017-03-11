@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# :Project: pyxc-pj -- test utilities
-# :Created: mer 09 nov 2016 20:32:09 CET
-# :Author:  Alberto Berti <alberto@metapensiero.it>
-# :License: GNU General Public License version 3 or later
+# :Project:  metapensiero.pj -- test utilities
+# :Created:  mer 09 nov 2016 20:32:09 CET
+# :Author:   Alberto Berti <alberto@metapensiero.it>
+# :License:  GNU General Public License version 3 or later
 #
 
 import ast

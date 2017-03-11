@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# :Project:   pj -- A Python 3 to ES6 Javascript translator
+# :Project:   metapensiero.pj -- A Python 3 to ES6 Javascript translator
 # :Created:   lun 22 feb 2016 16:00:00 CET
 # :Author:    Alberto Berti <alberto@metapensiero.it>
 # :License:   GNU General Public License version 3 or later

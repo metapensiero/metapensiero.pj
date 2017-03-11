@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# :Project:  pj -- public api
-# :Created:    ven 26 feb 2016 15:16:13 CET
-# :Author:    Alberto Berti <alberto@metapensiero.it>
-# :License:   GNU General Public License version 3 or later
+# :Project:  metapensiero.pj -- public api
+# :Created:  ven 26 feb 2016 15:16:13 CET
+# :Author:   Alberto Berti <alberto@metapensiero.it>
+# :License:  GNU General Public License version 3 or later
 #
 
 import ast
