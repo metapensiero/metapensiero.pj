@@ -7,7 +7,6 @@
 #
 
 import os
-from codecs import open
 
 from setuptools import setup, find_packages
 
