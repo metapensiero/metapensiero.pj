@@ -158,9 +158,14 @@ class JSIfStatement(JSStatement):
         yield self.line(['if (', test, ') {'])
         yield from self.lines(body, indent=True, delim=True)
         if orelse:
-            yield self.line(['} else {'])
-            yield from self.lines(orelse, indent=True, delim=True)
-            yield self.line('}')
+            if (isinstance(orelse, (list, tuple))
+                and len(orelse) == 1
+                and isinstance(orelse[0], JSIfStatement)):
+                yield self.line(['} else ', orelse[0]])
+            else:
+                yield self.line(['} else {'])
+                yield from self.lines(orelse, indent=True, delim=True)
+                yield self.line('}')
         else:
             yield self.line('}')
 
