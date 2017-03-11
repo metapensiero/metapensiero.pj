@@ -220,7 +220,7 @@ class Transformer:
                     yield c
 
     def has_child(self, node, cls):
-        """Returns true if node has any child that instance of cls"""
+        """Return true if node has any child that is an instance of cls."""
         wanted = tuple(self.find_child(node, cls))
         return len(wanted) > 0
 
@@ -239,7 +239,7 @@ class Transformer:
         self.snippets.add(func)
 
     def _transform_node(self, in_node):
-        """This transforms a Python AST node to a JS AST node."""
+        """Transform a Python AST node to a JS AST node."""
 
         if isinstance(in_node, list) or isinstance(in_node, tuple):
             res = [self._transform_node(child) for child in in_node]

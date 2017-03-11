@@ -33,7 +33,7 @@ def delimited(delimiter, arr, dest=None, at_end=False):
     return dest
 
 def delimited_multi_line(node, text, begin=None, end=None, add_space=False):
-    """Used to deal with single and multi line literals"""
+    """Used to deal with single and multi line literals."""
     begin = begin or ''
     end = end or ''
     if begin and not end:
@@ -96,7 +96,7 @@ def walk_under_code_boundary(node):
 
 
 def body_local_names(body):
-    """Find the names assigned to in the provided body. It doesn't descent
+    """Find the names assigned to in the provided body. It doesn't descend
     into function or class subelements."""
     names = set()
     for stmt in body:
@@ -110,7 +110,7 @@ def node_names(py_node):
     """Extract 'names' from a Python node. Names are all those interesting for the
     enclosing scope.
 
-    Returns a set containing them. The nodes considered are the Assign and the
+    Return a set containing them. The nodes considered are the Assign and the
     ones that defines namespaces, the function and class definitions.
 
     The assignment can be something like:
@@ -192,7 +192,7 @@ class OutputSrc:
         }
 
     def _pos_in_src(self):
-        """Returns the position in source of the generated node"""
+        """Return the position in source of the generated node."""
         py_node = self.node.py_node
         if py_node:
             offset = getattr(py_node, 'col_offset', 0)

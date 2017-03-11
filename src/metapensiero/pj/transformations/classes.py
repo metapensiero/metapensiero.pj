@@ -79,12 +79,12 @@ def _class_guards(t, x):
 
 
 def ClassDef_exception(t, x):
-    """This converts a class like::
+    """Convert a class like::
 
       class MyError(Exception):
           pass
 
-    Into something like::
+    into something like::
 
       class MyError extends Error {
           constructor(message) {
@@ -130,7 +130,7 @@ def ClassDef_exception(t, x):
 
 
 def ClassDef_default(t, x):
-    """Converts a class to an ES6 class."""
+    """Convert a class to an ES6 class."""
 
     # check if translatable
     _class_guards(t, x)
@@ -305,7 +305,7 @@ def Call_super(t, x):
 
 
 def Attribute_super(t, x):
-    """Translates ``super().foo`` into ``super.foo` if the method isn't a constructor,
+    """Translate ``super().foo`` into ``super.foo` if the method isn't a constructor,
     where it's invalid.
 
     AST is::
@@ -336,7 +336,8 @@ def Attribute_super(t, x):
 
 
 def Subscript_super(t, x):
-    """Same as per attribute: translates ``super()[foo]`` into ``super[foo]``,
+    """Same as per attribute: translate ``super()[foo]`` into ``super[foo]``.
+
     AST is::
 
          Subscript(ctx=Load(),
@@ -366,7 +367,7 @@ def Subscript_super(t, x):
 
 
 def Call_isinstance(t, x):
-    """Translates ``isinstance(foo, Bar)`` to ``foo instanceof Bar`` and
+    """Translate ``isinstance(foo, Bar)`` to ``foo instanceof Bar`` and
     ``isinstance(Foo, (Bar, Zoo))`` to ``foo instanceof Bar || foo instanceof
     Zoo``.
 
@@ -413,7 +414,7 @@ def Call_isinstance(t, x):
 
 
 def Call_issubclass(t, x):
-    """Translates ``issubclass(Foo, Bar)`` to ``Foo.prototype instanceof Bar``.
+    """Translate ``issubclass(Foo, Bar)`` to ``Foo.prototype instanceof Bar``.
     """
     if (isinstance(x.func, ast.Name) and x.func.id == 'issubclass'):
         assert len(x.args) == 2

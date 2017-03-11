@@ -50,7 +50,7 @@ def ast_dump_file(fname):
 
 
 def ast_dumps(input, filename='', first_stmt_only=False):
-    """Ast dump a string"""
+    """AST dump a string."""
     try:
         from meta.asttools import str_ast
     except ImportError:
