@@ -303,8 +303,8 @@ AT_PREFIX_RE = re.compile(r'^__([a-zA-Z0-9])')
 INSIDE_DUNDER_RE = re.compile(r'([a-zA-Z0-9])__([a-zA-Z0-9])')
 
 def _replace_dunder(name):
-    """Replace dunder (``__``) in module names with an ``@`` symbol if its at the
-    start and with ``-`` if its on the middle."""
+    """Replace dunder (``__``) in `name` with an ``@`` symbol if it's at the
+    start and with ``-`` if it's on the middle."""
     res = AT_PREFIX_RE.sub(r'@\1', name)
     return INSIDE_DUNDER_RE.sub(r'\1-\2', res)
 
@@ -446,7 +446,7 @@ Attribute = [Attribute_super, Attribute_list_append, Attribute_default]
 
 
 def Assert(t, x):
-    """Convert asserts to just a snippet function call."""
+    """Convert ``assert`` statement to just a snippet function call."""
     if t.enable_snippets:
         from ..snippets import _assert
         t.add_snippet(_assert)

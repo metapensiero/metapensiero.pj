@@ -72,10 +72,12 @@ def translate_file(src_filename, dst_filename=None, map_filename=None,
 def translate_object(py_obj, body_only=False, enable_es6=False,
                      enable_stage3=False):
     """Translate the given Python 3 object (function, class, etc.) to ES6
-    Javascript. If ``body_only`` is True, the object itself is discarded
-    and only its body gets translated as it was a module body.
+    Javascript.
 
-    Returns a (js_text, js_source_map) tuple.
+    If `body_only` is ``True``, the object itself is discarded and only its
+    body gets translated as it was a module body.
+
+    Return a ``(js_text, js_source_map)`` tuple.
     """
     cwd = os.getcwd()
     src_filename = inspect.getsourcefile(py_obj)
@@ -94,17 +96,16 @@ def translate_object(py_obj, body_only=False, enable_es6=False,
 def translates(src_text, dedent=True, src_filename=None, src_offset=None,
                body_only=False, complete_src=None, enable_es6=False,
                enable_stage3=False):
-    """Translate the given Python 3 source text to ES6 Javascript. If the
-    string comes from a file, it's possible to specify the filename
-    that will be inserted into the output source map. The
-    ``src_offset`` is the ``(line_offset, col_offset)`` tuple of the
-    fragment and it's used to relocate the map
-    segments. ``map_filename`` is the intended file name for the
-    output map file that will be added as pragma comment to the output
-    JS.
+    """Translate the given Python 3 source text to ES6 Javascript.
 
-    Setting ``body_only`` to a true value will change the evaluation behavior
-    to translate only the body of the first statement.
+    If the string comes from a file, it's possible to specify the filename
+    that will be inserted into the output source map. The `src_offset` is the
+    ``(line_offset, col_offset)`` tuple of the fragment and it's used to
+    relocate the map segments. `map_filename` is the intended file name for
+    the output map file that will be added as pragma comment to the output JS.
+
+    Setting `body_only` to a true value will change the evaluation behavior to
+    translate only the body of the first statement.
     """
     if isinstance(src_text, (tuple, list)):
         src_lines = src_text
@@ -294,7 +295,7 @@ def evals_es6(py_text, body_only=False, ret_code=False, enable_stage3=False,
 BABEL_JS_CTX = None
 
 def babel_compile(source, reuse_js_ctx=True, **kwargs):
-    """Compile the given ``source`` from ES6 to ES5 usin Babeljs."""
+    """Compile the given `source` from ES6 to ES5 usin Babeljs."""
     global BABEL_JS_CTX
     presets = kwargs.get('presets')
     if not presets:

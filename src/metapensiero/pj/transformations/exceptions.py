@@ -25,7 +25,7 @@ def Try(t, x):
     ename = None
     if x.handlers:
         for h in x.handlers:
-            t.unsupported(x,  not (h.type is None or isinstance(h.type, ast.Name)),
+            t.unsupported(x, not (h.type is None or isinstance(h.type, ast.Name)),
                           "'except' expressions must be type names")
             t.unsupported(x, h.name and ename and h.name != ename,
                           "Different per 'except' block exception names aren't"

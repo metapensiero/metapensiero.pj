@@ -18,7 +18,7 @@ IGNORED_NAMES = ('__all__',)
 
 
 def delimited(delimiter, arr, dest=None, at_end=False):
-    """Similar to str.join(), but returns an array with an option to append the
+    """Similar to ``str.join()``, but returns an array with an option to append the
     delimiter at the end.
     """
     if dest is None:
@@ -61,7 +61,7 @@ def body_top_names(body):
 
 
 def controlled_ast_walk(node):
-    """Walk AST just like ast.walk(), but expect True on every branch to
+    """Walk AST just like ``ast.walk()``, but expect ``True`` on every branch to
     descend on sub-branches."""
     if isinstance(node, list):
         l = node.copy()
@@ -96,7 +96,7 @@ def walk_under_code_boundary(node):
 
 
 def body_local_names(body):
-    """Find the names assigned to in the provided body. It doesn't descend
+    """Find the names assigned to in the provided `body`. It doesn't descend
     into function or class subelements."""
     names = set()
     for stmt in body:
