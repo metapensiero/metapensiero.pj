@@ -18,6 +18,7 @@ from ..js_ast import (
     JSDependImport,
     JSDict,
     JSExpressionStatement,
+    JSLiteral,
     JSName,
     JSNamedImport,
     JSNull,
@@ -267,13 +268,20 @@ def Call_setattr(t, x):
             )
         )
 
+def Call_JS(t, x):
+    if (isinstance(x.func, ast.Name) and x.func.id == 'JS') and \
+       len(x.args) == 1:
+        assert isinstance(x.args[0], ast.Str)
+        return JSLiteral(x.args[0].s)
+
 
 from .classes import Call_super, Call_isinstance, Call_issubclass
 from .obvious import Call_default
 Call = [Call_typeof, Call_callable, Call_isinstance, Call_print, Call_len,
-        Call_new, Call_super, Call_import, Call_str, Call_type,
+        Call_JS, Call_new, Call_super, Call_import, Call_str, Call_type,
         Call_dict_update, Call_dict_copy, Call_tagged_template, Call_template,
-        Call_hasattr, Call_getattr, Call_setattr, Call_issubclass, Call_default]
+        Call_hasattr, Call_getattr, Call_setattr, Call_issubclass,
+        Call_default]
 
 
 #### Ops

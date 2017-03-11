@@ -111,6 +111,9 @@ class JSCommentBlock(JSNode):
         yield from self.lines(delimited_multi_line(self, text, '/*', '*/', True))
 
 
+class JSLiteral(JSNode):
+    def emit(self, text):
+        yield from self.lines(delimited_multi_line(self, text, '', '', False))
 #### Statements
 
 
