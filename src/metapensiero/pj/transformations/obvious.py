@@ -58,6 +58,7 @@ from ..js_ast import (
     JSStatements,
     JSStr,
     JSSubscript,
+    JSTemplateLiteral,
     JSTrue,
     JSUnaryOp,
     JSWhileStatement,
@@ -230,6 +231,17 @@ def Num(t, x):
 
 def Str(t, x):
     return JSStr(x.s)
+
+
+def JoinedStr(t, x):
+    chunks = []
+    for value in x.values:
+        if isinstance(value, ast.Str):
+            chunks.append(value.s)
+        else:
+            assert isinstance(value, ast.FormattedValue)
+            chunks.append('{%s}' % t._transform_node(value.value))
+    return JSTemplateLiteral(''.join(chunks))
 
 
 def Name_default(t, x):
