@@ -240,7 +240,7 @@ def JoinedStr(t, x):
             chunks.append(value.s)
         else:
             assert isinstance(value, ast.FormattedValue)
-            chunks.append('{%s}' % t._transform_node(value.value))
+            chunks.append('${%s}' % t._transform_node(value.value))
     return JSTemplateLiteral(''.join(chunks))
 
 
