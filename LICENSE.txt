@@ -1,5 +1,6 @@
-Portions copyright (c) 2010 Andrew Schaaf <andrew@andrewschaaf.com>
-Copyright (c) 2016 Alberto Berti <alberto@metapensiero.it>
+Portions are copyright © 2010 Andrew Schaaf <andrew@andrewschaaf.com>
+Copyright © 2016,2017 Alberto Berti <alberto@metapensiero.it>
+Portions copyright © 2017 Lele Gaifax <lele@metapensiero.it>
 
 Part of the code, developed by Andrew Schaaf is released in the terms
 of this license:
