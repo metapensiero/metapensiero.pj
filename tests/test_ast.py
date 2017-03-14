@@ -5,30 +5,15 @@
 # :License:   GNU General Public License version 3 or later
 #
 
-import pytest
-
-from conftest import load_tests_from_directory
-
-
-@pytest.mark.parametrize('name, py_code,js_src',
-                         load_tests_from_directory('test_ast_dump', '.ast'))
-def test_ast_dump(name, py_code, js_src, astdump):
-    node, dump = astdump(py_code)
+def test_ast_dump(fstest, astdump):
+    name, py_code, options, expected = fstest
+    node, dump = astdump(py_code, **options)
     dump = '\n'.join(line.rstrip() for line in dump.splitlines()).rstrip()
-    assert dump == js_src.rstrip()
+    assert dump == expected.rstrip()
 
 
-@pytest.mark.parametrize('name, py_code,js_src',
-                         load_tests_from_directory('test_ast_dump_first', '.ast'))
-def test_ast_dump_first(name, py_code, js_src, astdump):
-    node, dump = astdump(py_code, first_stmt_only=True)
+def test_ast_es6(fstest, astjs):
+    name, py_code, options, expected = fstest
+    dump = str(astjs(py_code, **options))
     dump = '\n'.join(line.rstrip() for line in dump.splitlines()).rstrip()
-    assert dump == js_src.rstrip()
-
-
-@pytest.mark.parametrize('name, py_code,js_src',
-                         load_tests_from_directory('test_ast_es6'))
-def test_ast_es6(name, py_code, js_src, astjs):
-    dump = str(astjs(py_code, es6=True))
-    dump = '\n'.join(line.rstrip() for line in dump.splitlines()).rstrip()
-    assert dump == js_src.rstrip()
+    assert dump == expected.rstrip()
