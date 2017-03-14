@@ -44,12 +44,11 @@ def load_python_code(filename):
                         raise ValueError('Bad header, expected "## value: expression",'
                                          ' got: %s' % line.rstrip())
                     option = option.strip()
-                    value = eval(expr.strip(), {
-                        'python_version': sys.version_info
-                    })
+                    expr = expr.strip()
+                    value = eval(expr, {'python_version': sys.version_info})
                     if option == 'requires':
                         if not value:
-                            return None, expr
+                            return None, 'Requires %s' % expr
                     else:
                         options[option] = value
                 else:
@@ -66,8 +65,10 @@ def load_tests_from_directory(dir):
     for pyfile in sorted(glob(join(dir, '*.py'))):
         py_code, options = load_python_code(pyfile)
         if py_code is None:
-            # TODO: it would be nice to report this as an XFail
+            yield pytest.mark.skip((split(pyfile)[1],))(
+                reason=options)
             continue
+
         cmpfile = splitext(pyfile)[0] + '.out'
         if exists(cmpfile):
             with open(cmpfile, encoding='utf-8') as f:
@@ -80,6 +81,7 @@ def load_tests_from_directory(dir):
 
 
 def pytest_make_parametrize_id(config, val):
+    # Use the first item of the tuples generated above to identify the parametrization
     return val[0]
 
 
@@ -87,5 +89,4 @@ def pytest_generate_tests(metafunc):
     if 'fstest' in metafunc.fixturenames:
         moddir = splitext(metafunc.module.__file__)[0]
         testdir = join(moddir, metafunc.function.__name__)
-        metafunc.parametrize("fstest",
-                             load_tests_from_directory(testdir))
+        metafunc.parametrize("fstest", load_tests_from_directory(testdir))
