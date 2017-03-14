@@ -778,3 +778,8 @@ def test_in_weakset():
         return prova in w
 
     assert eval_object_es6(test_in_ws, 'test_in_ws();') == True
+
+
+def test_eval_object_es6(fstest):
+    name, py_code, options, expected = fstest
+    assert eval_object_es6(py_code, 'test();') == expected.rstrip()
