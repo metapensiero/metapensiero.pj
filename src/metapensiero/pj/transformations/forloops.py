@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# :Project:  pj -- for loops transformations
+# :Project:  metapensiero.pj -- for loops transformations
 # :Created:  ven 26 feb 2016 15:17:49 CET
 # :Authors:  Andrew Schaaf <andrew@andrewschaaf.com>,
 #            Alberto Berti <alberto@metapensiero.it>
@@ -75,8 +75,9 @@ def For_range(t, x):
 
 
 def For_dict(t, x):
-    """Special 'for name in dict(expr)' statement translation. It detects
-    the ``dict()`` call and converts it to:
+    """Special ``for name in dict(expr)`` statement translation.
+
+    It detects the ``dict()`` call and converts it to:
 
     .. code:: javascript
 
@@ -129,8 +130,9 @@ def For_dict(t, x):
 
 
 def For_iterable(t, x):
-    """Special 'for name in iterable(expr)' statement translation. It detects
-    the ``iterable()`` call and converts it to:
+    """Special ``for name in iterable(expr)`` statement translation.
+
+    It detects the ``iterable()`` call and converts it to:
 
     .. code:: javascript
 
@@ -159,6 +161,7 @@ def For_iterable(t, x):
 
 def For_default(t, x):
     """Assumes that the iteration is over a list.
+
     Converts something like:
 
     .. code:: python

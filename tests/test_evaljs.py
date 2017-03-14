@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# :Project:  pj -- py evaluation tests
-# :Created:    dom 28 feb 2016 16:27:40 CET
-# :Author:    Alberto Berti <alberto@metapensiero.it>
-# :License:   GNU General Public License version 3 or later
+# :Project:  metapensiero.pj -- py evaluation tests
+# :Created:  dom 28 feb 2016 16:27:40 CET
+# :Author:   Alberto Berti <alberto@metapensiero.it>
+# :License:  GNU General Public License version 3 or later
 #
 
 import pytest

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# :Project:  pj -- code to aid transformation, it gets converted
+# :Project:  metapensiero.pj -- code to aid transformation, it gets converted
 # :Created:  mar 01 mar 2016 01:42:26 CET
 # :Author:   Alberto Berti <alberto@metapensiero.it>
 # :License:  GNU General Public License version 3 or later

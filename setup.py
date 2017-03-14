@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# :Project:   pj -- A Python 3 to ES6 Javascript translator
+# :Project:   metapensiero.pj -- A Python 3 to ES6 Javascript translator
 # :Created:   lun 22 feb 2016 16:00:00 CET
 # :Author:    Alberto Berti <alberto@metapensiero.it>
 # :License:   GNU General Public License version 3 or later
@@ -7,7 +7,6 @@
 #
 
 import os
-from codecs import open
 
 from setuptools import setup, find_packages
 
@@ -26,7 +25,7 @@ setup(
 
     description="Javascript for refined palates:"
     " a Python 3 to ES6 Javascript translator",
-    long_description=README + u'\n\n' + CHANGES,
+    long_description=README + '\n\n' + CHANGES,
 
     author="Alberto Berti",
     author_email="alberto@arstecnica.it",

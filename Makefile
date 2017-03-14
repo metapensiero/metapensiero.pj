@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# :Project:   metapensiero.signal -- A event framework that is asyncio aware
+# :Project:   metapensiero.pj -- A Python 3 to JavaScript translator
 # :Created:   dom 09 ago 2015 12:57:35 CEST
 # :Author:    Alberto Berti <alberto@metapensiero.it>
 # :License:   GNU General Public License version 3 or later

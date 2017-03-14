@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# :Project:  pj -- JS AST
+# :Project:  metapensiero.pj -- JS AST
 # :Created:  ven 26 feb 2016 15:17:49 CET
 # :Authors:  Andrew Schaaf <andrew@andrewschaaf.com>,
 #            Alberto Berti <alberto@metapensiero.it>

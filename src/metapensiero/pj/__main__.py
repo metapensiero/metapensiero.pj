@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# :Project:  pj -- commandline interface
-# :Created:    mar 01 mar 2016 19:33:21 CET
-# :Author:    Alberto Berti <alberto@metapensiero.it>
-# :License:   GNU General Public License version 3 or later
+# :Project:  metapensiero.pj -- commandline interface
+# :Created:  mar 01 mar 2016 19:33:21 CET
+# :Author:   Alberto Berti <alberto@metapensiero.it>
+# :License:  GNU General Public License version 3 or later
 #
 
 import argparse

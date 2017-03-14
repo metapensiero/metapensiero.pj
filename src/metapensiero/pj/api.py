@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# :Project:  pj -- public api
-# :Created:    ven 26 feb 2016 15:16:13 CET
-# :Author:    Alberto Berti <alberto@metapensiero.it>
-# :License:   GNU General Public License version 3 or later
+# :Project:  metapensiero.pj -- public api
+# :Created:  ven 26 feb 2016 15:16:13 CET
+# :Author:   Alberto Berti <alberto@metapensiero.it>
+# :License:  GNU General Public License version 3 or later
 #
 
 import ast
@@ -28,7 +28,7 @@ BABEL_POLYFILL = os.path.join(os.path.dirname(__file__), 'data',
 
 
 def _calc_file_names(src_filename, dst_filename=None, map_filename=None):
-    """Calculate destination paths for file translation/transpile"""
+    """Calculate destination paths for file translation/transpile."""
     src_filename = os.path.abspath(src_filename)
     src_dir = os.path.dirname(src_filename)
     if dst_filename and not os.path.isdir(dst_filename):
@@ -53,7 +53,7 @@ def _calc_file_names(src_filename, dst_filename=None, map_filename=None):
 
 def translate_file(src_filename, dst_filename=None, map_filename=None,
                    enable_es6=False, enable_stage3=False):
-    """Translated the given python source file to ES6 Javascript"""
+    """Translate the given python source file to ES6 Javascript."""
     dst_filename, map_filename, src_relpath, map_relpath = _calc_file_names(
         src_filename, dst_filename, map_filename
     )
@@ -72,10 +72,12 @@ def translate_file(src_filename, dst_filename=None, map_filename=None,
 def translate_object(py_obj, body_only=False, enable_es6=False,
                      enable_stage3=False):
     """Translate the given Python 3 object (function, class, etc.) to ES6
-    Javascript. If ``body_only`` is True, the object itself is discarded
-    and only its body gets translates as it was a module body.
+    Javascript.
 
-    Returns a (js_text, js_source_map) tuple.
+    If `body_only` is ``True``, the object itself is discarded and only its
+    body gets translated as it was a module body.
+
+    Return a ``(js_text, js_source_map)`` tuple.
     """
     cwd = os.getcwd()
     src_filename = inspect.getsourcefile(py_obj)
@@ -94,17 +96,16 @@ def translate_object(py_obj, body_only=False, enable_es6=False,
 def translates(src_text, dedent=True, src_filename=None, src_offset=None,
                body_only=False, complete_src=None, enable_es6=False,
                enable_stage3=False):
-    """Transate the given Python 3 source text to ES6 Javascript. If the
-    string comes from a file, it's possible to specify the filename
-    that will be inserted into the output source map. The
-    ``src_offset`` is the ``(line_offset, col_offset)`` tuple of the
-    fragment and it's used to relocate the map
-    segments. ``map_filename`` is the intended file name for the
-    output map file that will be added as pragma comment to the output
-    JS.
+    """Translate the given Python 3 source text to ES6 Javascript.
 
-    Setting ``body_only`` to a true value will change the evaluation behavior
-    to translate only the body of the first statement.
+    If the string comes from a file, it's possible to specify the filename
+    that will be inserted into the output source map. The `src_offset` is the
+    ``(line_offset, col_offset)`` tuple of the fragment and it's used to
+    relocate the map segments. `map_filename` is the intended file name for
+    the output map file that will be added as pragma comment to the output JS.
+
+    Setting `body_only` to a true value will change the evaluation behavior to
+    translate only the body of the first statement.
     """
     if isinstance(src_text, (tuple, list)):
         src_lines = src_text
@@ -182,7 +183,7 @@ def transpile_es6s(es6_text, es6_filename=None, es6_sourcemap=None,
 
 def transpile_object(py_obj, body_only=False, es6_filename=None,
                      enable_stage3=False, **kw):
-    """Transpile the given python Python 3 object to ES5 Javascript using
+    """Transpile the given Python 3 object to ES5 Javascript using
     Dukpy and babeljs."""
     es6_text, es6_sourcemap = translate_object(py_obj, body_only=body_only,
                                                enable_es6=True,
@@ -193,7 +194,7 @@ def transpile_object(py_obj, body_only=False, es6_filename=None,
 
 def transpile_pys(src_text, dedent=True, src_filename=None, src_offset=None,
                   body_only=False, es6_filename=None, enable_stage3=False, **kw):
-    """Transpile the given python Python 3 source text to ES5 Javascript
+    """Transpile the given Python 3 source text to ES5 Javascript
     using Dukpy and babeljs.
     """
     es6_text, es6_sourcemap = translates(src_text, dedent, src_filename,
@@ -205,7 +206,7 @@ def transpile_pys(src_text, dedent=True, src_filename=None, src_offset=None,
 
 def transpile_py_file(src_filename, dst_filename=None, map_filename=None,
                       enable_stage3=False, **kw):
-    """Transpile the given python Python 3 source file to ES5 Javascript
+    """Transpile the given Python 3 source file to ES5 Javascript
     using Dukpy and babeljs.
     """
     dst_filename, map_filename, src_relpath, map_relpath = _calc_file_names(
@@ -294,7 +295,7 @@ def evals_es6(py_text, body_only=False, ret_code=False, enable_stage3=False,
 BABEL_JS_CTX = None
 
 def babel_compile(source, reuse_js_ctx=True, **kwargs):
-    """Compiles the given ``source`` from ES6 to ES5 usin Babeljs"""
+    """Compile the given `source` from ES6 to ES5 usin Babeljs."""
     global BABEL_JS_CTX
     presets = kwargs.get('presets')
     if not presets:

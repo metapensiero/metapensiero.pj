@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# :Project:  pj -- transformation processor
+# :Project:  metapensiero.pj -- transformation processor
 # :Created:  ven 26 feb 2016 15:17:49 CET
 # :Authors:  Andrew Schaaf <andrew@andrewschaaf.com>,
 #            Alberto Berti <alberto@metapensiero.it>
@@ -191,7 +191,7 @@ class Transformer:
         return self.node_parent_map.get(node)
 
     def parents(self, node, stop_at=None):
-        """Return all the parents possibly up an instance of ``stop_at`` class."""
+        """Return all the parents possibly up an instance of `stop_at` class."""
         parent = self.node_parent_map.get(node)
         while parent:
             yield parent
@@ -200,8 +200,8 @@ class Transformer:
             parent = self.node_parent_map.get(parent)
 
     def find_parent(self, node, *classes):
-        """Retrieve the first parent of the given AST node that is an instance
-        of the given class."""
+        """Retrieve the first parent of the given AST `node` that is an instance
+        of the given `classes`."""
         parent = self.parent_of(node)
         if parent is not None:
             if isinstance(parent, classes):
@@ -210,7 +210,7 @@ class Transformer:
                 return self.find_parent(parent, *classes)
 
     def find_child(self, node, cls):
-        """Find any child of node that is an instance of cls. The walk will
+        """Find any child of `node` that is an instance of `cls`. The walk will
         not go down into other code blocks."""
         if not isinstance(node, (tuple, list, set)):
             node = (node)
@@ -220,7 +220,7 @@ class Transformer:
                     yield c
 
     def has_child(self, node, cls):
-        """Returns true if node has any child that instance of cls"""
+        """Return true if `node` has any child that is an instance of `cls`."""
         wanted = tuple(self.find_child(node, cls))
         return len(wanted) > 0
 
@@ -239,7 +239,7 @@ class Transformer:
         self.snippets.add(func)
 
     def _transform_node(self, in_node):
-        """This transforms a Python AST node to a JS AST node."""
+        """Transform a Python AST node to a JS AST node."""
 
         if isinstance(in_node, list) or isinstance(in_node, tuple):
             res = [self._transform_node(child) for child in in_node]
@@ -313,17 +313,17 @@ class Transformer:
         return self._args_stack[-1]
 
     def unsupported(self, py_node, cond, desc):
-        """Raise an exception if cond is False"""
+        """Raise an exception if `cond` is ``False``."""
         if cond:
             raise UnsupportedSyntaxError(py_node, desc)
 
     def warn(self, py_node, msg):
-        """Append the given message to the warnings"""
+        """Append the given message to the warnings."""
         self._warnings.append((py_node, msg))
 
     def subtransform(self, obj, remap_to=None):
         """Transform a piece of code, either a python object or a string. This
-        is done in a new Transformer with a configuration similar to the
+        is done in a new ``Transformer`` with a configuration similar to the
         calling instance."""
         if isinstance(obj, str):
             src = textwrap.dedent(obj)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# :Project:  pj -- special transformations
+# :Project:  metapensiero.pj -- special transformations
 # :Created:  ven 26 feb 2016 15:17:49 CET
 # :Authors:  Andrew Schaaf <andrew@andrewschaaf.com>,
 #            Alberto Berti <alberto@metapensiero.it>
@@ -85,7 +85,7 @@ def Call_typeof(t, x):
 
 
 def Call_callable(t, x):
-    """Translates callable(foo) to foo instanceof Function"""
+    """Translate ``callable(foo)`` to ``foo instanceof Function``."""
     if (isinstance(x.func, ast.Name) and x.func.id == 'callable'):
         assert len(x.args) == 1
         return JSBinOp(
@@ -119,7 +119,7 @@ def Call_str(t, x):
 
 
 def Call_new(t, x):
-    """Translates ``Foo(...) to ``new Foo(...)`` if function name starts
+    """Translate ``Foo(...)`` to ``new Foo(...)`` if function name starts
     with a capital letter.
     """
     def getNameString(x):
@@ -158,9 +158,10 @@ def Call_type(t, x):
 
 
 def Call_dict_update(t, x):
-    """Converts ``dict(foo).update(bar)`` to ``Object.assign(foo, bar)``.
+    """Convert ``dict(foo).update(bar)`` to ``Object.assign(foo, bar)``.
 
-    requires ES6
+    Requires ES6
+
     AST dump::
 
       Expr(value=Call(args=[Name(ctx=Load(),
@@ -187,9 +188,10 @@ def Call_dict_update(t, x):
 
 
 def Call_dict_copy(t, x):
-    """Converts ``dict(foo).copy()`` to ``Object.assign({}, foo)``.
+    """Convert ``dict(foo).copy()`` to ``Object.assign({}, foo)``.
 
-    requires ES6
+    Requires ES6
+
     AST dump::
 
       Expr(value=Call(args=[],
@@ -236,14 +238,14 @@ def Call_tagged_template(t, x):
 
 
 def Call_hasattr(t, x):
-    """Translates ``hasattr(foo, bar)`` to ``bar in foo``."""
+    """Translate ``hasattr(foo, bar)`` to ``bar in foo``."""
     if (isinstance(x.func, ast.Name) and x.func.id == 'hasattr') and \
        len(x.args) == 2:
         return JSBinOp(x.args[1], JSOpIn(), x.args[0])
 
 
 def Call_getattr(t, x):
-    """Translates ``getattr(foo, bar, default)`` to ``foo[bar] || default``."""
+    """Translate ``getattr(foo, bar, default)`` to ``foo[bar] || default``."""
     if (isinstance(x.func, ast.Name) and x.func.id == 'getattr') and \
        2 <= len(x.args) < 4:
         if len(x.args) == 2:
@@ -258,7 +260,7 @@ def Call_getattr(t, x):
 
 
 def Call_setattr(t, x):
-    """Translates ``setattr(foo, bar, value)`` to ``foo[bar] = value``."""
+    """Translate ``setattr(foo, bar, value)`` to ``foo[bar] = value``."""
     if (isinstance(x.func, ast.Name) and x.func.id == 'setattr') and \
        len(x.args) == 3:
         return JSExpressionStatement(
@@ -309,8 +311,8 @@ AT_PREFIX_RE = re.compile(r'^__([a-zA-Z0-9])')
 INSIDE_DUNDER_RE = re.compile(r'([a-zA-Z0-9])__([a-zA-Z0-9])')
 
 def _replace_dunder(name):
-    """Replacae dunder (``__``) in module names with an ``@`` symbol if its at the
-    start and with ``-`` if its on the middle."""
+    """Replace dunder (``__``) in `name` with an ``@`` symbol if it's at the
+    start and with ``-`` if it's on the middle."""
     res = AT_PREFIX_RE.sub(r'@\1', name)
     return INSIDE_DUNDER_RE.sub(r'\1-\2', res)
 
@@ -427,7 +429,7 @@ from .obvious import Attribute_default
 from .classes import Attribute_super
 
 def Attribute_list_append(t, x):
-    """Converts ``list(foo).append(bar)`` to ``foo.push(bar)``.
+    """Convert ``list(foo).append(bar)`` to ``foo.push(bar)``.
 
     AST dump::
 
@@ -452,7 +454,7 @@ Attribute = [Attribute_super, Attribute_list_append, Attribute_default]
 
 
 def Assert(t, x):
-    """Converts asserts to just a snippet function call"""
+    """Convert ``assert`` statement to just a snippet function call."""
     if t.enable_snippets:
         from ..snippets import _assert
         t.add_snippet(_assert)

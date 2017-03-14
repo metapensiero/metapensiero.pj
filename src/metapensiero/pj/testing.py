@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# :Project: pyxc-pj -- test utilities
-# :Created: mer 09 nov 2016 20:32:09 CET
-# :Author:  Alberto Berti <alberto@metapensiero.it>
-# :License: GNU General Public License version 3 or later
+# :Project:  metapensiero.pj -- test utilities
+# :Created:  mer 09 nov 2016 20:32:09 CET
+# :Author:   Alberto Berti <alberto@metapensiero.it>
+# :License:  GNU General Public License version 3 or later
 #
 
 import ast
@@ -50,7 +50,7 @@ def ast_dump_file(fname):
 
 
 def ast_dumps(input, filename='', first_stmt_only=False):
-    """Ast dump a string"""
+    """AST dump a string."""
     try:
         from meta.asttools import str_ast
     except ImportError:

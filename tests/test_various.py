@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# :Project:  pyxc-pj -- tests for various stuff
-# :Created:    lun 22 feb 2016 23:31:45 CET
-# :Author:    Alberto Berti <alberto@metapensiero.it>
-# :License:   GNU General Public License version 3 or later
+# :Project:  metapensiero.pj -- tests for various stuff
+# :Created:  lun 22 feb 2016 23:31:45 CET
+# :Author:   Alberto Berti <alberto@metapensiero.it>
+# :License:  GNU General Public License version 3 or later
 #
 
 import pytest

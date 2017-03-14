@@ -1,5 +1,5 @@
 .. -*- coding: utf-8 -*-
-.. :Project:   pj --
+.. :Project:   metapensiero.pj
 .. :Created:   lun 07 mar 2016 02:37:09 CET
 .. :Author:    Alberto Berti <alberto@metapensiero.it>
 .. :Licenza:   GNU General Public License version 3 or later

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# :Project: pyxc-pj -- test fixtures
-# :Created: lun 22 feb 2016 12:16:42 CET
-# :Author:  Alberto Berti <alberto@metapensiero.it>
-# :License: GNU General Public License version 3 or later
+# :Project:  metapensiero.pj -- test fixtures
+# :Created:  lun 22 feb 2016 12:16:42 CET
+# :Author:   Alberto Berti <alberto@metapensiero.it>
+# :License:  GNU General Public License version 3 or later
 #
 
 from glob import glob
