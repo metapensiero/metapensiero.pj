@@ -1,4 +1,5 @@
 ## first_stmt_only: True
+
 def func():
 
     try:

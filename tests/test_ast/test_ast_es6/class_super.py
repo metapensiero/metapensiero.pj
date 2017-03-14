@@ -1,4 +1,5 @@
 ## es6: True
+
 class A:
 
     def __init__(self, value):

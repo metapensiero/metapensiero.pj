@@ -1,4 +1,5 @@
 ## first_stmt_only: True
+
 def func():
 
     def afunc(a, b, *args, foo=None, **kwargs):
