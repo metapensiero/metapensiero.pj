@@ -67,8 +67,7 @@ def load_tests_from_directory(dir, ext=None):
     for pyfile in sorted(glob(join(dir, '*.py'))):
         py_code, options = load_python_code(pyfile)
         if py_code is None:
-            yield pytest.mark.skip((split(pyfile)[1],))(
-                reason=options)
+            yield pytest.mark.skip((split(pyfile)[1], None, None, None))(reason=options)
             continue
 
         cmpfile = splitext(pyfile)[0] + ext
@@ -82,11 +81,6 @@ def load_tests_from_directory(dir, ext=None):
             raise RuntimeError('%s has no correspondent %s' % (pyfile, cmpfile))
 
 
-def pytest_make_parametrize_id(config, val):
-    # Use the first item of the tuples generated above to identify the parametrization
-    return val[0]
-
-
 def pytest_generate_tests(metafunc):
     if metafunc.cls is not None and metafunc.cls.__name__.endswith('FS'):
         ext = getattr(metafunc.cls, 'EXT', None)
@@ -97,4 +91,4 @@ def pytest_generate_tests(metafunc):
         argvalues = list(load_tests_from_directory(testdir, ext))
         metafunc.parametrize(
             ('name', 'py_code', 'options', 'expected'), argvalues,
-            ids=[v[0] for v in argvalues])
+            ids=[v[0] if isinstance(v, tuple) else v.args[0][0] for v in argvalues])
