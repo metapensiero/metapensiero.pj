@@ -58,7 +58,8 @@ def load_python_code(filename):
     return py_code, options
 
 
-def load_tests_from_directory(dir):
+def load_tests_from_directory(dir, ext=None):
+    ext = ext or '.out'
     if not isabs(dir):
         dir = join(dirname(__file__), dir)
     if not isdir(dir):
@@ -70,7 +71,7 @@ def load_tests_from_directory(dir):
                 reason=options)
             continue
 
-        cmpfile = splitext(pyfile)[0] + '.out'
+        cmpfile = splitext(pyfile)[0] + ext
         if exists(cmpfile):
             with open(cmpfile, encoding='utf-8') as f:
                 expected = f.read()
@@ -87,7 +88,13 @@ def pytest_make_parametrize_id(config, val):
 
 
 def pytest_generate_tests(metafunc):
-    if 'fstest' in metafunc.fixturenames:
+    if metafunc.cls is not None and metafunc.cls.__name__.endswith('FS'):
+        ext = getattr(metafunc.cls, 'EXT', None)
+        if isinstance(ext, dict):
+            ext = ext[metafunc.function.__name__]
         moddir = splitext(metafunc.module.__file__)[0]
         testdir = join(moddir, metafunc.function.__name__)
-        metafunc.parametrize("fstest", load_tests_from_directory(testdir))
+        argvalues = list(load_tests_from_directory(testdir, ext))
+        metafunc.parametrize(
+            ('name', 'py_code', 'options', 'expected'), argvalues,
+            ids=[v[0] for v in argvalues])

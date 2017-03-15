@@ -780,6 +780,9 @@ def test_in_weakset():
     assert eval_object_es6(test_in_ws, 'test_in_ws();') == True
 
 
-def test_eval_object_es6(fstest):
-    name, py_code, options, expected = fstest
-    assert eval_object_es6(py_code, 'test();') == expected.rstrip()
+class TestEvalFromFS:
+
+    EXT = '.js'
+
+    def test_eval_object_es6(self, name, py_code, options, expected):
+        assert eval_object_es6(py_code, 'test();') == expected.rstrip()

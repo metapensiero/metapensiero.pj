@@ -34,7 +34,10 @@ def test_textwrap_behavior():
     assert len(out) == 16
 
 
-def test_translate_object(fstest):
-    name, py_code, options, expected = fstest
-    dump = translate_object(py_code, **options)[0]
-    assert dump.rstrip() == expected.rstrip()
+class TestTranslationFromFS:
+
+    EXT = '.js'
+
+    def test_translate_object(self, name, py_code, options, expected):
+        dump = translate_object(py_code, **options)[0]
+        assert dump.rstrip() == expected.rstrip()
