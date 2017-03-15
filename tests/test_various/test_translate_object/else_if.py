@@ -1,3 +1,4 @@
+## body_only: True
 def func():
     a = 1
     if a == 0:
