@@ -234,6 +234,7 @@ def Str(t, x):
 
 
 def JoinedStr(t, x):
+    t.es6_guard(x, "f-strings require ES6")
     chunks = []
     for value in x.values:
         if isinstance(value, ast.Str):
