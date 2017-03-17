@@ -174,7 +174,7 @@ def Call_default(t, x, operator=None):
     kwargs = []
     if x.keywords:
         for kw in x.keywords:
-            t.unsupported(x, kw.arg is None, "'**kwargs' syntax ins'nt "
+            t.unsupported(x, kw.arg is None, "'**kwargs' syntax isn't "
                           "supported")
             kwargs.append((kw.arg, kw.value))
         kwargs = JSDict(*zip(*kwargs))
