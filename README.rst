@@ -133,7 +133,7 @@ semanticts. These are, briefly:
   - ``element in container`` for use with lists, objects, strings and the new
     ES6 collections like ``Map``, ``Set`` and so on;
   - identity checks: ``foo is bar``;
-  - ternary comparisons like ``x < y <= z``;
+  - chained comparisons like ``x < y <= z``;
 
 * Statements (see section `Simple stuff`_ and `for statement`_ for the
   details)
