@@ -114,10 +114,17 @@ semanticts. These are, briefly:
   - ``callable()``;
   - ``hasattr()``, ``getattr()``, ``setattr()``;
   - template literals with ``tmpl('a string with ${substitution}')``;
+  - simple Python 3.6+ `f-strings`__, neither `conversion`__ nor
+    `format_spec`__ are supported: ``f"Value of {a}"`` becomes
+    ```Value of ${a}```
   - names starting with ``d_`` and ``dd_`` will have that part replaced with
     ``$`` and ``$$``, respectively;
   - names ending with an underscore will have it removed. Useful for example
     with the AVA ES6 test runner which has a check named ``is``;
+
+  __ https://docs.python.org/3.6/reference/lexical_analysis.html#f-strings
+  __ https://docs.python.org/3.6/reference/lexical_analysis.html#grammar-token-conversion
+  __ https://docs.python.org/3.6/reference/lexical_analysis.html#grammar-token-format_spec
 
 * Comparisons (see section `Simple stuff`_ for the details)
 

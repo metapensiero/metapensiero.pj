@@ -3,6 +3,11 @@
 Changes
 -------
 
+next (unreleased)
+~~~~~~~~~~~~~~~~~
+
+- translate Python 3.6+ f-strings to ES6 template literals;
+
 0.5 (2016-11-23)
 ~~~~~~~~~~~~~~~~
 
@@ -31,7 +36,6 @@ Changes
 - added sorting to the rendered snippets/decorators/assignments so that their
   order does not change at every ricompilation;
 - do not re-declare variables declare in outer scopes;
-
 
 0.4 (2016-11-15)
 ~~~~~~~~~~~~~~~~
