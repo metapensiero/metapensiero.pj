@@ -6,6 +6,8 @@
 # :License:  GNU General Public License version 3 or later
 #
 
+import pytest
+
 from metapensiero.pj.api import translate_object
 
 
@@ -41,3 +43,8 @@ class TestTranslationFromFS:
     def test_translate_object(self, name, py_code, options, expected):
         dump = translate_object(py_code, **options)[0]
         assert dump.rstrip() == expected.rstrip()
+
+    def test_translate_object_unsupported(self, name, py_code, options, expected):
+        from metapensiero.pj.processor.exceptions import UnsupportedSyntaxError
+        with pytest.raises(UnsupportedSyntaxError):
+            translate_object(py_code, **options)[0]

@@ -242,6 +242,10 @@ def JoinedStr(t, x):
             chunks.append(value.s)
         else:
             assert isinstance(value, ast.FormattedValue)
+            t.unsupported(x, value.conversion != -1,
+                          "f-string conversion spec isn't supported")
+            t.unsupported(x, value.format_spec is not None,
+                          "f-string format spec isn't supported")
             chunks.append('${%s}' % t._transform_node(value.value))
     return JSTemplateLiteral(''.join(chunks))
 
