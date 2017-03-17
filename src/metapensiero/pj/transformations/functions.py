@@ -194,6 +194,13 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
                         [], body,
                         **cls_member_opts
                     )
+                elif name == '__instancecheck__':
+                    cls_member_opts['static'] = True
+                    result = JSMethod(
+                        '[Symbol.hasInstance]',
+                        args, body,
+                        **cls_member_opts
+                    )
                 else:
                     result = mwrapper(
                         name, args, body,
