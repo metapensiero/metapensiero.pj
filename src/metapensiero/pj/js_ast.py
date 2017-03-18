@@ -115,6 +115,7 @@ class JSCommentBlock(JSNode):
 class JSLiteral(JSNode):
     def emit(self, text):
         yield from self.lines(delimited_multi_line(self, text, '', '', False))
+
 #### Statements
 
 
@@ -257,7 +258,7 @@ class JSImport(JSStatement):
 
 class JSDependImport(JSImport):
     def emit(self, module):
-        yield self.line(['import ', "'", module, "'"], delim=True)
+        yield self.line(['System.import(', "'", module, "'", ')'], delim=True)
 
 
 class JSNamedImport(JSImport):
