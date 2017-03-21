@@ -1,4 +1,4 @@
-## requires: python_version >= (3,6,1)
+## requires: (3,6) < python_version < (3,6,1)
 
 def func():
     pi = 3.14159
