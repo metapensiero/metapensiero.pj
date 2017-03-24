@@ -51,7 +51,7 @@ setup(
     extras_require={
         'dev': [
             'metapensiero.tool.bump_version',
-            'docutils'
+            'readme_renderer',
         ],
         'test': [
             'pytest',

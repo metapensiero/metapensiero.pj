@@ -40,19 +40,18 @@ help::
 	@printf "tag-release\n\tComplete the release tagging the working tree\n"
 
 .PHONY: tag-release
-tag-release:
+tag-release: assert-master-branch check-release-date check-long-description-markup
 	git commit -a -m "Release $(VERSION)"
 	git tag -a -m "Version $(VERSION)" v$(VERSION)
 
-.PHONY: test-readme+changes-markup
-test-readme+changes-markup:
-	@[ `(cat README.rst; echo; cat CHANGES.rst) \
-		| rst2html.py 2>&1 >/dev/null \
-		| wc -l` -eq 0 ] \
-	  || (echo "ERROR: README+CHANGES rst markup check failed!"; exit 1)
-	@fgrep -qi unreleased CHANGES.rst \
-	  && (echo "ERROR: release date not set in CHANGES.rst"; exit 1) \
-	  || true
+.PHONY: check-long-description-markup
+check-long-description-markup:
+	@$(PYTHON) setup.py check -r -s
+
+.PHONY: check-release-date
+check-release-date:
+	@fgrep -q "$(VERSION) ($(shell date --iso-8601))" CHANGES.rst \
+	  || (echo "ERROR: release date of version $(VERSION) not set in CHANGES.rst"; exit 1)
 
 help::
 	@printf "pypi-upload\n\tUpload the source distribution to PyPI\n"
