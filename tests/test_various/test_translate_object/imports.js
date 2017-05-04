@@ -1,7 +1,7 @@
 import * as foo from 'foo';
 import * as bar from 'bar';
 import * as b from 'foo/bar';
-import {hello as h, bye as bb} from 'foo/bar';
+import {bye as bb, hello as h} from 'foo/bar';
 import {bar} from '../foo/zoo';
 import * as foo from './foo';
 import {bar} from './foo';
