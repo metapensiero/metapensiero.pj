@@ -259,7 +259,7 @@ class JSDependImport(JSImport):
 class JSNamedImport(JSImport):
     def emit(self, module, names):
         js_names = []
-        for name, alias in names:
+        for name, alias in sorted(names):
             if alias:
                 js_names.append(self.part(name, ' as ', alias))
             else:

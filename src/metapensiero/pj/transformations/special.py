@@ -328,7 +328,7 @@ def Import(t, x):
         old_name = n.name
         n.name = _replace_dunder(n.name)
         t.unsupported(x, (old_name != n.name) and not n.asname,
-        "A module name cannot contain dashes, use 'as' to give it a new name.")
+                      "A module name cannot contain dashes, use 'as' to give it a new name.")
         path_module = '/'.join(n.name.split('.'))
         result.append(
             JSStarImport(path_module, n.asname or n.name)
