@@ -8,6 +8,7 @@
 
 import ast
 from functools import reduce
+from itertools import chain
 
 from ..js_ast import (
     JSAttribute,
@@ -86,6 +87,7 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
     kw = x.args.kwonlyargs
     kwdefs = x.args.kw_defaults
     kw_acc = x.args.kwarg
+    kw_names = [k.arg for k in kw]
     if kw:
         kwargs = []
         for k, v in zip(kw, kwdefs):
@@ -120,7 +122,7 @@ def FunctionDef(t, x, fwrapper=None, mwrapper=None):
     else:
         upper_vars = set()
     local_vars = list((set(body_local_names(body)) - set(arg_names)) -
-                      upper_vars)
+                      set(kw_names) - upper_vars)
     t.ctx['vars'] = upper_vars | set(local_vars)
     if len(local_vars) > 0:
         local_vars.sort()
