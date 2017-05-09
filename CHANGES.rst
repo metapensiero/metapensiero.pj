@@ -3,6 +3,12 @@
 Changes
 -------
 
+0.7 (unrelased)
+~~~~~~~~~~~~~~~
+
+- fix a bug that prevented BabelJS translation when keyword arguments
+  are present;
+
 0.6 (2017-05-09)
 ~~~~~~~~~~~~~~~~~
 
