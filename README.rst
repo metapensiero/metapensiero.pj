@@ -114,22 +114,20 @@ semanticts. These are, briefly:
   - ``callable()``;
   - ``hasattr()``, ``getattr()``, ``setattr()``;
   - template literals with ``tmpl('a string with ${substitution}')``;
-  - simple Python 3.6+ `f-strings`__, neither `conversion`__ nor
-    `format_spec`__ are supported: ``f"Value of {a}"`` becomes
-    ```Value of ${a}```
+  - simple Python 3.6+ `f-strings`_ (see `Strings`_);
+  - template literals and tagged_templates (see `Strings`_);
   - names starting with ``d_`` and ``dd_`` will have that part replaced with
     ``$`` and ``$$``, respectively;
   - names ending with an underscore will have it removed. Useful for example
     with the AVA ES6 test runner which has a check named ``is``;
+  - ``__instancecheck__`` to ``[Symbol.hasInstance]``;
 
-  __ https://docs.python.org/3.6/reference/lexical_analysis.html#f-strings
-  __ https://docs.python.org/3.6/reference/lexical_analysis.html#grammar-token-conversion
-  __ https://docs.python.org/3.6/reference/lexical_analysis.html#grammar-token-format_spec
+.. _f-strings: https://docs.python.org/3.6/reference/lexical_analysis.html#f-strings
 
 * Comparisons (see section `Simple stuff`_ for the details)
 
   - most of the basics;
-  - ``isinstance()``;
+  - ``isinstance()`` and ``issubclass()``;
   - ``element in container`` for use with lists, objects, strings and the new
     ES6 collections like ``Map``, ``Set`` and so on;
   - identity checks: ``foo is bar``;
@@ -1039,6 +1037,8 @@ top level is translated to ES6 exports.
 
         from foo__bar import zoo
 
+        from __foo.zoo import bar
+
         from __globals__ import test_name
 
         # this should not trigger variable definition
@@ -1063,11 +1063,47 @@ top level is translated to ES6 exports.
 
         import {zoo} from 'foo-bar';
 
+        import {bar} from '@foo/zoo';
+
         test_name = 2;
         test_foo = true;
 
         export {test_name};
         export {test_foo};
+
+Strings
+-------
+
+Javascripthon supports converting Python 3.6+ `f-strings`_ to ES6
+`template literals`_. The expression in the braces gets converted, but
+neither `conversion`__ nor `format_spec`__ are supported: ``f"Value of
+{a}"`` becomes ```Value of ${a}``` and ``f"Value of {self.foo}"``
+becomes ```Value of ${this.foo}```.
+
+.. _template literals: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
+__ https://docs.python.org/3.6/reference/lexical_analysis.html#grammar-token-conversion
+__ https://docs.python.org/3.6/reference/lexical_analysis.html#grammar-token-format_spec
+
+You can also write *raw* template literals by using the function
+``tmpl()`` it does only a conversion of the string markers, from those
+used in Python's literal string notation to template literal notation.
+
+There is also the way to express *tagged templates*, template literals
+that are parsed using a provided function. This is done by using the
+function ``__``. So for example:
+
+.. code:: python
+
+  __('A template ${string} with foo', bar)
+
+gets translated to:
+
+.. code:: javascript
+
+  bar`A template ${string} with foo`
+
+``bar`` will be executed with the value of ``${string}`` as a
+parameter, see the link for `template literals`_ for help.
 
 Examples
 --------
@@ -1123,7 +1159,6 @@ This is a brief list of what needs to be done:
 * convert ``dict()`` calls to ES6 ``Map`` object creation;
 * convert *set* literals to ES6 ``Set`` objects. Also, update
   "foo in bar" to use bar.has(foo) for sets;
-* multi-line strings to ES6 template strings (does this make any sense?);
 
 Done
 ----
