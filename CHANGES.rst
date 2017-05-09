@@ -3,7 +3,7 @@
 Changes
 -------
 
-next (unreleased)
+0.6 (2017-05-09)
 ~~~~~~~~~~~~~~~~~
 
 - allow to define template literals and tagged templates:
