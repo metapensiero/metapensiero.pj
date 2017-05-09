@@ -6,7 +6,13 @@ Changes
 next (unreleased)
 ~~~~~~~~~~~~~~~~~
 
+- allow to define template literals and tagged templates:
+- define package scopes in imports prepending names with ``__``;
+- translate ``issubclass()``;
+- translate lambdas as arrow functions;
 - translate Python 3.6+ f-strings to ES6 template literals;
+- Add translation for ``__instancecheck__`` to ``[Symbol.hasInstance]``;
+- Sort imports alphabetically;
 
 0.5 (2016-11-23)
 ~~~~~~~~~~~~~~~~
