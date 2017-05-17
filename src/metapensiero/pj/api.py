@@ -80,7 +80,7 @@ def translate_object(py_obj, body_only=False, enable_es6=False,
     Return a ``(js_text, js_source_map)`` tuple.
     """
     cwd = os.getcwd()
-    src_filename = inspect.getsourcefile(py_obj)
+    src_filename = os.path.abspath(inspect.getsourcefile(py_obj))
     prefix = os.path.commonpath((cwd, src_filename))
     if len(prefix) > 1:
         src_filename = src_filename[len(prefix) + 1:]
