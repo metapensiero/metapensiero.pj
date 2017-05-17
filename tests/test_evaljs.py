@@ -780,6 +780,22 @@ def test_in_weakset():
     assert eval_object_es6(test_in_ws, 'test_in_ws();') == True
 
 
+def test_integer():
+
+    def test_int():
+        return int('5') + int('6')
+
+    assert eval_object(test_int, 'test_int();') == test_int()
+
+
+def test_float_conversion():
+
+    def test_float():
+        return float('7.5') + float('7.1')
+
+    assert eval_object(test_float, 'test_float();') == test_float()
+
+
 class TestEvalFromFS:
 
     EXT = '.js'

@@ -285,6 +285,7 @@ def Call_setattr(t, x):
             )
         )
 
+
 def Call_JS(t, x):
     if (isinstance(x.func, ast.Name) and x.func.id == 'JS') and \
        len(x.args) == 1:
@@ -292,11 +293,22 @@ def Call_JS(t, x):
         return JSLiteral(x.args[0].s)
 
 
+def Call_int(t, x):
+    # maybe this needs a special keywords mangling for optional "base" param
+    if isinstance(x.func, ast.Name) and x.func.id == 'int':
+        return JSCall(JSName('parseInt'), x.args)
+
+
+def Call_float(t, x):
+    if isinstance(x.func, ast.Name) and x.func.id == 'float':
+        return JSCall(JSName('parseFloat'), x.args)
+
+
 Call = [Call_typeof, Call_callable, Call_isinstance, Call_print, Call_len,
         Call_JS, Call_new, Call_super, Call_import, Call_str, Call_type,
         Call_dict_update, Call_dict_copy, Call_tagged_template, Call_template,
         Call_hasattr, Call_getattr, Call_setattr, Call_issubclass,
-        Call_default]
+        Call_int, Call_float, Call_default]
 
 
 #### Ops

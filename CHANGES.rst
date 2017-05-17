@@ -6,6 +6,7 @@ Changes
 0.7 (unrelased)
 ~~~~~~~~~~~~~~~
 
+- translate ``int()`` and ``float()``;
 - fix a bug that prevented BabelJS translation when keyword arguments
   are present;
 

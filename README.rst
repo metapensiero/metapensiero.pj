@@ -121,6 +121,8 @@ semanticts. These are, briefly:
   - names ending with an underscore will have it removed. Useful for example
     with the AVA ES6 test runner which has a check named ``is``;
   - ``__instancecheck__`` to ``[Symbol.hasInstance]``;
+  - ``int`` to ``parseInt``;
+  - ``float`` to ``parseFloat``;
 
 .. _f-strings: https://docs.python.org/3.6/reference/lexical_analysis.html#f-strings
 
