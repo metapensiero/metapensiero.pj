@@ -41,6 +41,24 @@ from ..js_ast import (
     JSUnaryOp,
 )
 
+from .classes import (
+    Attribute_super,
+    Call_isinstance,
+    Call_issubclass,
+    Call_super,
+    Subscript_super,
+)
+
+from .obvious import (
+    Attribute_default,
+    BinOp_default,
+    Call_default,
+    Compare_default,
+    Expr_default,
+    Name_default,
+    Subscript_default,
+)
+
 
 #### Expr
 
@@ -49,7 +67,6 @@ def Expr_docstring(t, x):
     if isinstance(x.value, ast.Str):
         return JSCommentBlock(x.value.s)
 
-from .obvious import Expr_default
 Expr = [Expr_docstring, Expr_default]
 
 
@@ -63,7 +80,6 @@ def BinOp_pow(t, x):
             [x.left, x.right])
 
 
-from .obvious import BinOp_default
 BinOp = [BinOp_pow, BinOp_default]
 
 
@@ -73,7 +89,6 @@ def Name_self(t, x):
         return JSThis()
 
 
-from .obvious import Name_default
 Name = [Name_self, Name_default]
 
 
@@ -277,8 +292,6 @@ def Call_JS(t, x):
         return JSLiteral(x.args[0].s)
 
 
-from .classes import Call_super, Call_isinstance, Call_issubclass
-from .obvious import Call_default
 Call = [Call_typeof, Call_callable, Call_isinstance, Call_print, Call_len,
         Call_JS, Call_new, Call_super, Call_import, Call_str, Call_type,
         Call_dict_update, Call_dict_copy, Call_tagged_template, Call_template,
@@ -380,9 +393,6 @@ def ImportFrom(t, x):
     return result
 
 
-from .obvious import Compare_default
-
-
 def Compare_in(t, x):
     if not isinstance(x.ops[0], (ast.NotIn, ast.In)):
         return
@@ -419,14 +429,8 @@ def Subscript_slice(t, x):
         return JSCall(JSAttribute(x.value, 'slice'), args)
 
 
-from .obvious import Subscript_default
-from .classes import Subscript_super
-
 Subscript = [Subscript_slice, Subscript_super, Subscript_default]
 
-
-from .obvious import Attribute_default
-from .classes import Attribute_super
 
 def Attribute_list_append(t, x):
     """Convert ``list(foo).append(bar)`` to ``foo.push(bar)``.
