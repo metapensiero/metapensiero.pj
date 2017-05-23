@@ -87,7 +87,8 @@ def translate_object(py_obj, body_only=False, enable_es6=False,
     src_lines, sline_offset = inspect.getsourcelines(py_obj)
     # line offsets should be 0-based
     sline_offset = sline_offset - 1
-    complete_src = open(src_filename).read()
+    with open(src_filename) as f:
+        complete_src = f.read()
     return translates(src_lines, True, src_filename, (sline_offset, 0),
                       body_only=body_only, complete_src=complete_src,
                       enable_es6=enable_es6, enable_stage3=enable_stage3)
