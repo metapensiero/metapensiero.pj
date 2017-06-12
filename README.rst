@@ -168,6 +168,21 @@ semanticts. These are, briefly:
   - async methods, generator methods;
   - non-function body members (i.e. ``member_of_class_Foo = bar``);
 
+License
+-------
+
+This package is covered by the `GNU General Public License version
+3 or later`__. The code produced by it (i.e. the transpiled
+JavaScript) is *your* code, and *you* are free to choose whatever
+license you like. The only ``runtime`` that exists is the file
+``snippets.py`` from which some utility functions are picked when
+necessary and transpiled together with your code. While it's
+distributed with the same license as the other source code in its
+*transpiled* form will have the license you choose.
+
+So, to summarize, the license of the this tool is GPL, but it doesn't
+extends to the products of this tool, on which you are free to decide.
+
 Installation
 ------------
 
