@@ -3,7 +3,7 @@
 # :Created:   lun 22 feb 2016 16:00:00 CET
 # :Author:    Alberto Berti <alberto@metapensiero.it>
 # :License:   GNU General Public License version 3 or later
-# :Copyright: Copyright (C) 2016 Alberto Berti
+# :Copyright: © 2016, 2017 Alberto Berti
 #
 
 import os
@@ -46,7 +46,8 @@ setup(
     namespace_packages=['metapensiero',],
     install_requires=[
         'setuptools',
-        'dukpy'
+        'dukpy',
+        'macropy>=1.0.4'
     ],
     extras_require={
         'dev': [

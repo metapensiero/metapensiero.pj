@@ -1,0 +1,9 @@
+# -*- coding: utf-8; mode: conf-unix -*-
+# :Project:   metapensiero.pj -- A Python 3 to ES6 Javascript translator
+# :Created:   lun 12 giu 2017 22:20:23 CEST
+# :Author:    Alberto Berti <alberto@metapensiero.it>
+# :License:   GNU General Public License version 3 or later
+# :Copyright: © 2017 Alberto Berti
+#
+
+https://github.com/azazel75/macropy/archive/master.zip
