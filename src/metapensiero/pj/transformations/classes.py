@@ -9,7 +9,8 @@
 import ast
 
 from macropy.core.quotes import macros, q, ast_literal
-
+from macropy.experimental.pattern import (macros, _matching, switch,
+    ClassMatcher, LiteralMatcher, ListMatcher)
 from ..processor.util import controlled_ast_walk
 
 from ..js_ast import (
@@ -418,19 +419,18 @@ def Call_isinstance(t, x):
 def Call_issubclass(t, x):
     """Translate ``issubclass(Foo, Bar)`` to ``Foo.prototype instanceof Bar``.
     """
-    if (isinstance(x.func, ast.Name) and x.func.id == 'issubclass'):
-        assert len(x.args) == 2
-        target = x.args[0]
-        tproto = q[ast_literal[target].prototype]
-        if isinstance(x.args[1], (ast.Tuple, ast.List, ast.Set)):
-            classes = x.args[1].elts
-        else:
-            classes = [x.args[1]]
-        prev = None
-        for c in classes:
-            cur = q[ast_literal[c].prototype.isPrototypeOf(
-                ast_literal[tproto])]
-            if prev is not None:
-                cur = q[ast_literal[prev] or ast_literal[cur]]
-            prev = cur
-        return JSExpressionStatement(cur)
+    with switch(x):
+        if ast.Call(func=ast.Name(id='issubclass'), args=[target, classes]):
+            tproto = q[ast_literal[target].prototype]
+            if isinstance(classes, (ast.Tuple, ast.List, ast.Set)):
+                classes = classes.elts
+            else:
+                classes = [classes]
+            prev = None
+            for c in classes:
+                cur = q[ast_literal[c].prototype.isPrototypeOf(
+                    ast_literal[tproto])]
+                if prev is not None:
+                    cur = q[ast_literal[prev] or ast_literal[cur]]
+                prev = cur
+            return JSExpressionStatement(cur)
