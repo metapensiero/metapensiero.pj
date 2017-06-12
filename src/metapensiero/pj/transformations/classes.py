@@ -77,7 +77,7 @@ def _class_guards(t, x):
                       "Assignments must have only one target")
     if len(x.bases) > 0:
         assert len(x.bases) == 1
-    assert not x.keywords, x.keywords
+    assert not x.keywords, "class '{}', args cannot be keywords".format(x.name)
 
 
 def ClassDef_exception(t, x):
