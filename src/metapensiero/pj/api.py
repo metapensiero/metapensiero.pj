@@ -13,6 +13,7 @@ import os
 import textwrap
 
 import dukpy
+import macropy.activate
 
 from .processor.transforming import Transformer
 from .processor.util import Block
