@@ -179,6 +179,11 @@ To install the package execute the following command::
 
   $ pip install javascripthon
 
+or, if you want install it from sources::
+
+  $ git clone https://github.com/azazel75/metapensiero.pj
+  $ pip install -r metapensiero.pj/requirements.txt
+  $ pip install metapensiero.pj
 
 Usage
 -----
