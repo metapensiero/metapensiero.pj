@@ -8,6 +8,8 @@
 
 import ast
 
+from macropy.core.quotes import macros, q, ast_literal
+
 from ..processor.util import controlled_ast_walk
 
 from ..js_ast import (
@@ -419,10 +421,16 @@ def Call_issubclass(t, x):
     if (isinstance(x.func, ast.Name) and x.func.id == 'issubclass'):
         assert len(x.args) == 2
         target = x.args[0]
+        tproto = q[ast_literal[target].prototype]
         if isinstance(x.args[1], (ast.Tuple, ast.List, ast.Set)):
             classes = x.args[1].elts
-            args = tuple((JSAttribute(target, 'prototype'), c) for c in classes)
-            return JSMultipleArgsOp(JSOpInstanceof(), JSOpOr(), *args)
         else:
-            cls = x.args[1]
-            return JSBinOp(JSAttribute(target, 'prototype'), JSOpInstanceof(), cls)
+            classes = [x.args[1]]
+        prev = None
+        for c in classes:
+            cur = q[ast_literal[c].prototype.isPrototypeOf(
+                ast_literal[tproto])]
+            if prev is not None:
+                cur = q[ast_literal[prev] or ast_literal[cur]]
+            prev = cur
+        return JSExpressionStatement(cur)
