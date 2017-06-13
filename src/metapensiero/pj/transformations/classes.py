@@ -11,8 +11,8 @@ import ast
 from macropy.core.quotes import macros, q, ast_literal
 from macropy.experimental.pattern import (macros, _matching, switch,
     ClassMatcher, LiteralMatcher, ListMatcher)
-from ..processor.util import controlled_ast_walk
 
+from ..processor.util import controlled_ast_walk
 from ..js_ast import (
     JSAssignmentExpression,
     JSAttribute,
