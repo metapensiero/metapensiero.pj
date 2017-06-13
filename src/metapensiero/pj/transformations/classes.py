@@ -8,7 +8,7 @@
 
 import ast
 
-from macropy.core.quotes import ast_literal, ast_list, macros, name, q
+from macropy.core.quotes import macros, ast_literal, ast_list, name, q
 from macropy.experimental.pattern import (macros, _matching, switch,
     ClassMatcher, LiteralMatcher, ListMatcher)
 
