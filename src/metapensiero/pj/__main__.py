@@ -112,6 +112,8 @@ def main(args=None, fout=None, ferr=None):
     }
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
+        logging.getLogger().setLevel(logging.DEBUG)
+        log.debug('Log started')
     if not (args.files or args.string):
         rep.print_err("Error: You have to supply either a string with -s or a "
                       "filename")
