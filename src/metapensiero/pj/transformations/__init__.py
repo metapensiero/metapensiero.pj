@@ -5,6 +5,9 @@
 # :License:  GNU General Public License version 3 or later
 #
 
+import macropy.activate
+
+
 def _normalize_name(n):
     if n.startswith('d_'):
         n = n.replace('d_', '$')
