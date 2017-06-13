@@ -8,13 +8,12 @@
 
 import ast
 
-from macropy.core.quotes import macros, q, ast_literal
+from macropy.core.quotes import ast_literal, ast_list, macros, name, q
 from macropy.experimental.pattern import (macros, _matching, switch,
     ClassMatcher, LiteralMatcher, ListMatcher)
 
 from ..processor.util import controlled_ast_walk
 from ..js_ast import (
-    JSAssignmentExpression,
     JSAttribute,
     JSBinOp,
     JSCall,
@@ -250,19 +249,11 @@ def ClassDef_default(t, x):
     if x.decorator_list:
         from ..snippets import set_class_decorators
         t.add_snippet(set_class_decorators)
-        cls_decos = JSExpressionStatement(
-            JSExpressionStatement(
-                JSAssignmentExpression(
-                    JSName(name),
-                    JSCall(
-                        JSAttribute(JSName('_pj'), 'set_class_decorators'),
-                        (JSName(name),
-                         JSList(x.decorator_list)),
-                    )
-                )
-            )
-        )
-        stmts.append(cls_decos)
+        with q as cls_decos:
+            name[name] = _pj.set_class_decorators(
+                name[name], ast_list[x.decorator_list])
+
+        stmts.append(JSExpressionStatement(cls_decos[0]))
     return JSStatements(*stmts)
 
 
