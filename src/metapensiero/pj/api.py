@@ -6,6 +6,7 @@
 #
 
 import ast
+import base64
 import json
 import inspect
 import logging
@@ -52,7 +53,7 @@ def _calc_file_names(src_filename, dst_filename=None, map_filename=None):
 
 
 def translate_file(src_filename, dst_filename=None, map_filename=None,
-                   enable_es6=False, enable_stage3=False):
+                   enable_es6=False, enable_stage3=False, inline_map=False):
     """Translate the given python source file to ES6 Javascript."""
     dst_filename, map_filename, src_relpath, map_relpath = _calc_file_names(
         src_filename, dst_filename, map_filename
@@ -61,12 +62,16 @@ def translate_file(src_filename, dst_filename=None, map_filename=None,
     js_text, src_map = translates(src_text, True, src_relpath,
                                   enable_es6=enable_es6,
                                   enable_stage3=enable_stage3)
+    if inline_map:
+        map_relpath = 'data:text/json;base64,%s' % \
+                      base64.b64encode(src_map.encode('utf-8')).decode('ascii')
     js_text += '\n//# sourceMappingURL=%s\n' % map_relpath
 
     with open(dst_filename, 'w') as dst:
         dst.write(js_text)
-    with open(map_filename, 'w') as map:
-        map.write(src_map)
+    if not inline_map:
+        with open(map_filename, 'w') as map:
+            map.write(src_map)
 
 
 def translate_object(py_obj, body_only=False, enable_es6=False,

@@ -60,6 +60,12 @@ parser.add_argument('-e', '--eval', action='store_true',
 parser.add_argument('--dump-ast', action='store_true',
                     help="Dump the Python AST. You need to have the package"
                     " metapensiero.pj[test] installed")
+parser.add_argument('--inline-map', action='store_true',
+                    help="Save the source-map inline instead of in an additional"
+                    " file, useful when transpiling with BabelJS externally "
+                    "but without access to the cli. Ignored "
+                    "when transpiling.")
+
 
 
 class Reporter:
@@ -79,12 +85,14 @@ class Reporter:
 def transform(src_fname, dst_fname=None, transpile=False, enable_es6=False,
               enable_stage3=False, **kw):
     if transpile:
+        kw.pop('inline_map', None)
         api.transpile_py_file(src_fname, dst_fname,
                               enable_stage3=enable_stage3,
                               **kw)
     else:
+        kw.pop('truntime', None)
         api.translate_file(src_fname, dst_fname, enable_es6=enable_es6,
-                           enable_stage3=enable_stage3)
+                           enable_stage3=enable_stage3, **kw)
 
 
 def transform_string(input, transpile=False, enable_es6=False,
@@ -108,7 +116,8 @@ def main(args=None, fout=None, ferr=None):
     rep = Reporter(fout, ferr)
     args = parser.parse_args(args)
     freeargs = {
-        'truntime': args.truntime
+        'truntime': args.truntime,
+        'inline_map': args.inline_map
     }
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
