@@ -59,6 +59,8 @@ from .obvious import (
     Subscript_default,
 )
 
+from . import _normalize_name
+
 
 #### Expr
 
@@ -375,7 +377,9 @@ def ImportFrom(t, x):
         t.add_globals(*names)
         result = JSPass()
         if x.module:
-            path_module = '/'.join(_replace_dunder(x.module).split('.'))
+            mod = tuple(_normalize_name(frag) for frag in
+                        _replace_dunder(x.module).split('.'))
+            path_module = '/'.join(mod)
             if x.level == 1:
                 # from .foo import bar
                 path_module = './' + path_module
