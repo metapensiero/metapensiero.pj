@@ -161,6 +161,7 @@ def Call_new(t, x):
     if subj:
         return Call_default(t, subj, operator='new ')
 
+
 def Call_import(t, x):
     if (isinstance(x.func, ast.Name) and x.func.id == '__import__'):
         assert len(x.args) == 1 and isinstance(x.args[0], ast.Str)
