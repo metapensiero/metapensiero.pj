@@ -35,7 +35,7 @@ from ..js_ast import (
     JSUnaryOp,
 )
 
-from . import _normalize_name
+from . import _normalize_name, _normalize_dict_keys
 
 EXC_TEMPLATE = """\
 class %(name)s(Error):
@@ -221,7 +221,7 @@ def ClassDef_default(t, x):
             JSCall(
                 JSAttribute(JSName('_pj'), 'set_properties'),
                 (JSName(name),
-                 JSDict(assigns[1], assigns[2])),
+                 JSDict(_normalize_dict_keys(t, assigns[1]), assigns[2])),
             )
         )
         stmts.append(assigns)
@@ -240,7 +240,7 @@ def ClassDef_default(t, x):
             JSCall(
                 JSAttribute(JSName('_pj'), 'set_decorators'),
                 (JSName(name),
-                 JSDict(keys, values)),
+                 JSDict(_normalize_dict_keys(t, keys), values)),
             )
         )
         stmts.append(decos)

@@ -123,6 +123,18 @@ semanticts. These are, briefly:
   - ``__instancecheck__`` to ``[Symbol.hasInstance]``;
   - ``int`` to ``parseInt``;
   - ``float`` to ``parseFloat``;
+  - dictionary keys are unanbiguous when ES6 translation is
+    enabled. For example the following code gets translated correctly:
+
+    .. code:: python
+
+       a = 'foo'
+       d = {a: 1}
+       print(d[a])
+
+    prints ``1`` in both Python and JavaScript, while it prints
+    ``undefined`` when translated and evaluated in JavaScript without
+    ES6.
 
 .. _f-strings: https://docs.python.org/3.6/reference/lexical_analysis.html#f-strings
 

@@ -10,7 +10,7 @@
 import ast
 from functools import reduce
 
-from . import _normalize_name
+from . import _normalize_name, _normalize_dict_keys
 
 from ..js_ast import (
     JSAssignmentExpression,
@@ -153,7 +153,7 @@ def Tuple(t, x):
 
 
 def Dict(t, x):
-    return JSDict(x.keys, x.values)
+    return JSDict(_normalize_dict_keys(t, x.keys), x.values)
 
 
 def Lambda(t, x):
@@ -171,13 +171,15 @@ def IfExp(t, x):
 
 def Call_default(t, x, operator=None):
     # See [pj.transformations.special](special.py) for special cases
-    kwargs = []
+    kwkeys = []
+    kwvalues = []
     if x.keywords:
         for kw in x.keywords:
             t.unsupported(x, kw.arg is None, "'**kwargs' syntax isn't "
                           "supported")
-            kwargs.append((kw.arg, kw.value))
-        kwargs = JSDict(*zip(*kwargs))
+            kwkeys.append(kw.arg)
+            kwvalues.append(kw.value)
+        kwargs = JSDict(_normalize_dict_keys(t, kwkeys), kwvalues)
     else:
         kwargs = None
     return JSCall(x.func, x.args, kwargs, operator)
