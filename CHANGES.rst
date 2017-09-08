@@ -6,14 +6,18 @@ Changes
 0.7 (unrelased)
 ~~~~~~~~~~~~~~~
 
+- translate dicts unambiguously, using "computed member name form" for
+  keys that aren't strings;
+- use ``macropy`` package to deal with some of the translation
+  details;
 - translate ``int()`` and ``float()``;
-- fix a bug that prevented BabelJS translation when keyword arguments
+- fix a bug that prevented BabelJS translation when keyword arguments;
   are present;
 
 0.6 (2017-05-09)
 ~~~~~~~~~~~~~~~~~
 
-- allow to define template literals and tagged templates:
+- allow to define template literals and tagged templates;
 - define package scopes in imports prepending names with ``__``;
 - translate ``issubclass()``;
 - translate lambdas as arrow functions;
