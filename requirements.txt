@@ -5,5 +5,3 @@
 # :License:   GNU General Public License version 3 or later
 # :Copyright: © 2017 Alberto Berti
 #
-
-https://github.com/azazel75/macropy/archive/master.zip
