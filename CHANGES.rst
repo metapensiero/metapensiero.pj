@@ -3,8 +3,8 @@
 Changes
 -------
 
-0.7 (unrelased)
-~~~~~~~~~~~~~~~
+0.7 (2017-09-08)
+~~~~~~~~~~~~~~~~
 
 - translate dicts unambiguously, using "computed member name form" for
   keys that aren't strings;
