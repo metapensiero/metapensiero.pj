@@ -299,12 +299,18 @@ def Call_JS(t, x):
 def Call_int(t, x):
     # maybe this needs a special keywords mangling for optional "base" param
     if isinstance(x.func, ast.Name) and x.func.id == 'int':
-        return JSCall(JSName('parseInt'), x.args)
+        if t.enable_es6:
+            return JSCall(JSAttribute('Number', 'parseInt'), x.args)
+        else:
+            return JSCall(JSName('parseInt'), x.args)
 
 
 def Call_float(t, x):
     if isinstance(x.func, ast.Name) and x.func.id == 'float':
-        return JSCall(JSName('parseFloat'), x.args)
+        if t.enable_es6:
+            return JSCall(JSAttribute('Number', 'parseFloat'), x.args)
+        else:
+            return JSCall(JSName('parseFloat'), x.args)
 
 
 Call = [Call_typeof, Call_callable, Call_isinstance, Call_print, Call_len,
