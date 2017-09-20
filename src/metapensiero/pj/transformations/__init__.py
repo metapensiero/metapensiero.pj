@@ -10,7 +10,7 @@ import logging
 
 import macropy.activate
 
-from ..js_ast import JSKeySubscript
+from ..js_ast import JSKeySubscript, JSStr, TargetNode
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,9 @@ def _normalize_dict_keys(transformer, keys):
     for key in keys:
         if isinstance(key, str):
             key = ast.Str(key)
-        elif not isinstance(key, ast.Str):
+        elif isinstance(key, JSStr):
+            key = ast.Str(key.args[0])
+        if not isinstance(key, ast.Str):
             if transformer.enable_es6:
                 key = JSKeySubscript(key)
             else:
