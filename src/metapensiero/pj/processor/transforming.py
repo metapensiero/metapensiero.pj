@@ -56,6 +56,12 @@ class TargetNode:
             str(x) for x in
             self.serialize())
 
+    @classmethod
+    def final(cls, *transformed_args, **options):
+        tn = cls(**options)
+        tn.transformed_args = transformed_args
+        return tn
+
     def serialize(self):
         for a in self.emit(*self.transformed_args, **self.options):
             yield from a.serialize()
