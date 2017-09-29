@@ -11,6 +11,7 @@ import ast
 from ..js_ast import (
     JSBinOp,
     JSIfStatement,
+    JSLetStatement,
     JSName,
     JSNewCall,
     JSOpInstanceof,
@@ -19,20 +20,20 @@ from ..js_ast import (
     JSTryCatchFinallyStatement,
 )
 
+from .classes import _build_call_isinstance
+
 
 def Try(t, x):
     t.unsupported(x, x.orelse, "'else' block of 'try' statement isn't supported")
+    known_exc_types = (ast.Name, ast.Attribute, ast.Tuple, ast.List)
     ename = None
     if x.handlers:
         for h in x.handlers:
-            t.unsupported(x, not (h.type is None or isinstance(h.type, ast.Name)),
-                          "'except' expressions must be type names")
-            t.unsupported(x, h.name and ename and h.name != ename,
-                          "Different per 'except' block exception names aren't"
-                          " supported")
+            if h.type is not None and not isinstance(h.type, known_exc_types):
+                t.warn(x, "Exception type expression might not evaluate to a "
+                       "valid type or sequence of types.")
             ename = h.name
         ename = ename or 'e'
-
         if t.has_child(x.handlers, ast.Raise) and t.has_child(x.finalbody, ast.Return):
             t.warn(x, node, "The re-raise in 'except' body may be masked by the "
                    "return in 'final' body.")
@@ -43,19 +44,25 @@ def Try(t, x):
         rhandlers.reverse()
         prev_except = stmt =  None
         for ix, h in enumerate(rhandlers):
+            body = h.body
+            if h.name is not None and h.name != ename:
+                # Rename the exception to match the handler
+                rename = JSLetStatement([h.name],[ename])
+                body = [rename] + h.body
+
             # if it's  the last except and it's a catchall
             # threat 'except Exception:' as a catchall
             if (ix == 0 and h.type is None or (isinstance(h.type, ast.Name) and
                                    h.type.id == 'Exception')):
-                prev_except = JSStatements(*h.body)
+                prev_except = JSStatements(*body)
                 continue
             else:
                 if ix == 0:
                     prev_except = JSThrowStatement(JSName(ename))
                 # then h.type is an ast.Name != 'Exception'
                 stmt = JSIfStatement(
-                    JSBinOp(JSName(ename), JSOpInstanceof(), JSName(h.type.id)),
-                    h.body,
+                    _build_call_isinstance(JSName(ename), h.type),
+                    body,
                     prev_except
                 )
             prev_except = stmt
