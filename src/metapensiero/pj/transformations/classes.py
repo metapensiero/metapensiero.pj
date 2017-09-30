@@ -35,6 +35,8 @@ from ..js_ast import (
     JSUnaryOp,
 )
 
+from .common import _build_call_isinstance
+
 from . import _normalize_name, _normalize_dict_keys
 
 EXC_TEMPLATE = """\
@@ -359,29 +361,6 @@ def Subscript_super(t, x):
                 result = JSSubscript(JSSuper(), _normalize_name(sup_method))
             return result
 
-def _build_call_isinstance(tgt, cls_or_seq):
-    if isinstance(cls_or_seq, (ast.Tuple, ast.List, ast.Set)):
-        classes = cls_or_seq.elts
-        args = tuple((tgt, c) for c in classes)
-        return JSMultipleArgsOp(JSOpInstanceof(), JSOpOr(), *args)
-    else:
-        cls = cls_or_seq
-        if isinstance(cls, ast.Name) and cls.id == 'str':
-            return JSMultipleArgsOp(
-                (JSOpStrongEq(), JSOpInstanceof()),
-                JSOpOr(),
-                (JSUnaryOp(JSOpTypeof(), tgt), JSStr('string')),
-                (tgt, JSName('String'))
-            )
-        elif isinstance(cls, ast.Name) and cls.id in ['int', 'float']:
-            return JSMultipleArgsOp(
-                (JSOpStrongEq(), JSOpInstanceof()),
-                JSOpOr(),
-                (JSUnaryOp(JSOpTypeof(), tgt), JSStr('number')),
-                (tgt, JSName('Number'))
-            )
-        else:
-            return JSBinOp(tgt, JSOpInstanceof(), cls)
 
 def Call_isinstance(t, x):
     """Translate ``isinstance(foo, Bar)`` to ``foo instanceof Bar`` and
@@ -405,6 +384,7 @@ def Call_isinstance(t, x):
     if (isinstance(x.func, ast.Name) and x.func.id == 'isinstance'):
         assert len(x.args) == 2
         return _build_call_isinstance(x.args[0], x.args[1])
+
 
 def Call_issubclass(t, x):
     """Translate ``issubclass(Foo, Bar)`` to ``Foo.prototype instanceof Bar``.

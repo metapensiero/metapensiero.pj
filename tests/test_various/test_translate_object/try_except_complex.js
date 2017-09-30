@@ -42,11 +42,11 @@ try {
     value += 1;
 } catch(e) {
     if ((e instanceof MySecondError)) {
-        let err = e;
+        var err = e;
         value += 20;
     } else {
         if (((e instanceof MyThirdError) || (e instanceof MyFourthError))) {
-            let err2 = e;
+            var err2 = e;
             value += 30;
         } else {
             if ((e instanceof MyError)) {

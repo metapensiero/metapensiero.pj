@@ -11,16 +11,16 @@ import ast
 from ..js_ast import (
     JSBinOp,
     JSIfStatement,
-    JSLetStatement,
     JSName,
     JSNewCall,
     JSOpInstanceof,
     JSStatements,
     JSThrowStatement,
     JSTryCatchFinallyStatement,
+    JSVarStatement,
 )
 
-from .classes import _build_call_isinstance
+from .common import _build_call_isinstance
 
 
 def Try(t, x):
@@ -47,7 +47,7 @@ def Try(t, x):
             body = h.body
             if h.name is not None and h.name != ename:
                 # Rename the exception to match the handler
-                rename = JSLetStatement([h.name],[ename])
+                rename = JSVarStatement([h.name], [ename])
                 body = [rename] + h.body
 
             # if it's  the last except and it's a catchall
