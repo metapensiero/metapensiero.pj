@@ -3,13 +3,13 @@
 Changes
 -------
 
-0.8 (unreleased)
+0.8 (2017-11-16)
 ~~~~~~~~~~~~~~~~
 
 - add support for ``except`` sections with more than one exception
   type and arbitrary exception variable name. Thanks to @devanlai;
 - dict keys conversion fixes;
-- anable ``--inline-map`` when translating a string with ``-s``;
+- enable ``--inline-map`` when translating a string with ``-s``;
 
 
 0.7 (2017-09-08)
