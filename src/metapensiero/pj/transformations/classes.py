@@ -35,6 +35,8 @@ from ..js_ast import (
     JSUnaryOp,
 )
 
+from .common import _build_call_isinstance
+
 from . import _normalize_name, _normalize_dict_keys
 
 EXC_TEMPLATE = """\
@@ -381,30 +383,7 @@ def Call_isinstance(t, x):
     """
     if (isinstance(x.func, ast.Name) and x.func.id == 'isinstance'):
         assert len(x.args) == 2
-        if isinstance(x.args[1], (ast.Tuple, ast.List, ast.Set)):
-            classes = x.args[1].elts
-            target = x.args[0]
-            args = tuple((target, c) for c in classes)
-            return JSMultipleArgsOp(JSOpInstanceof(), JSOpOr(), *args)
-        else:
-            tgt = x.args[0]
-            cls = x.args[1]
-            if isinstance(cls, ast.Name) and cls.id == 'str':
-                return JSMultipleArgsOp(
-                    (JSOpStrongEq(), JSOpInstanceof()),
-                    JSOpOr(),
-                    (JSUnaryOp(JSOpTypeof(), tgt), JSStr('string')),
-                    (tgt, JSName('String'))
-                )
-            elif isinstance(cls, ast.Name) and cls.id in ['int', 'float']:
-                return JSMultipleArgsOp(
-                    (JSOpStrongEq(), JSOpInstanceof()),
-                    JSOpOr(),
-                    (JSUnaryOp(JSOpTypeof(), tgt), JSStr('number')),
-                    (tgt, JSName('Number'))
-                )
-            else:
-                return JSBinOp(tgt, JSOpInstanceof(), cls)
+        return _build_call_isinstance(x.args[0], x.args[1])
 
 
 def Call_issubclass(t, x):

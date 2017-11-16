@@ -14,18 +14,46 @@ MyError.prototype.constructor = MyError;
 class MySecondError extends MyError {
     /* A stupid error */
 }
+function MyThirdError(message) {
+    this.name = "MyThirdError";
+    this.message = (message || "Custom error MyThirdError");
+    if (((typeof Error.captureStackTrace) === "function")) {
+        Error.captureStackTrace(this, this.constructor);
+    } else {
+        this.stack = new Error(message).stack;
+    }
+}
+MyThirdError.prototype = Object.create(Error.prototype);
+MyThirdError.prototype.constructor = MyThirdError;
+function MyFourthError(message) {
+    this.name = "MyFourthError";
+    this.message = (message || "Custom error MyFourthError");
+    if (((typeof Error.captureStackTrace) === "function")) {
+        Error.captureStackTrace(this, this.constructor);
+    } else {
+        this.stack = new Error(message).stack;
+    }
+}
+MyFourthError.prototype = Object.create(Error.prototype);
+MyFourthError.prototype.constructor = MyFourthError;
 try {
     value += 1;
     throw new MyError("Something bad happened");
     value += 1;
 } catch(e) {
     if ((e instanceof MySecondError)) {
+        var err = e;
         value += 20;
     } else {
-        if ((e instanceof MyError)) {
+        if (((e instanceof MyThirdError) || (e instanceof MyFourthError))) {
+            var err2 = e;
             value += 30;
         } else {
-            value += 40;
+            if ((e instanceof MyError)) {
+                value += 40;
+            } else {
+                value += 50;
+            }
         }
     }
 } finally {
