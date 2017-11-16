@@ -52,6 +52,12 @@ def _calc_file_names(src_filename, dst_filename=None, map_filename=None):
     return dst_filename, map_filename, src_relpath, map_relpath
 
 
+def _inline_src_map(src_map):
+    src_map_data = ('data:text/json;base64,%s' %
+        base64.b64encode(src_map.encode('utf-8')).decode('ascii'))
+    return '\n//# sourceMappingURL=%s\n' % src_map_data
+
+
 def translate_file(src_filename, dst_filename=None, map_filename=None,
                    enable_es6=False, enable_stage3=False, inline_map=False):
     """Translate the given python source file to ES6 Javascript."""
@@ -63,9 +69,9 @@ def translate_file(src_filename, dst_filename=None, map_filename=None,
                                   enable_es6=enable_es6,
                                   enable_stage3=enable_stage3)
     if inline_map:
-        map_relpath = 'data:text/json;base64,%s' % \
-                      base64.b64encode(src_map.encode('utf-8')).decode('ascii')
-    js_text += '\n//# sourceMappingURL=%s\n' % map_relpath
+        js_text += _inline_src_map(js_text, src_map)
+    else:
+        js_text += '\n//# sourceMappingURL=%s\n' % map_relpath
 
     with open(dst_filename, 'w') as dst:
         dst.write(js_text)
@@ -151,7 +157,7 @@ def translates(src_text, dedent=True, src_filename=None, src_offset=None,
     dline_offset = dcol_offset = 0
     if t.snippets:
         snipast = t.transform_snippets()
-        snipast  += jsast
+        snipast += jsast
         jsast = snipast
     js_code_block = Block(jsast)
     js_text = js_code_block.read()

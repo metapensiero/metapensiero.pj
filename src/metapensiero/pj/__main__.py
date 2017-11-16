@@ -98,10 +98,12 @@ def transform(src_fname, dst_fname=None, transpile=False, enable_es6=False,
 def transform_string(input, transpile=False, enable_es6=False,
                      enable_stage3=False, **kw):
     if transpile:
-        res = api.transpile_pys(input, enable_stage3=enable_stage3)[0]
+        res, src_map = api.transpile_pys(input, enable_stage3=enable_stage3)
     else:
-        res = api.translates(input, enable_es6=enable_es6,
-                             enable_stage3=enable_stage3)[0]
+        res, src_map = api.translates(input, enable_es6=enable_es6,
+                                      enable_stage3=enable_stage3)
+    if kw.get('inline_map', False):
+        res += api._inline_src_map(src_map)
     return res
 
 
