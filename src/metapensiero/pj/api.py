@@ -69,7 +69,7 @@ def translate_file(src_filename, dst_filename=None, map_filename=None,
                                   enable_es6=enable_es6,
                                   enable_stage3=enable_stage3)
     if inline_map:
-        js_text += _inline_src_map(js_text, src_map)
+        js_text += _inline_src_map(src_map)
     else:
         js_text += '\n//# sourceMappingURL=%s\n' % map_relpath
 
