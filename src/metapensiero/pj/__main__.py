@@ -65,7 +65,9 @@ parser.add_argument('--inline-map', action='store_true',
                     " file, useful when transpiling with BabelJS externally "
                     "but without access to the cli. Ignored "
                     "when transpiling.")
-
+parser.add_argument('--source-name', help="When using '-s' together with"
+                    " '--iniline-map' this option is necessary to produce a"
+                    " valid sourcemap which needs a name for the source file")
 
 
 class Reporter:
@@ -97,11 +99,17 @@ def transform(src_fname, dst_fname=None, transpile=False, enable_es6=False,
 
 def transform_string(input, transpile=False, enable_es6=False,
                      enable_stage3=False, **kw):
+    inline_map = kw.get('inline_map', False)
+    source_name = kw.get('source_name', None)
+    if inline_map and source_name is None:
+        raise ValueError("A source name is needed")
     if transpile:
-        res, src_map = api.transpile_pys(input, enable_stage3=enable_stage3)
+        res, src_map = api.transpile_pys(input, enable_stage3=enable_stage3,
+                                         src_filename=source_name)
     else:
         res, src_map = api.translates(input, enable_es6=enable_es6,
-                                      enable_stage3=enable_stage3)
+                                      enable_stage3=enable_stage3,
+                                      src_filename=source_name)
     if kw.get('inline_map', False):
         res += api._inline_src_map(src_map)
     return res
@@ -119,7 +127,8 @@ def main(args=None, fout=None, ferr=None):
     args = parser.parse_args(args)
     freeargs = {
         'truntime': args.truntime,
-        'inline_map': args.inline_map
+        'inline_map': args.inline_map,
+        'source_name': args.source_name
     }
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
