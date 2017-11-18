@@ -3,6 +3,13 @@
 Changes
 -------
 
+0.9 (unrelased)
+~~~~~~~~~~~~~~~
+
+- add a ``--source-name`` options to be used together with
+  ``--inline-map`` when using ``-s``;
+
+
 0.8 (2017-11-16)
 ~~~~~~~~~~~~~~~~
 
