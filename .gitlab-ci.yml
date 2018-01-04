@@ -1,14 +1,40 @@
 ---
+stages:
+  - test
+  - wheels
+
 before_script:
   - pip install -r requirements.txt
   - pip install .
 
 test:3.5:
+  stage: test
   image: python:3.5
   script:
     - python setup.py test
 
 test:3.6:
+  stage: test
   image: python:3.6
   script:
     - python setup.py test
+
+wheel:3.5:
+  stage: wheels
+  image: python:3.5
+  only: master
+  script:
+  - python setup.py bdist_wheel
+  artifacts:
+    paths:
+    - dist/*.whl
+
+wheel:3.6:
+  stage: wheels
+  image: python:3.6
+  only: master
+  script:
+  - python setup.py bdist_wheel
+  artifacts:
+    paths:
+    - dist/*.whl
