@@ -22,6 +22,7 @@ JavaScripthon: a Python 3 to ES6 JavaScript translator
 .. figure:: http://s3.amazonaws.com/fossbytes.content/wp-content/uploads/2016/04/Javascripthon-python-js-converter.jpg
    :alt: JavaScripthon
    :align: left
+   :width: 800
 
    ..
 
