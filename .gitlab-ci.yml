@@ -19,22 +19,10 @@ test:3.6:
   script:
     - python setup.py test
 
-wheel:3.5:
-  stage: wheels
-  image: python:3.5
-  only:
-    - master
-  script:
-    - python setup.py bdist_wheel
-  artifacts:
-    paths:
-      - dist/*.whl
-
-wheel:3.6:
+wheel:
+  before_script:
   stage: wheels
   image: python:3.6
-  only:
-    - master
   script:
     - python setup.py bdist_wheel
   artifacts:
