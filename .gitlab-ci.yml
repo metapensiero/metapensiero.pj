@@ -1,0 +1,14 @@
+---
+before_script:
+  - pip install -r requirements.txt
+  - pip install .
+
+test:3.5:
+  image: python:3.5
+  script:
+    - python setup.py test
+
+test:3.6:
+  image: python:3.6
+  script:
+    - python setup.py test
