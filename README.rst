@@ -9,9 +9,10 @@
 JavaScripthon: a Python 3 to ES6 JavaScript translator
 ======================================================
 
-.. image:: https://travis-ci.org/azazel75/metapensiero.pj.svg?branch=master
-   :target: https://travis-ci.org/azazel75/metapensiero.pj
+.. image:: https://gitlab.com/metapensiero/metapensiero.pj/badges/master/pipeline.svg
+   :target: https://gitlab.com/metapensiero/metapensiero.pj/commits/master
    :align: left
+   :alt: tests status
 
 .. image:: https://badges.gitter.im/javascripthon/Lobby.svg
    :alt: Join the chat at https://gitter.im/javascripthon/Lobby
@@ -20,7 +21,7 @@ JavaScripthon: a Python 3 to ES6 JavaScript translator
 
 .. figure:: http://s3.amazonaws.com/fossbytes.content/wp-content/uploads/2016/04/Javascripthon-python-js-converter.jpg
    :alt: JavaScripthon
-   :align: center
+   :align: left
 
    ..
 
