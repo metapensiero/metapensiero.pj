@@ -22,7 +22,7 @@ JavaScripthon: a Python 3 to ES6 JavaScript translator
 .. figure:: http://s3.amazonaws.com/fossbytes.content/wp-content/uploads/2016/04/Javascripthon-python-js-converter.jpg
    :alt: JavaScripthon
    :align: left
-   :width: 800
+   :width: 750px
 
    ..
 
@@ -295,6 +295,15 @@ You can even try more fancy ES6 features, like destructuring assignment:
    $ pj -s "a, b, c = (2, 3, 5) \na+b+c" -e
    10
 
+Reporting Bugs
+--------------
+
+The main development repository is the one on gitlab__, the one on
+github is just a mirror so please report issues and feature requests
+there__.
+
+__ https://gitlab.com/metapensiero/metapensiero.pj
+__ https://gitlab.com/metapensiero/metapensiero.pj/issues
 
 Conversions Rosetta Stone
 -------------------------
