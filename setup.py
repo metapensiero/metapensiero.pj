@@ -56,7 +56,7 @@ setup(
         ],
         'test': [
             'pytest',
-            'pytest-cov'
+            'pytest-cov',
             'meta'
         ],
     },
