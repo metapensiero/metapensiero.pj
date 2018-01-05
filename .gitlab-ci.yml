@@ -18,6 +18,7 @@ test:3.6:
   image: python:3.6
   script:
     - python setup.py test
+  coverage: '/\d+\%\s*$/'
 
 wheel:
   before_script:

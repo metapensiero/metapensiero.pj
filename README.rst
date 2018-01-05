@@ -14,6 +14,11 @@ JavaScripthon: a Python 3 to ES6 JavaScript translator
    :align: left
    :alt: tests status
 
+.. image:: https://gitlab.com/metapensiero/metapensiero.pj/badges/master/coverage.svg
+   :target: https://gitlab.com/metapensiero/metapensiero.pj/commits/master
+   :align: left
+   :alt: tests coverage
+
 .. image:: https://badges.gitter.im/javascripthon/Lobby.svg
    :alt: Join the chat at https://gitter.im/javascripthon/Lobby
    :target: https://gitter.im/javascripthon/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
