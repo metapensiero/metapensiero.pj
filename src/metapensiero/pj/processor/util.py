@@ -12,6 +12,7 @@ import re
 import textwrap
 
 from . import sourcemaps
+from os import sep
 
 
 IGNORED_NAMES = ('__all__',)
@@ -50,6 +51,8 @@ def delimited_multi_line(node, text, begin=None, end=None, add_space=False):
 
 
 def parent_of(path):
+    if sep in path:
+        return sep.join(path.rstrip(sep).split(sep)[:-1])
     return '/'.join(path.rstrip('/').split('/')[:-1])
 
 
