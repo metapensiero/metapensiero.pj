@@ -307,8 +307,8 @@ The main development repository is the one on gitlab__, the one on
 github is just a mirror so please report issues and feature requests
 there__.
 
-__ https://gitlab.com/metapensiero/metapensiero.pj
-__ https://gitlab.com/metapensiero/metapensiero.pj/issues
+__ https://gitlab.com/azazel/metapensiero.pj
+__ https://gitlab.com/azazel/metapensiero.pj/issues
 
 Conversions Rosetta Stone
 -------------------------
