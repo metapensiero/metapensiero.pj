@@ -268,9 +268,12 @@ class JSNamedImport(JSImport):
                 js_names.append(self.part(name, ' as ', alias))
             else:
                 js_names.append(self.part(name))
-
-        yield self.line(['import {', *delimited(', ', js_names),
-                         "} from '", module, "'"], delim=True)
+        if len(js_names)==1:
+            yield self.line(['import ', js_names[0], " from '", module,
+                            "'"], delim=True)
+        else:
+            yield self.line(['import {', *delimited(', ', js_names),
+                             "} from '", module, "'"], delim=True)
 
 
 class JSStarImport(JSImport):
