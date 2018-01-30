@@ -284,6 +284,11 @@ class JSExport(JSStatement):
         yield self.line(['export ', '{', name, '}'], delim=True)
 
 
+class JSExportDefault(JSStatement):
+    def emit(self, name):
+        yield self.line(['export default ', name], delim=True)
+
+
 class JSAwait(JSStatement):
 
     def emit(self, value):

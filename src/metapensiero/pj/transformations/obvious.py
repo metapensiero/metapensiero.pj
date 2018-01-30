@@ -25,6 +25,7 @@ from ..js_ast import (
     JSDeleteStatement,
     JSDict,
     JSExport,
+    JSExportDefault,
     JSExpressionStatement,
     JSFalse,
     JSIfExp,
@@ -82,8 +83,11 @@ def Assign_all(t, x):
     if len(x.targets) == 1 and isinstance(x.targets[0], ast.Name) and \
        x.targets[0].id == '__all__':
         t.es6_guard(x, "'__all__' assignment requires ES6")
-        elements = x.value.elts
-        result = [JSExport(el.s) for el in elements]
+        if 'elts' in dir(x.value):
+            elements = x.value.elts
+            result = [JSExport(el.s) for el in elements]
+        else:
+            result = [JSExportDefault(x.value)]
         return JSStatements(*result)
 
 Assign = [Assign_all, Assign_default]
