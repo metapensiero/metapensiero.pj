@@ -69,6 +69,7 @@ def Expr_docstring(t, x):
     if isinstance(x.value, ast.Str):
         return JSCommentBlock(x.value.s)
 
+
 Expr = [Expr_docstring, Expr_default]
 
 
@@ -197,7 +198,7 @@ def Call_dict_update(t, x):
     if isinstance(x.func, ast.Attribute) and x.func.attr == 'update' and \
        isinstance(x.func.value, ast.Call) and  \
        isinstance(x.func.value.func, ast.Name) and \
-       x.func.value.func.id == 'dict' and  len(x.func.value.args) == 1:
+       x.func.value.func.id == 'dict' and len(x.func.value.args) == 1:
         t.es6_guard(x, "dict.update() requires ES6")
         return JSCall(
             JSAttribute(JSName('Object'), 'assign'),
@@ -328,13 +329,16 @@ Call = [Call_typeof, Call_callable, Call_isinstance, Call_print, Call_len,
 def Eq(t, x):
     return JSOpStrongEq()
 
+
 Is = Eq
+
 
 # <code>!=</code>
 #
 # Transform to <code>!==</code>
 def NotEq(t, x):
     return JSOpStrongNotEq()
+
 
 IsNot = NotEq
 
@@ -343,6 +347,7 @@ IsNot = NotEq
 
 AT_PREFIX_RE = re.compile(r'^__([a-zA-Z0-9])')
 INSIDE_DUNDER_RE = re.compile(r'([a-zA-Z0-9])__([a-zA-Z0-9])')
+
 
 def _replace_dunder(name):
     """Replace dunder (``__``) in `name` with an ``@`` symbol if it's at the
@@ -362,7 +367,8 @@ def Import(t, x):
         old_name = n.name
         n.name = _replace_dunder(n.name)
         t.unsupported(x, (old_name != n.name) and not n.asname,
-                      "A module name cannot contain dashes, use 'as' to give it a new name.")
+                      "A module name cannot contain dashes, use 'as' to give "
+                      "it a new name.")
         path_module = '/'.join(n.name.split('.'))
         result.append(
             JSStarImport(path_module, n.asname or n.name)
@@ -405,7 +411,7 @@ def ImportFrom(t, x):
                     imp = JSStarImport('./' + n.name, n.asname or n.name)
                 else:
                     # from .. import foo
-                    imp = JSStarImport('../' * (x.level -1) + n.name,
+                    imp = JSStarImport('../' * (x.level - 1) + n.name,
                                        n.asname or n.name)
                 if len(x.names) == 1:
                     imp.py_node = x
@@ -440,7 +446,8 @@ def Subscript_slice(t, x):
 
     if isinstance(x.slice, ast.Slice):
         slice = x.slice
-        t.unsupported(x, slice.step and slice.step != 1, "Slice step is unsupported")
+        t.unsupported(x, slice.step and slice.step != 1,
+                      "Slice step is unsupported")
         args = []
         if slice.lower:
             args.append(slice.lower)
@@ -485,4 +492,5 @@ def Assert(t, x):
     if t.enable_snippets:
         from ..snippets import _assert
         t.add_snippet(_assert)
-        return JSCall(JSAttribute('_pj', '_assert'), [x.test, x.msg or JSNull()])
+        return JSCall(JSAttribute('_pj', '_assert'),
+                      [x.test, x.msg or JSNull()])

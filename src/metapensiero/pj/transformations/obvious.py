@@ -86,6 +86,7 @@ def Assign_all(t, x):
         result = [JSExport(el.s) for el in elements]
         return JSStatements(*result)
 
+
 Assign = [Assign_all, Assign_default]
 
 
