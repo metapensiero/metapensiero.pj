@@ -346,7 +346,10 @@ INSIDE_DUNDER_RE = re.compile(r'([a-zA-Z0-9])__([a-zA-Z0-9])')
 
 def _replace_dunder(name):
     """Replace dunder (``__``) in `name` with an ``@`` symbol if it's at the
-    start and with ``-`` if it's on the middle."""
+    start and with ``-`` if it's on the middle.
+    Also triple underscore (``___``) for tilde. """
+    if name.startswith('___'):
+        name = '~' + name[3:]
     res = AT_PREFIX_RE.sub(r'@\1', name)
     return INSIDE_DUNDER_RE.sub(r'\1-\2', res)
 
