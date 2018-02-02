@@ -10,6 +10,7 @@ import ast
 import inspect
 import re
 import textwrap
+import os.path
 
 from . import sourcemaps
 
@@ -50,8 +51,7 @@ def delimited_multi_line(node, text, begin=None, end=None, add_space=False):
 
 
 def parent_of(path):
-    return '/'.join(path.rstrip('/').split('/')[:-1])
-
+    return os.path.split(os.path.normpath(path))[0]
 
 def body_top_names(body):
     names = set()
