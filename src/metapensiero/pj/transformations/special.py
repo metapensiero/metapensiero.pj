@@ -17,6 +17,7 @@ from ..js_ast import (
     JSCommentBlock,
     JSDependImport,
     JSDict,
+    JSExportDefault,
     JSExpressionStatement,
     JSLiteral,
     JSName,
@@ -50,6 +51,8 @@ from .classes import (
 )
 
 from .obvious import (
+    Assign_all,
+    Assign_default,
     Attribute_default,
     BinOp_default,
     Call_default,
@@ -494,3 +497,15 @@ def Assert(t, x):
         t.add_snippet(_assert)
         return JSCall(JSAttribute('_pj', '_assert'),
                       [x.test, x.msg or JSNull()])
+
+
+def Assign_default_(t, x):
+    if len(x.targets) == 1 and isinstance(x.targets[0], ast.Name) and \
+       x.targets[0].id == '__default__':
+        t.es6_guard(x, "'__default__' assignment requires ES6")
+        t.unsupported(x, isinstance(x.value, (ast.Tuple, ast.List)),
+                      "Only one symbol can be exported using '__default__'.")
+        return JSExportDefault(x.value)
+
+
+Assign = [Assign_all, Assign_default_, Assign_default]

@@ -3,7 +3,8 @@
 # :Created:  ven 26 feb 2016 15:17:49 CET
 # :Authors:  Andrew Schaaf <andrew@andrewschaaf.com>,
 #            Alberto Berti <alberto@metapensiero.it>,
-#            Lele Gaifax <lele@metapensiero.it>
+#            Lele Gaifax <lele@metapensiero.it>,
+#            Sebastian Silva <sebastian@somosazucar.org>
 # :License:  GNU General Public License version 3 or later
 #
 
@@ -282,6 +283,11 @@ class JSStarImport(JSImport):
 class JSExport(JSStatement):
     def emit(self, name):
         yield self.line(['export ', '{', name, '}'], delim=True)
+
+
+class JSExportDefault(JSStatement):
+    def emit(self, name):
+        yield self.line(['export default ', name], delim=True)
 
 
 class JSAwait(JSStatement):
