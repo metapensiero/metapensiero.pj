@@ -86,8 +86,9 @@ def Assign_all(t, x):
                       "Please define a '__default__' member for default"
                       " export.")
         elements = x.value.elts
-        result = [JSExport(el.s) for el in elements]
-        return JSStatements(*result)
+        return JSExport([el.s for el in elements
+                         if not t.unsupported(el, not isinstance(el, ast.Str),
+                         'Must be a string literal.')])
 
 
 def AugAssign(t, x):

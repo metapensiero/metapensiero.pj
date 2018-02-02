@@ -12,5 +12,4 @@ import * as fb from '@foo/bar';
 var test_foo;
 test_name = 2;
 test_foo = true;
-export {test_name};
-export {test_foo};
+export {test_name, test_foo};
