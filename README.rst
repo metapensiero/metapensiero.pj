@@ -1110,13 +1110,13 @@ top level is translated to ES6 exports.
         import * as bar from 'bar';
         import * as b from 'foo/bar';
         import {hello as h, bye as bb} from 'foo/bar';
-        import {bar} from '../foo/zoo';
+        import bar from '../foo/zoo';
         import * as foo from './foo';
-        import {bar} from './foo';
+        import bar from './foo';
 
-        import {zoo} from 'foo-bar';
+        import zoo from 'foo-bar';
 
-        import {bar} from '@foo/zoo';
+        import bar from '@foo/zoo';
 
         test_name = 2;
         test_foo = true;
