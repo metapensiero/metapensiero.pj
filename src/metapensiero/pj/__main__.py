@@ -66,7 +66,7 @@ parser.add_argument('--inline-map', action='store_true',
                     "but without access to the cli. Ignored "
                     "when transpiling.")
 parser.add_argument('--source-name', help="When using '-s' together with"
-                    " '--iniline-map' this option is necessary to produce a"
+                    " '--inline-map' this option is necessary to produce a"
                     " valid sourcemap which needs a name for the source file")
 
 
