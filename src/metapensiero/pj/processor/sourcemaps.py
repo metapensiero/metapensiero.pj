@@ -36,8 +36,6 @@ import json
 import re
 import sys
 
-PY3 = sys.version_info[0] == 3
-text_type = str if PY3 else unicode
 
 # A single base 64 digit can contain 6 bits of data. For the base 64
 # variable length quantities we use in the source map spec, the first
@@ -128,7 +126,7 @@ def decode(source, ignore_errors=True):
         smap = json.loads(source)
 
     sources = smap['sources']
-    names = list(map(text_type, smap['names']))
+    names = list(map(str, smap['names']))
     lines = smap['mappings'].split(';')
 
     source_root = smap.get('source_root')
@@ -235,7 +233,9 @@ def encode(sourcemap):
                                       data['sources']))
     return json.dumps(data)
 
-source_map_url_re = re.compile(r'/[\*/][#@]\s*sourceMappingURL=([^\s*]+)\s*(?:\*/)?')
+
+source_map_url_re = re.compile(
+    r'/[\*/][#@]\s*sourceMappingURL=([^\s*]+)\s*(?:\*/)?')
 
 
 def discover(source):
