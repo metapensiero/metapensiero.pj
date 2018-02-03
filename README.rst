@@ -1080,6 +1080,8 @@ top level is translated to ES6 named exports.
 
   * - .. code:: python
 
+        from ___.components.xterm import Terminal
+        
         import foo, bar
         import foo.bar as b
         from foo.bar import hello as h, bye as bb
@@ -1108,6 +1110,8 @@ top level is translated to ES6 named exports.
 
         var test_foo;
 
+        import Terminal from '~/components/xterm';
+        
         import * as foo from 'foo';
         import * as bar from 'bar';
         import * as b from 'foo/bar';
