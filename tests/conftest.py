@@ -49,13 +49,14 @@ def load_python_code(filename):
                     value = eval(expr, {'python_version': sys.version_info})
                     if option == 'requires':
                         if not value:
-                            return None, 'Requires %s' % expr
+                            return None, None, 'Requires %s' % expr
                     else:
                         options[option] = value
                 else:
                     script.append(line)
-    py_code = compile(''.join(script), filename, 'exec')
-    return py_code, options
+    py_src = ''.join(script)
+    py_code = compile(py_src, filename, 'exec')
+    return py_code, py_src, options
 
 
 def load_tests_from_directory(dir, ext=None):
@@ -65,9 +66,10 @@ def load_tests_from_directory(dir, ext=None):
     if not isdir(dir):
         raise RuntimeError('%s does not exist or is not a directory' % dir)
     for pyfile in sorted(glob(join(dir, '*.py'))):
-        py_code, options = load_python_code(pyfile)
+        py_code, py_src, options = load_python_code(pyfile)
         if py_code is None:
-            yield pytest.mark.skip((split(pyfile)[1], None, None, None))(reason=options)
+            yield pytest.mark.skip((split(pyfile)[1],
+                                    None, None, None, None))(reason=options)
             continue
 
         cmpfile = splitext(pyfile)[0] + ext
@@ -76,9 +78,10 @@ def load_tests_from_directory(dir, ext=None):
                 expected = f.read()
             # The first item is to make it easier to spot the right test
             # in verbose mode
-            yield split(pyfile)[1], py_code, options, expected
+            yield split(pyfile)[1], py_code, py_src, options, expected
         else:
-            raise RuntimeError('%s has no correspondent %s' % (pyfile, cmpfile))
+            raise RuntimeError('%s has no correspondent %s' % (
+                pyfile, cmpfile))
 
 
 def pytest_generate_tests(metafunc):

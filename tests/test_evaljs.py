@@ -800,5 +800,5 @@ class TestEvalFromFS:
 
     EXT = '.js'
 
-    def test_eval_object_es6(self, name, py_code, options, expected):
+    def test_eval_object_es6(self, name, py_code, py_src, options, expected):
         assert eval_object_es6(py_code, 'test();') == expected.rstrip()

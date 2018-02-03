@@ -40,11 +40,12 @@ class TestTranslationFromFS:
 
     EXT = '.js'
 
-    def test_translate_object(self, name, py_code, options, expected):
-        dump = translate_object(py_code, **options)[0]
+    def test_translate_object(self, name, py_code, py_src, options, expected):
+        dump = translates(py_src, **options)[0]
         assert dump.rstrip() == expected.rstrip()
 
-    def test_translate_object_unsupported(self, name, py_code, options, expected):
+    def test_translate_object_unsupported(self, name, py_code, py_src, options,
+                                          expected):
         from metapensiero.pj.processor.exceptions import UnsupportedSyntaxError
         with pytest.raises(UnsupportedSyntaxError):
             translate_object(py_code, **options)[0]
