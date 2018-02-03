@@ -19,8 +19,8 @@ IGNORED_NAMES = ('__all__', '__default__')
 
 
 def delimited(delimiter, arr, dest=None, at_end=False):
-    """Similar to ``str.join()``, but returns an array with an option to append the
-    delimiter at the end.
+    """Similar to ``str.join()``, but returns an array with an option to
+    append the delimiter at the end.
     """
     if dest is None:
         dest = []
@@ -32,6 +32,7 @@ def delimited(delimiter, arr, dest=None, at_end=False):
     if at_end:
         dest.append(delimiter)
     return dest
+
 
 def delimited_multi_line(node, text, begin=None, end=None, add_space=False):
     """Used to deal with single and multi line literals."""
@@ -53,6 +54,7 @@ def delimited_multi_line(node, text, begin=None, end=None, add_space=False):
 def parent_of(path):
     return os.path.split(os.path.normpath(path))[0]
 
+
 def body_top_names(body):
     names = set()
     for x in body:
@@ -61,8 +63,9 @@ def body_top_names(body):
 
 
 def controlled_ast_walk(node):
-    """Walk AST just like ``ast.walk()``, but expect ``True`` on every branch to
-    descend on sub-branches."""
+    """Walk AST just like ``ast.walk()``, but expect ``True`` on every
+    branch to descend on sub-branches.
+    """
     if isinstance(node, list):
         l = node.copy()
     elif isinstance(node, tuple):
@@ -76,8 +79,8 @@ def controlled_ast_walk(node):
             for n in ast.iter_child_nodes(popped):
                 l.append(n)
 
-CODE_BLOCK_STMTS = (ast.FunctionDef, ast.ClassDef,
-                    ast.AsyncFunctionDef)
+
+CODE_BLOCK_STMTS = (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)
 
 
 def walk_under_code_boundary(node):
@@ -88,7 +91,7 @@ def walk_under_code_boundary(node):
             subn = it.send(traverse)
             yield subn
             if isinstance(subn, CODE_BLOCK_STMTS):
-                traverse = False # continue traversing sub names
+                traverse = False  # continue traversing sub names
             else:
                 traverse = True
     except StopIteration:
@@ -107,8 +110,8 @@ def body_local_names(body):
 
 
 def node_names(py_node):
-    """Extract 'names' from a Python node. Names are all those interesting for the
-    enclosing scope.
+    """Extract 'names' from a Python node. Names are all those interesting
+    for the enclosing scope.
 
     Return a set containing them. The nodes considered are the Assign and the
     ones that defines namespaces, the function and class definitions.
@@ -119,6 +122,7 @@ def node_names(py_node):
       a = b # 'a' is the target
       a = b = c # 'a' and 'b' are the targets
       a1, a2 = b = c # ('a1', 'a2') and 'b' are the targets
+
     """
     names = set()
     if isinstance(py_node, ast.Assign):
@@ -173,7 +177,8 @@ class OutputSrc:
         self.node = node
         self.src_name = name
 
-    def _gen_mapping(self, text, src_line=None, src_offset=None, dst_offset=None):
+    def _gen_mapping(self, text, src_line=None, src_offset=None,
+                     dst_offset=None):
         """Generate a single mapping. `dst_line` is absent from signature
         because the part hasn't this information, but is present in the
         returned mapping. `src_line` is adjusted to be 0-based.
@@ -355,7 +360,8 @@ class Block(OutputSrc):
     def read(self):
         return ''.join(str(l) for l in self.lines)
 
-    def sourcemap(self, source, src_filename, src_offset=None, dst_offset=None):
+    def sourcemap(self, source, src_filename, src_offset=None,
+                  dst_offset=None):
         Token = sourcemaps.Token
         tokens = []
         for m in self.src_mappings(src_offset, dst_offset):

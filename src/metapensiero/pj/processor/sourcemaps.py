@@ -154,37 +154,39 @@ def decode(source, ignore_errors=True):
             if len(fields) not in (1, 4, 5):
                 raise SourceMapDecodeError(
                     'Invalid segment {}, parsed as {}'.format(segment, fields))
-
-
             if len(fields) > 1:
                 src_id += fields[1]
                 if not 0 <= src_id < len(sources):
                     raise SourceMapDecodeError(
-                        'Segment {} references source {} which does not exist'.format(
-                        segment, src_id))
+                        'Segment {} references source {} which '
+                        'does not exist'.format(
+                            segment, src_id))
                 src = sources[src_id]
                 src_line += fields[2]
                 if src_line < 0:
-                    raise SourceMapDecodeError('Segment {} has negative src_line'.format(
-                                               segment))
+                    raise SourceMapDecodeError(
+                        'Segment {} has negative src_line'.format(segment))
                 src_col += fields[3]
                 if src_col < 0:
-                    raise SourceMapDecodeError('Segment {} has negative src_col'.format(
-                                               segment))
+                    raise SourceMapDecodeError(
+                        'Segment {} has negative src_col'.format(segment))
 
             if len(fields) > 4:
                 name_id += fields[4]
                 if not 0 <= name_id < len(names):
                     raise SourceMapDecodeError(
-                        'Segment {} references name {} which does not exist'.format(
-                        segment, name_id))
+                        'Segment {} references name {} which '
+                        'does not exist'.format(
+                            segment, name_id))
                 name = names[name_id]
 
-            tokens.append(Token(dst_line, dst_col, src, src_line, src_col, name))
+            tokens.append(Token(dst_line, dst_col, src, src_line, src_col,
+                                name))
 
     sources_content = {src: content
-                       for src, content in zip(sources, smap.get('sourcesContent',
-                                                                 (None,) * len(sources)))
+                       for src, content in zip(
+                               sources, smap.get('sourcesContent',
+                                                 (None,) * len(sources)))
                        if content is not None}
     return SourceMap(tokens, sources_content, raw=smap,
                      ignore_errors=ignore_errors)
@@ -229,7 +231,8 @@ def encode(sourcemap):
             'mappings': ';'.join(map(','.join, mappings)),
             'sources': sorted(sources, key=lambda x: sources[x]),
             'names': sorted(names, key=lambda x: names[x])}
-    data['sourcesContent'] = list(map(sourcemap.sources_content.get, data['sources']))
+    data['sourcesContent'] = list(map(sourcemap.sources_content.get,
+                                      data['sources']))
     return json.dumps(data)
 
 source_map_url_re = re.compile(r'/[\*/][#@]\s*sourceMappingURL=([^\s*]+)\s*(?:\*/)?')
@@ -253,18 +256,22 @@ def discover(source):
             return result[0]
     return None
 
+
 def strip(content):
     return source_map_url_re.sub('', content)
 
+
 # namedtuples have a nice repr and they support comparison (useful for
 # bisect search)
-class Token(namedtuple('TokenBase', 'dst_line dst_col src src_line src_col name'
-                       ' mapping')):
+class Token(namedtuple('TokenBase', 'dst_line dst_col src src_line src_col '
+                       'name mapping')):
     __slots__ = ()
+
     def __new__(cls, dst_line=0, dst_col=0, src='', src_line=0, src_col=0,
                 name=None, mapping=None):
         return super(Token, cls).__new__(cls, dst_line, dst_col,
                                          src, src_line, src_col, name, mapping)
+
 
 def shift_tokens(tokens, dst_line=0, dst_col=0, src_line=0, src_col=0):
     return [t._replace(dst_line=t.dst_line + dst_line,
@@ -272,6 +279,7 @@ def shift_tokens(tokens, dst_line=0, dst_col=0, src_line=0, src_col=0):
                        src_line=t.src_line + src_line,
                        src_col=t.src_col + src_col)
             for t in tokens]
+
 
 TOKEN_SPEC = (
     ('LINECOMMENT', r'//'),
@@ -281,6 +289,7 @@ TOKEN_SPEC = (
 )
 token_re = re.compile('|'.join('(?P<%s>%s)' % pair for pair in TOKEN_SPEC),
                       re.UNICODE | re.MULTILINE | re.DOTALL)
+
 
 def identity_tokenize(content, src):
     in_comment = False
@@ -305,13 +314,19 @@ def identity_tokenize(content, src):
                 if column > start_column:
                     yield Token(line_num, column, src, line_num, column)
 
+
 def identity_map(content, src):
     return SourceMap(identity_tokenize(content, src), {src: content})
 
+
 class SourceMap(object):
-    def __init__(self, tokens=(), sources_content=None, raw=None, ignore_errors=False):
+    def __init__(self, tokens=(), sources_content=None, raw=None,
+                 ignore_errors=False):
         self.tokens = []
-        self.sources_content = {} if sources_content is None else sources_content.copy()
+        if sources_content is None:
+            self.sources_content = {}
+        else:
+            self.source_content = sources_content.copy()
         self.raw = {} if raw is None else raw.copy()
         self.ignore_errors = ignore_errors
         map(self.add_token, tokens)
@@ -323,7 +338,8 @@ class SourceMap(object):
             index = bisect_right(self.tokens, token)
             if not self.ignore_errors and index and \
                     self.tokens[index - 1][:2] == token[:2]:
-                raise ValueError('Token with given dst_line and dst_col already exists:\n'
-                                 'Existing: {}\nAdded: {}'.format(self.tokens[index - 1],
-                                                                  token))
+                raise ValueError(
+                    'Token with given dst_line and dst_col already exists:\n'
+                    'Existing: {}\nAdded: {}'.format(self.tokens[index - 1],
+                                                     token))
             self.tokens.insert(index, token)
