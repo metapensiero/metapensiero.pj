@@ -8,6 +8,8 @@ Changes
 
 - add a ``--source-name`` options to be used together with
   ``--inline-map`` when using ``-s``;
+- move main repository to gitlab.com/metapensiero;
+- add support for default export and import;
 
 
 0.8 (2017-11-16)
