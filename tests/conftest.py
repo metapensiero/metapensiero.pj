@@ -12,7 +12,8 @@ import sys
 
 import pytest
 
-from metapensiero.pj.testing import ast_object, ast_dump_object, ast_object_to_js
+from metapensiero.pj.testing import (ast_object, ast_dump_object,
+                                     ast_object_to_js)
 
 
 @pytest.fixture
@@ -42,7 +43,8 @@ def load_python_code(filename):
                     try:
                         option, expr = line.strip().lstrip('# ').split(':', 1)
                     except:
-                        raise ValueError('Bad header, expected "## value: expression",'
+                        raise ValueError('Bad header, expected "## value:'
+                                         ' expression",'
                                          ' got: %s' % line.rstrip())
                     option = option.strip()
                     expr = expr.strip()
@@ -93,5 +95,6 @@ def pytest_generate_tests(metafunc):
         testdir = join(moddir, metafunc.function.__name__)
         argvalues = list(load_tests_from_directory(testdir, ext))
         metafunc.parametrize(
-            ('name', 'py_code', 'options', 'expected'), argvalues,
-            ids=[v[0] if isinstance(v, tuple) else v.args[0][0] for v in argvalues])
+            ('name', 'py_code', 'py_src', 'options', 'expected'), argvalues,
+            ids=[v[0] if isinstance(v, tuple)
+                 else v.args[0][0] for v in argvalues])

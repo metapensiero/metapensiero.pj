@@ -34,8 +34,8 @@ def ast_dump_object(obj, first_stmt_only=False):
 
 
 def ast_object_to_js(obj, es6=False):
-    """Convert a Python object to JS using pj, optionally transforming with ES6
-    features enabled.
+    """Convert a Python object to JS using pj, optionally transforming
+    with ES6 features enabled.
     """
     src = inspect.getsource(obj)
     node = ast.parse(textwrap.dedent(src))

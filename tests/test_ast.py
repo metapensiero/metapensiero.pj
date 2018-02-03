@@ -6,6 +6,7 @@
 # :License:  GNU General Public License version 3 or later
 #
 
+
 class TestASTFromFS:
 
     EXT = {'test_ast_dump': '.ast', 'test_ast_es6': '.js'}
