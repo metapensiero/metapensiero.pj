@@ -1216,6 +1216,15 @@ gets translated to:
 ``bar`` will be executed with the value of ``${string}`` as a
 parameter, see the link for `template literals`_ for help.
 
+Verbatim JS
+-----------
+
+You can intermix Python and JS by using the
+``JS('Your-JS-code-here')`` marker function. It will not be touched by
+the ES6 transcoder but if you choose to also transpile it to ES5, il
+will be considered by Babel.
+
+
 Examples
 --------
 
