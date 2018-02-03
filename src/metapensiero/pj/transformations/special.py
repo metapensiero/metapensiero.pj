@@ -511,9 +511,10 @@ def Assign_default_(t, x):
         t.es6_guard(x, "'__default__' assignment requires ES6")
         t.unsupported(x.value, isinstance(x.value, (ast.Tuple, ast.List)),
                       "Only one symbol can be exported using '__default__'.")
-        t.unsupported(x.value, not isinstance(x.value, ast.Str),
-                      'Must be a string literal.')
-        return JSExportDefault(x.value.s)
+        if isinstance(x.value, ast.Str):
+            return JSExportDefault(x.value.s)
+        else:
+            return JSExportDefault(x.value)
 
 
 Assign = [Assign_all, Assign_default_, Assign_default]
