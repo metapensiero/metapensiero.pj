@@ -280,6 +280,11 @@ class JSStarImport(JSImport):
                         delim=True)
 
 
+class JSDefaultImport(JSImport):
+    def emit(self, module, alias):
+        yield self.line(['import ', alias, " from '", module, "'"], delim=True)
+
+
 class JSExport(JSStatement):
     def emit(self, names):
         yield self.line(['export ', '{', *delimited(', ', names), '}'],

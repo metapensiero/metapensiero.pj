@@ -15,6 +15,7 @@ from ..js_ast import (
     JSBinOp,
     JSCall,
     JSCommentBlock,
+    JSDefaultImport,
     JSDependImport,
     JSDict,
     JSExportDefault,
@@ -403,8 +404,13 @@ def ImportFrom(t, x):
                 # from ..foo import bar
                 # from ...foo import bar
                 path_module = '../' * (x.level - 1) + path_module
-            result = JSNamedImport(path_module,
-                                   [(n.name, n.asname) for n in x.names])
+            if len(x.names) == 1 and x.names[0].name == '__default__':
+                t.unsupported(x, x.names[0].asname is None,
+                              "Default import must declare an 'as' clause.")
+                result = JSDefaultImport(path_module, x.names[0].asname)
+            else:
+                result = JSNamedImport(path_module,
+                                       [(n.name, n.asname) for n in x.names])
         else:
             assert x.level > 0
             result = []

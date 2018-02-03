@@ -15,6 +15,7 @@ def func():
     import foo__bar as fb
     from __foo.bar import zoo
     import __foo.bar as fb
+    from foo import __default__ as bar
 
     # this should not trigger variable definition
     test_name = 2
