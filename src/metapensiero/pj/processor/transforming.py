@@ -319,9 +319,10 @@ class Transformer:
         return self._args_stack[-1]
 
     def unsupported(self, py_node, cond, desc):
-        """Raise an exception if `cond` is ``False``."""
+        """Raise an exception if `cond` is ``True``."""
         if cond:
             raise UnsupportedSyntaxError(py_node, desc)
+        return False
 
     def warn(self, py_node, msg):
         """Append the given message to the warnings."""
