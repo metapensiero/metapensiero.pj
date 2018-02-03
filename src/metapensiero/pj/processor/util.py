@@ -15,7 +15,7 @@ import os.path
 from . import sourcemaps
 
 
-IGNORED_NAMES = ('__all__',)
+IGNORED_NAMES = ('__all__', '__default__')
 
 
 def delimited(delimiter, arr, dest=None, at_end=False):
