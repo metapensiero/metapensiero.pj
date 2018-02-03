@@ -1070,8 +1070,7 @@ Python's behavior.
 
 ``import`` and ``from ... import`` statements are converted to ES6
 imports, and the declaration of an ``__all__`` member on the module
-top level is translated to ES6 exports.
-
+top level is translated to ES6 named exports.
 
 .. list-table:: import and exports
   :header-rows: 1
@@ -1092,6 +1091,8 @@ top level is translated to ES6 exports.
 
         from __foo.zoo import bar
 
+        from foo import __default__ as bar
+
         from __globals__ import test_name
 
         # this should not trigger variable definition
@@ -1101,6 +1102,7 @@ top level is translated to ES6 exports.
         test_foo = True
 
         __all__ = ['test_name', 'test_foo']
+        __default__ = 'test_name'
 
     - .. code:: javascript
 
@@ -1118,11 +1120,67 @@ top level is translated to ES6 exports.
 
         import {bar} from '@foo/zoo';
 
+        import bar from 'foo';
+
         test_name = 2;
         test_foo = true;
 
-        export {test_name};
-        export {test_foo};
+        export {test_name, test_foo};
+        export default test_name;
+
+About JS **default** ``export`` and ``import``
+++++++++++++++++++++++++++++++++++++++++++++++
+
+If you want to export something as *default export* in your modules,
+declare a ``__default__`` member and assign to it the string of the
+symbol you want to export. To clarify:
+
+.. code:: python
+
+  foo = 42
+  bar = "hello"
+
+  __all__ = ['foo', 'bar']  # foo and bar will be exported as named exports
+  __default__ = 'bar'  # bar will also be exported as the *default*
+
+This becomes:
+
+.. code:: javascript
+
+  var bar, foo;
+
+  foo = 42;
+  bar = "hello";
+
+  export {foo, bar};
+  export default bar;
+
+For what concerns the ``import``, you can import the default export of
+a module using the ``default`` name, as defined by the ES6
+spec. However, as there were some issues reported to me with bundlers
+not supporting the named import of the default export, a special
+``import`` statement using ``__default__ as name`` has been added that
+directly translates to the more common form of ES6 default import. So:
+
+.. code:: python
+
+  from foo import default as bar
+  from foo import __default__ as zoo
+
+Translates to:
+
+.. code:: javascript
+
+  import {default as bar} from 'foo';
+  import zoo from 'foo';
+
+The two imports should work the same, see `exploring js section`__ and
+the linked spec. But if you encounter problems with the former use
+the latter instead. Keep in mind that you cannot mix the
+``__default__`` import with others (i.e. it needs to be on a line of
+its own) and that you always need to specify an ``... as name ...`` part.
+
+__ http://exploringjs.com/es6/ch_modules.html#sec_importing-exporting-details
 
 Strings
 -------
