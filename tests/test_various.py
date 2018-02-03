@@ -8,7 +8,7 @@
 
 import pytest
 
-from metapensiero.pj.api import translate_object
+from metapensiero.pj.api import translates
 
 
 def test_body_names_stop_at_func(astobj):
@@ -48,4 +48,4 @@ class TestTranslationFromFS:
                                           expected):
         from metapensiero.pj.processor.exceptions import UnsupportedSyntaxError
         with pytest.raises(UnsupportedSyntaxError):
-            translate_object(py_code, **options)[0]
+            translates(py_src, **options)[0]
