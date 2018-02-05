@@ -86,6 +86,7 @@ class Reporter:
 
 def transform(src_fname, dst_fname=None, transpile=False, enable_es6=False,
               enable_stage3=False, **kw):
+    kw.pop('source_name', None)
     if transpile:
         kw.pop('inline_map', None)
         api.transpile_py_file(src_fname, dst_fname,
@@ -102,7 +103,8 @@ def transform_string(input, transpile=False, enable_es6=False,
     inline_map = kw.get('inline_map', False)
     source_name = kw.get('source_name', None)
     if inline_map and source_name is None:
-        raise ValueError("A source name is needed")
+        raise ValueError("A source name is needed, please specify it using "
+                         "the '--source-name option.")
     if transpile:
         res, src_map = api.transpile_pys(input, enable_stage3=enable_stage3,
                                          src_filename=source_name)
