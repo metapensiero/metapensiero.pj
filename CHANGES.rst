@@ -10,7 +10,7 @@ Changes
   ``--inline-map`` when using ``-s``;
 - move main repository to gitlab.com/metapensiero;
 - add support for default export and import;
-
+- add documentation for the ``JS()`` marker function;
 
 0.8 (2017-11-16)
 ~~~~~~~~~~~~~~~~
