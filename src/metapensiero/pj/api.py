@@ -69,7 +69,7 @@ def translate_file(src_filename, dst_filename=None, map_filename=None,
                                   enable_es6=enable_es6,
                                   enable_stage3=enable_stage3)
     if inline_map:
-        js_text += _inline_src_map(src_map)
+        js_text += src_map.stringify(inline_comment=True)
     else:
         js_text += '\n//# sourceMappingURL=%s\n' % map_relpath
 
@@ -77,7 +77,7 @@ def translate_file(src_filename, dst_filename=None, map_filename=None,
         dst.write(js_text)
     if not inline_map:
         with open(map_filename, 'w') as map:
-            map.write(src_map)
+            map.write(src_map.stringify())
 
 
 def translate_object(py_obj, body_only=False, enable_es6=False,
@@ -123,7 +123,7 @@ def translates(src_text, dedent=True, src_filename=None, src_offset=None,
         src_lines = src_text
         src_text = ''.join(src_text)
     else:
-        src_lines = src_text.splitlines() # removes \n
+        src_lines = src_text.splitlines()  # removes \n
 
     # take into account only the lines with content because only those
     # will be dedented
@@ -161,15 +161,17 @@ def translates(src_text, dedent=True, src_filename=None, src_offset=None,
         jsast = snipast
     js_code_block = Block(jsast)
     js_text = js_code_block.read()
-    enc_src_map, src_map = js_code_block.sourcemap(complete_src or src_text,
-                                                   src_filename,
-                                                   (sline_offset, scol_offset),
-                                                   (dline_offset, dcol_offset))
+    if not src_filename:
+        src_filename = '<source>'
+
+    src_map = js_code_block.sourcemap(complete_src or src_text, src_filename,
+                                      (sline_offset, scol_offset),
+                                      (dline_offset, dcol_offset))
     for t in src_map.tokens:
         log.debug("js: (%d, %d)\t\t py: (%d, %d)\t txt: '%s'",
                   t.dst_line, t.dst_col, t.src_line - sline_offset,
                   t.src_col - scol_offset, t.mapping['text'])
-    return js_text, enc_src_map
+    return js_text, src_map
 
 
 def transpile_es6s(es6_text, es6_filename=None, es6_sourcemap=None,
@@ -181,7 +183,7 @@ def transpile_es6s(es6_text, es6_filename=None, es6_sourcemap=None,
         opts['filename'] = es6_filename
     if es6_sourcemap:
         if isinstance(es6_sourcemap, str):
-            es6_sourcemap = json.loads(es6_sourcemap)
+            es6_sourcemap = es6_sourcemap.encode()
         opts['inputSourceMap'] = es6_sourcemap
     opts['presets'] = ["es2015"]
     if enable_stage3:
@@ -200,12 +202,13 @@ def transpile_object(py_obj, body_only=False, es6_filename=None,
     es6_text, es6_sourcemap = translate_object(py_obj, body_only=body_only,
                                                enable_es6=True,
                                                enable_stage3=enable_stage3)
-    return transpile_es6s(es6_text, es6_filename, es6_sourcemap,
+    return transpile_es6s(es6_text, es6_filename, es6_sourcemap.encode(),
                           enable_stage3=enable_stage3, **kw)
 
 
 def transpile_pys(src_text, dedent=True, src_filename=None, src_offset=None,
-                  body_only=False, es6_filename=None, enable_stage3=False, **kw):
+                  body_only=False, es6_filename=None, enable_stage3=False,
+                  **kw):
     """Transpile the given Python 3 source text to ES5 Javascript
     using Dukpy and babeljs.
     """
@@ -232,10 +235,12 @@ def transpile_py_file(src_filename, dst_filename=None, map_filename=None,
     es6_map_relpath = os.path.relpath(es6_map_filename, dst_dir)
     es6_relpath = os.path.relpath(es6_dst_filename, dst_dir)
     src_text = open(src_filename).readlines()
-    es6_text, es6_src_map = translates(src_text, True, src_relpath,
-                                       enable_es6=True, enable_stage3=enable_stage3)
+    es6_text, es6_src_map = translates(
+        src_text, True, src_relpath, enable_es6=True,
+        enable_stage3=enable_stage3)
 
-    es5_text, es5_src_map = transpile_es6s(es6_text, es6_relpath, es6_src_map,
+    es5_text, es5_src_map = transpile_es6s(es6_text, es6_relpath,
+                                           es6_src_map.encode(),
                                            enable_stage3=enable_stage3, **kw)
     es5_text += '\n//# sourceMappingURL=%s\n' % map_relpath
     es6_text += '\n//# sourceMappingURL=%s\n' % es6_map_relpath
@@ -243,7 +248,7 @@ def transpile_py_file(src_filename, dst_filename=None, map_filename=None,
     with open(es6_dst_filename, 'w') as dst:
         dst.write(es6_text)
     with open(es6_map_filename, 'w') as map:
-        map.write(es6_src_map)
+        map.write(es6_src_map.stringify())
 
     with open(dst_filename, 'w') as dst:
         dst.write(es5_text)
@@ -261,7 +266,8 @@ def evaljs(js_text, load_es6_polyfill=False, **kwargs):
         list(js_text)
     if load_es6_polyfill:
         with open(BABEL_POLYFILL, 'r', encoding='utf-8') as babel_poly:
-            js_text = ['global = this; this.console = {log: print};\n'] + [babel_poly.read()] + js_text
+            js_text = (['global = this; this.console = {log: print};\n'] +
+                       [babel_poly.read()] + js_text)
     return dukpy.evaljs(js_text, **kwargs)
 
 
@@ -286,7 +292,8 @@ def evals(py_text, body_only=False, ret_code=False, **kwargs):
 
 def eval_object_es6(py_obj, append=None, body_only=False, ret_code=False,
                     enable_stage3=False, **kwargs):
-    es5_text, _ = transpile_object(py_obj, body_only, enable_stage3=enable_stage3)
+    es5_text, _ = transpile_object(py_obj, body_only,
+                                   enable_stage3=enable_stage3)
     if append:
         es5_text += '\n' + append
     res = evaljs(es5_text, load_es6_polyfill=True, **kwargs)
@@ -304,7 +311,9 @@ def evals_es6(py_text, body_only=False, ret_code=False, enable_stage3=False,
         res = (res, es5_text)
     return res
 
+
 BABEL_JS_CTX = None
+
 
 def babel_compile(source, reuse_js_ctx=True, **kwargs):
     """Compile the given `source` from ES6 to ES5 usin Babeljs."""

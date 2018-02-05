@@ -374,7 +374,7 @@ class Block(OutputSrc):
         )
         for t in tokens:
             src_map.add_token(t)
-        return sourcemaps.encode(src_map), src_map
+        return src_map
 
 
 def obj_source(obj):

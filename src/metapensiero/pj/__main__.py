@@ -113,7 +113,7 @@ def transform_string(input, transpile=False, enable_es6=False,
                                       enable_stage3=enable_stage3,
                                       src_filename=source_name)
     if kw.get('inline_map', False):
-        res += api._inline_src_map(src_map)
+        res += src_map.stringify(inline_comment=True)
     return res
 
 

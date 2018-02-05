@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) Waldemar Kornewald
+# Copyright (c) Waldemar Kornewald, Alberto Berti
 # All rights reserved.
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -30,11 +30,11 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from base64 import b64encode
 from bisect import bisect_right
 from collections import namedtuple
 import json
 import re
-import sys
 
 
 # A single base 64 digit can contain 6 bits of data. For the base 64
@@ -112,126 +112,6 @@ def encode_vlq(num):
             digit |= VLQ_CONTINUATION_BIT
         result += BASE64_CHARS[digit]
     return result
-
-
-def decode(source, ignore_errors=True):
-    if isinstance(source, dict):
-        smap = source
-    else:
-        # According to the spec a souce map may be prepended with
-        # ")]}'" to cause a JavaScript error. In that case ignore the
-        # entire first line.
-        if source[:4] == ")]}'":
-            source = source.split('\n', 1)[1]
-        smap = json.loads(source)
-
-    sources = smap['sources']
-    names = list(map(str, smap['names']))
-    lines = smap['mappings'].split(';')
-
-    source_root = smap.get('source_root')
-    if source_root is not None:
-        sources = ['/'.join((source_root, s)) for s in sources]
-
-    tokens = []
-
-    dst_col = src_id = src_line = src_col = name_id = 0
-    for dst_line, line in enumerate(lines):
-        dst_col = 0
-        for segment in line.split(','):
-            if not segment:
-                continue
-            fields = decode_vlqs(segment)
-            dst_col += fields[0]
-            if dst_col < 0:
-                raise SourceMapDecodeError(
-                    'Segment {} has negative dst_col'.format(segment, fields))
-
-            src = None
-            name = None
-            if len(fields) not in (1, 4, 5):
-                raise SourceMapDecodeError(
-                    'Invalid segment {}, parsed as {}'.format(segment, fields))
-            if len(fields) > 1:
-                src_id += fields[1]
-                if not 0 <= src_id < len(sources):
-                    raise SourceMapDecodeError(
-                        'Segment {} references source {} which '
-                        'does not exist'.format(
-                            segment, src_id))
-                src = sources[src_id]
-                src_line += fields[2]
-                if src_line < 0:
-                    raise SourceMapDecodeError(
-                        'Segment {} has negative src_line'.format(segment))
-                src_col += fields[3]
-                if src_col < 0:
-                    raise SourceMapDecodeError(
-                        'Segment {} has negative src_col'.format(segment))
-
-            if len(fields) > 4:
-                name_id += fields[4]
-                if not 0 <= name_id < len(names):
-                    raise SourceMapDecodeError(
-                        'Segment {} references name {} which '
-                        'does not exist'.format(
-                            segment, name_id))
-                name = names[name_id]
-
-            tokens.append(Token(dst_line, dst_col, src, src_line, src_col,
-                                name))
-
-    sources_content = {src: content
-                       for src, content in zip(
-                               sources, smap.get('sourcesContent',
-                                                 (None,) * len(sources)))
-                       if content is not None}
-    return SourceMap(tokens, sources_content, raw=smap,
-                     ignore_errors=ignore_errors)
-
-
-def encode(sourcemap):
-    sources = {}
-    prev_src_id = next_src_id = 0
-    prev_src_line = prev_src_col = 0
-    names = {}
-    prev_name_id = next_name_id = 0
-    mappings = []
-    prev_dst_line = -1
-    for token in sourcemap.tokens:
-        while prev_dst_line < token.dst_line:
-            prev_dst_line += 1
-            prev_dst_col = 0
-            segments = []
-            mappings.append(segments)
-        vlq = [token.dst_col - prev_dst_col]
-        prev_dst_col = token.dst_col
-        if token.src:
-            source_id = sources.get(token.src)
-            if source_id is None:
-                sources[token.src] = source_id = next_src_id
-                next_src_id += 1
-            vlq.append(source_id - prev_src_id)
-            vlq.append(token.src_line - prev_src_line)
-            vlq.append(token.src_col - prev_src_col)
-            if token.name:
-                name_id = names.get(token.name)
-                if name_id is None:
-                    names[token.name] = name_id = next_name_id
-                    next_name_id += 1
-                vlq.append(name_id - prev_name_id)
-                prev_name_id = name_id
-            prev_src_id = source_id
-            prev_src_line = token.src_line
-            prev_src_col = token.src_col
-        segments.append(''.join(map(encode_vlq, vlq)))
-    data = {'version': 3,
-            'mappings': ';'.join(map(','.join, mappings)),
-            'sources': sorted(sources, key=lambda x: sources[x]),
-            'names': sorted(names, key=lambda x: names[x])}
-    data['sourcesContent'] = list(map(sourcemap.sources_content.get,
-                                      data['sources']))
-    return json.dumps(data)
 
 
 source_map_url_re = re.compile(
@@ -319,14 +199,14 @@ def identity_map(content, src):
     return SourceMap(identity_tokenize(content, src), {src: content})
 
 
-class SourceMap(object):
+class SourceMap:
     def __init__(self, tokens=(), sources_content=None, raw=None,
                  ignore_errors=False):
         self.tokens = []
         if sources_content is None:
             self.sources_content = {}
         else:
-            self.source_content = sources_content.copy()
+            self.sources_content = sources_content.copy()
         self.raw = {} if raw is None else raw.copy()
         self.ignore_errors = ignore_errors
         map(self.add_token, tokens)
@@ -343,3 +223,146 @@ class SourceMap(object):
                     'Existing: {}\nAdded: {}'.format(self.tokens[index - 1],
                                                      token))
             self.tokens.insert(index, token)
+
+    @classmethod
+    def decode(cls, source, ignore_errors=True):
+        """Decode string or dict back into a sourcemap."""
+        if isinstance(source, dict):
+            smap = source
+        else:
+            # According to the spec a souce map may be prepended with
+            # ")]}'" to cause a JavaScript error. In that case ignore the
+            # entire first line.
+            if source[:4] == ")]}'":
+                source = source.split('\n', 1)[1]
+            smap = json.loads(source)
+
+        sources = smap['sources']
+        names = list(map(str, smap['names']))
+        lines = smap['mappings'].split(';')
+
+        source_root = smap.get('source_root')
+        if source_root is not None:
+            sources = ['/'.join((source_root, s)) for s in sources]
+
+        tokens = []
+
+        dst_col = src_id = src_line = src_col = name_id = 0
+        for dst_line, line in enumerate(lines):
+            dst_col = 0
+            for segment in line.split(','):
+                if not segment:
+                    continue
+                fields = decode_vlqs(segment)
+                dst_col += fields[0]
+                if dst_col < 0:
+                    raise SourceMapDecodeError(
+                        'Segment {} has negative dst_col'.format(segment, fields))
+
+                src = None
+                name = None
+                if len(fields) not in (1, 4, 5):
+                    raise SourceMapDecodeError(
+                        'Invalid segment {}, parsed as {}'.format(segment, fields))
+                if len(fields) > 1:
+                    src_id += fields[1]
+                    if not 0 <= src_id < len(sources):
+                        raise SourceMapDecodeError(
+                            'Segment {} references source {} which '
+                            'does not exist'.format(
+                                segment, src_id))
+                    src = sources[src_id]
+                    src_line += fields[2]
+                    if src_line < 0:
+                        raise SourceMapDecodeError(
+                            'Segment {} has negative src_line'.format(segment))
+                    src_col += fields[3]
+                    if src_col < 0:
+                        raise SourceMapDecodeError(
+                            'Segment {} has negative src_col'.format(segment))
+
+                if len(fields) > 4:
+                    name_id += fields[4]
+                    if not 0 <= name_id < len(names):
+                        raise SourceMapDecodeError(
+                            'Segment {} references name {} which '
+                            'does not exist'.format(
+                                segment, name_id))
+                    name = names[name_id]
+
+                tokens.append(Token(dst_line, dst_col, src, src_line, src_col,
+                                    name))
+
+        sources_content = {src: content
+                           for src, content in zip(
+                                   sources, smap.get('sourcesContent',
+                                                     (None,) * len(sources)))
+                           if content is not None}
+        return cls(tokens, sources_content, raw=smap,
+                         ignore_errors=ignore_errors)
+
+    def encode(self):
+        """Encode the given sourcemap object into a mapping that contains all
+        the fields wanted by the sourcemaps *spec*.
+
+        :return: a dictionary containing the encoded sourcemap fields
+        :rtype: dict
+        """
+        sources = {}
+        prev_src_id = next_src_id = 0
+        prev_src_line = prev_src_col = 0
+        names = {}
+        prev_name_id = next_name_id = 0
+        mappings = []
+        prev_dst_line = -1
+        for token in self.tokens:
+            while prev_dst_line < token.dst_line:
+                prev_dst_line += 1
+                prev_dst_col = 0
+                segments = []
+                mappings.append(segments)
+            vlq = [token.dst_col - prev_dst_col]
+            prev_dst_col = token.dst_col
+            if token.src:
+                source_id = sources.get(token.src)
+                if source_id is None:
+                    sources[token.src] = source_id = next_src_id
+                    next_src_id += 1
+                vlq.append(source_id - prev_src_id)
+                vlq.append(token.src_line - prev_src_line)
+                vlq.append(token.src_col - prev_src_col)
+                if token.name:
+                    name_id = names.get(token.name)
+                    if name_id is None:
+                        names[token.name] = name_id = next_name_id
+                        next_name_id += 1
+                    vlq.append(name_id - prev_name_id)
+                    prev_name_id = name_id
+                prev_src_id = source_id
+                prev_src_line = token.src_line
+                prev_src_col = token.src_col
+            segments.append(''.join(map(encode_vlq, vlq)))
+        data = {'version': 3,
+                'mappings': ';'.join(map(','.join, mappings)),
+                'sources': sorted(sources, key=lambda x: sources[x]),
+                'names': sorted(names, key=lambda x: names[x])}
+        data['sourcesContent'] = list(map(self.sources_content.get,
+                                          data['sources']))
+        return data
+
+    def stringify(self, inline_comment=False):
+        """Encode a SourceMap and return a string of its JSON dump, optionally
+        encoding it with base64.
+
+        :param sourcemap: the sourcemap
+        :type sourcemap: class:`~.SourceMap`
+        :param bool inline_comment: set it to ``True`` if the sourcemap is
+          intended to be added as a comment in the source body
+        :return: a string containing the encoded sourcemap fields
+        :rtype: str
+        """
+        data = json.dumps(self.encode())
+        if inline_comment:
+            data = ('\n//# sourceMappingURL=data:text/json;base64,%s\n' %
+                    b64encode(data.encode('utf-8')).decode('ascii'))
+        return data
