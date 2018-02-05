@@ -44,7 +44,8 @@ class TargetNode:
     """The Transformer instance which is managing this one"""
     transformer = None
 
-    """The final arguments passed to the emit method defined on the subclasses"""
+    """The final arguments passed to the emit method defined on the
+    subclasses"""
     transformed_args = None
 
     def __init__(self, *args, **kwargs):
@@ -116,8 +117,8 @@ class Transformer:
     enable_stage3 = False
     disable_srcmap = False
 
-    """Used in subtransformation to remap a node on a Transformer instance to the
-    AST produced by a substransform."""
+    """Used in subtransformation to remap a node on a Transformer instance
+    to the AST produced by a substransform."""
     remap_to = None
 
     def __init__(self, py_ast_module, statements_class, snippets=True,
@@ -199,7 +200,8 @@ class Transformer:
         return self.node_parent_map.get(node)
 
     def parents(self, node, stop_at=None):
-        """Return all the parents possibly up an instance of `stop_at` class."""
+        """Return all the parents possibly up an instance of `stop_at`
+        class."""
         parent = self.node_parent_map.get(node)
         while parent:
             yield parent
@@ -208,8 +210,9 @@ class Transformer:
             parent = self.node_parent_map.get(parent)
 
     def find_parent(self, node, *classes):
-        """Retrieve the first parent of the given AST `node` that is an instance
-        of the given `classes`."""
+        """Retrieve the first parent of the given AST `node` that is an
+        instance of the given `classes`.
+        """
         parent = self.parent_of(node)
         if parent is not None:
             if isinstance(parent, classes):
@@ -218,8 +221,9 @@ class Transformer:
                 return self.find_parent(parent, *classes)
 
     def find_child(self, node, cls):
-        """Find any child of `node` that is an instance of `cls`. The walk will
-        not go down into other code blocks."""
+        """Find any child of `node` that is an instance of `cls`. The walk
+        will not go down into other code blocks.
+        """
         if not isinstance(node, (tuple, list, set)):
             node = (node)
         for n in node:
@@ -228,7 +232,8 @@ class Transformer:
                     yield c
 
     def has_child(self, node, cls):
-        """Return true if `node` has any child that is an instance of `cls`."""
+        """Return true if `node` has any child that is an instance of
+        `cls`."""
         wanted = tuple(self.find_child(node, cls))
         return len(wanted) > 0
 
@@ -267,8 +272,8 @@ class Transformer:
                         res = out_node
                         break
                 else:
-                    raise TransformationError(in_node,
-                                              "No transformation for the node")
+                    raise TransformationError(
+                        in_node, "No transformation for the node")
 
         elif isinstance(in_node, TargetNode):
             self._finalize_target_node(in_node)
@@ -332,8 +337,9 @@ class Transformer:
 
     def subtransform(self, obj, remap_to=None):
         """Transform a piece of code, either a python object or a string. This
-        is done in a new ``Transformer`` with a configuration similar to the
-        calling instance."""
+        is done in a new ``Transformer`` with a configuration similar
+        to the calling instance.
+        """
         if isinstance(obj, str):
             src = textwrap.dedent(obj)
         else:
