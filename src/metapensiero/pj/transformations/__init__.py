@@ -20,6 +20,8 @@ def _normalize_name(n):
         n = n.replace('d_', '$')
     elif n.startswith('dd_'):
         n = n.replace('dd_', '$$')
+    # allow to reference names that are Python's keywords by appending
+    # a dash to them
     elif not n.startswith('_') and n.endswith('_'):
         n = n[:-1]
     return n

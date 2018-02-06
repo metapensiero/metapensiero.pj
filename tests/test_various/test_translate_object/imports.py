@@ -16,6 +16,7 @@ def func():
     from __foo.bar import zoo
     import __foo.bar as fb
     from foo import __default__ as bar
+    from at_tilde_.foo.bar import zoo
 
     # this should not trigger variable definition
     test_name = 2

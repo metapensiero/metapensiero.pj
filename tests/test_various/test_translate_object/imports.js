@@ -10,6 +10,7 @@ import * as fb from 'foo-bar';
 import {zoo} from '@foo/bar';
 import * as fb from '@foo/bar';
 import bar from 'foo';
+import {zoo} from '@~/foo/bar';
 var test_foo;
 test_name = 2;
 test_foo = true;

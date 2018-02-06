@@ -7,6 +7,7 @@
 #
 
 import ast
+from unicodedata import lookup
 import re
 
 from ..js_ast import (
@@ -348,16 +349,70 @@ IsNot = NotEq
 
 #### Import
 
-
 AT_PREFIX_RE = re.compile(r'^__([a-zA-Z0-9])')
 INSIDE_DUNDER_RE = re.compile(r'([a-zA-Z0-9])__([a-zA-Z0-9])')
 
 
-def _replace_dunder(name):
-    """Replace dunder (``__``) in `name` with an ``@`` symbol if it's at the
-    start and with ``-`` if it's on the middle."""
-    res = AT_PREFIX_RE.sub(r'@\1', name)
-    return INSIDE_DUNDER_RE.sub(r'\1-\2', res)
+GEN_PREFIX_RE = re.compile(r'((?:[a-zA-Z][a-z]+)+)_')
+SINGLE_WORD_RE = re.compile(r'([A-Z][a-z]+)')
+
+
+_shortcuts = {
+    'at': '@'
+}
+
+
+def _notable_replacer_gen():
+    """This is used together with 'GEN_PREFIX_RE' to replace unicode
+    symbol names in module prefixes. Some names are shortcut using the
+    ``_shortcuts`` map. It's designed to replace matches olny if they
+    are located at the beginning of the string and if they are
+    subsequent to one another. It returns a function to be used with a
+    regular expression object ``sub()`` method.
+    """
+    last_match_end = None
+
+    def replace_notable_name(match):
+        nonlocal last_match_end
+        # try to replace only if the match is positioned at the start
+        # or is following another match
+        if ((last_match_end is None and match.start() == 0) or
+            (isinstance(last_match_end, int) and
+             last_match_end == match.start())):
+            last_match_end = match.end()
+            prefix = match.group(1)
+            low_prefix = prefix.lower()
+            if low_prefix in _shortcuts:
+                return _shortcuts[low_prefix]
+            try:
+                prefix = SINGLE_WORD_RE.sub(r' \1', prefix).strip()
+                return lookup(prefix)
+            except KeyError:
+                pass
+        return match.group()
+    return replace_notable_name
+
+
+def _replace_identifiers_with_symbols(dotted_str):
+    """Replaces two kinds of identifiers with characters. This is used to
+    express characters that are used in JS module paths in Python's
+    ``import`` statements.
+
+    1. The first replaces ``__`` (a "dunder") with ``@`` if it's at
+       the beginning and with ``-`` if it's in the middle of two
+       words;
+    2. the second replaces notable names ending with an underscore
+       like ``tilde_`` with the corresponding character (only at the
+       beginning).
+
+    Returns a string with the mangled dotted path
+    """
+    dotted_str = AT_PREFIX_RE.sub(r'@\1', dotted_str)
+    dotted_str = INSIDE_DUNDER_RE.sub(r'\1-\2', dotted_str)
+
+    dotted_str = GEN_PREFIX_RE.sub(_notable_replacer_gen(), dotted_str)
+
+    return dotted_str
 
 
 def Import(t, x):
@@ -369,10 +424,10 @@ def Import(t, x):
     result = []
     for n in x.names:
         old_name = n.name
-        n.name = _replace_dunder(n.name)
+        n.name = _replace_identifiers_with_symbols(n.name)
         t.unsupported(x, (old_name != n.name) and not n.asname,
-                      "A module name cannot contain dashes, use 'as' to give "
-                      "it a new name.")
+                      "Invalid module name: {!r}: use 'as' to give "
+                      "it a new name.".format(n.name))
         path_module = '/'.join(n.name.split('.'))
         result.append(
             JSStarImport(path_module, n.asname or n.name)
@@ -395,7 +450,7 @@ def ImportFrom(t, x):
         result = JSPass()
         if x.module:
             mod = tuple(_normalize_name(frag) for frag in
-                        _replace_dunder(x.module).split('.'))
+                        _replace_identifiers_with_symbols(x.module).split('.'))
             path_module = '/'.join(mod)
             if x.level == 1:
                 # from .foo import bar
