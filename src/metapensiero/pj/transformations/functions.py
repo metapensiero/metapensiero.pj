@@ -8,7 +8,7 @@
 
 import ast
 from functools import reduce
-from itertools import chain
+
 
 from ..js_ast import (
     JSAttribute,
