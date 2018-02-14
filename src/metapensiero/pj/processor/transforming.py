@@ -195,6 +195,8 @@ class Transformer:
                         in_node.__class__.__name__, []):
                     out_node = transformation(self, in_node)
                     if out_node is not None:
+                        if isinstance(out_node, ast.AST):
+                            out_node = self._transform_node(out_node)
                         self._finalize_target_node(out_node, py_node=in_node)
                         res = out_node
                         break
