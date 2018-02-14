@@ -10,6 +10,9 @@ import ast
 from unicodedata import lookup
 import re
 
+from macropy.core import Literal
+from macropy.core.quotes import macros, q, u, ast_literal  # noqa: F401
+
 from ..js_ast import (
     JSAssignmentExpression,
     JSAttribute,
@@ -67,8 +70,6 @@ from .obvious import (
 from . import _normalize_name
 
 
-#### Expr
-
 # docstrings &rarr; comment blocks
 def Expr_docstring(t, x):
     if isinstance(x.value, ast.Str):
@@ -111,34 +112,29 @@ def Call_callable(t, x):
     """Translate ``callable(foo)`` to ``foo instanceof Function``."""
     if (isinstance(x.func, ast.Name) and x.func.id == 'callable'):
         assert len(x.args) == 1
-        return JSBinOp(
-            JSBinOp(x.args[0], JSOpInstanceof(), JSName('Function')),
-            JSOpOr(),
-            JSBinOp(
-                JSUnaryOp(JSOpTypeof(), x.args[0]),
-                JSOpStrongEq(),
-                JSStr('function')
-            )
-        )
+        return q[isinstance(ast_literal[x.args[0]], Function) or  # noqa: F821
+                 typeof(ast_literal[x.args[0]]) == 'function']  # noqa: F821
 
 
 # <code>print(...)</code> &rarr; <code>console.log(...)</code>
 def Call_print(t, x):
     if (isinstance(x.func, ast.Name) and x.func.id == 'print'):
-        return JSCall(JSAttribute(JSName('console'), 'log'), x.args)
+        out = q[console.log()]  # noqa: F821
+        out.args = x.args
+        return out
 
 
 # <code>len(x)</code> &rarr; <code>x.length</code>
 def Call_len(t, x):
     if (isinstance(x.func, ast.Name) and x.func.id == 'len' and
         len(x.args) == 1):
-        return JSAttribute(x.args[0], 'length')
+        return q[ast_literal[x.args[0]].length]
 
 
 def Call_str(t, x):
     if (isinstance(x.func, ast.Name) and x.func.id == 'str' and
         len(x.args) == 1):
-        return JSCall(JSAttribute(JSName(x.args[0]), 'toString'), [])
+        return q[ast_literal[x.args[0]].toString()]
 
 
 def Call_new(t, x):
@@ -178,7 +174,7 @@ def Call_import(t, x):
 def Call_type(t, x):
     if (isinstance(x.func, ast.Name) and x.func.id == 'type'):
         assert len(x.args) == 1
-        return JSCall(JSAttribute(JSName('Object'), 'getPrototypeOf'), x.args)
+        return q[Object.getPrototypeOf(ast_literal[x.args[0]])]  # noqa: F821
 
 
 def Call_dict_update(t, x):
@@ -205,10 +201,9 @@ def Call_dict_update(t, x):
        isinstance(x.func.value.func, ast.Name) and \
        x.func.value.func.id == 'dict' and len(x.func.value.args) == 1:
         t.es6_guard(x, "dict.update() requires ES6")
-        return JSCall(
-            JSAttribute(JSName('Object'), 'assign'),
-            [x.func.value.args[0]] + x.args
-            )
+        tree = q[Object.assign()]  # noqa: F821
+        tree.args = [x.func.value.args[0]] + x.args
+        return tree
 
 
 def Call_dict_copy(t, x):
@@ -233,10 +228,9 @@ def Call_dict_copy(t, x):
        isinstance(x.func.value.func, ast.Name) and \
        x.func.value.func.id == 'dict' and len(x.func.value.args) == 1:
         t.es6_guard(x, "dict.copy() requires ES6")
-        return JSCall(
-            JSAttribute(JSName('Object'), 'assign'),
-            (JSDict([], []), x.func.value.args[0])
-            )
+        tree = q[Object.assign({})]  # noqa: F821
+        tree.args.append(x.func.value.args[0])
+        return tree
 
 
 def Call_template(t, x):
