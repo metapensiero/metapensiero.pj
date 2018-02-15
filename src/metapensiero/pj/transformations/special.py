@@ -135,20 +135,22 @@ def Call_str(t, x):
         return q[ast_literal[x.args[0]].toString()]
 
 
+def _get_name_string(x):
+    if isinstance(x, ast.Name):
+        return x.id
+    elif isinstance(x, ast.Attribute):
+        return str(x.attr)
+    elif isinstance(x, ast.Subscript):
+        if isinstance(x.slice, ast.Index):
+            return str(x.slice.value)
+
+
 def Call_new(t, x):
     """Translate ``Foo(...)`` to ``new Foo(...)`` if function name starts
     with a capital letter.
     """
-    def getNameString(x):
-        if isinstance(x, ast.Name):
-            return x.id
-        elif isinstance(x, ast.Attribute):
-            return str(x.attr)
-        elif isinstance(x, ast.Subscript):
-            if isinstance(x.slice, ast.Index):
-                return str(x.slice.value)
 
-    NAME_STRING = getNameString(x.func)
+    NAME_STRING = _get_name_string(x.func)
 
     if (NAME_STRING and re.search(r'^[A-Z]', NAME_STRING)):
         # TODO: generalize args mangling and apply here
