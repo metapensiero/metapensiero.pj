@@ -10,37 +10,25 @@ import ast
 from unicodedata import lookup
 import re
 
-from macropy.core import Literal
 from macropy.core.quotes import macros, q, u, ast_literal  # noqa: F401
 
 from ..js_ast import (
-    JSAssignmentExpression,
     JSAttribute,
     JSBinOp,
-    JSCall,
     JSCommentBlock,
     JSDefaultImport,
     JSDependImport,
-    JSDict,
     JSExportDefault,
-    JSExpressionStatement,
     JSLiteral,
     JSName,
     JSNamedImport,
-    JSNull,
-    JSNum,
     JSOpIn,
-    JSOpInstanceof,
-    JSOpNot,
-    JSOpOr,
     JSOpStrongEq,
     JSOpStrongNotEq,
     JSOpTypeof,
     JSPass,
     JSStarImport,
     JSStatements,
-    JSStr,
-    JSSubscript,
     JSTaggedTemplate,
     JSTemplateLiteral,
     JSThis,
