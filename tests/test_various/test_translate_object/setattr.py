@@ -1,0 +1,1 @@
+setattr(foo, bar, zoo)

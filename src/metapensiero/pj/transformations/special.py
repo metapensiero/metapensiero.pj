@@ -70,8 +70,8 @@ from .obvious import (
 from . import _normalize_name
 
 
-# docstrings &rarr; comment blocks
 def Expr_docstring(t, x):
+    """Convert docstrings to comment blocks."""
     if isinstance(x.value, ast.Str):
         return JSCommentBlock(x.value.s)
 
@@ -79,21 +79,19 @@ def Expr_docstring(t, x):
 Expr = [Expr_docstring, Expr_default]
 
 
-# <code>2**3</code> &rarr; <code>Math.pow(2, 3)</code>
 def BinOp_pow(t, x):
+    """Convert ``2**3`` into ``Math.pow(2, 3)``."""
     if isinstance(x.op, ast.Pow):
-        return JSCall(
-            JSAttribute(
-                JSName('Math'),
-                'pow'),
-            [x.left, x.right])
+        res = q[Math.pow()]  # noqa: F821
+        res.args = [x.left, x.right]
+        return res
 
 
 BinOp = [BinOp_pow, BinOp_default]
 
 
-# <code>self</code> &rarr; <code>this</code>
 def Name_self(t, x):
+    """Convert ``self`` into ``this``."""
     if x.id == 'self':
         return JSThis()
 
@@ -101,8 +99,8 @@ def Name_self(t, x):
 Name = [Name_self, Name_default]
 
 
-# <code>typeof(x)</code> &rarr; <code>(typeof x)</code>
 def Call_typeof(t, x):
+    """Convert ``typeof(foo)`` into ``typeof foo``."""
     if (isinstance(x.func, ast.Name) and x.func.id == 'typeof'):
         assert len(x.args) == 1
         return JSUnaryOp(JSOpTypeof(), x.args[0])
@@ -116,24 +114,24 @@ def Call_callable(t, x):
                  typeof(ast_literal[x.args[0]]) == 'function']  # noqa: F821
 
 
-# <code>print(...)</code> &rarr; <code>console.log(...)</code>
 def Call_print(t, x):
+    """Convert ``print(foo)`` into ``console.log(foo)``."""
     if (isinstance(x.func, ast.Name) and x.func.id == 'print'):
         out = q[console.log()]  # noqa: F821
         out.args = x.args
         return out
 
 
-# <code>len(x)</code> &rarr; <code>x.length</code>
 def Call_len(t, x):
+    """Convert ``len(foo)`` into ``foo.length``."""
     if (isinstance(x.func, ast.Name) and x.func.id == 'len' and
-        len(x.args) == 1):
+        len(x.args) == 1):  # noqa: E129
         return q[ast_literal[x.args[0]].length]
 
 
 def Call_str(t, x):
     if (isinstance(x.func, ast.Name) and x.func.id == 'str' and
-        len(x.args) == 1):
+        len(x.args) == 1):  # noqa: E129
         return q[ast_literal[x.args[0]].toString()]
 
 
@@ -259,6 +257,9 @@ def Call_hasattr(t, x):
     """Translate ``hasattr(foo, bar)`` to ``bar in foo``."""
     if (isinstance(x.func, ast.Name) and x.func.id == 'hasattr') and \
        len(x.args) == 2:
+        # TODO: need to mark this expression as "final" or it will be
+        # modified to use snippets' "in" runtime evaluation
+        # return q[ast_literal[x.args[1]] in ast_literal[x.args[0]]]
         return JSBinOp(x.args[1], JSOpIn(), x.args[0])
 
 
@@ -267,13 +268,10 @@ def Call_getattr(t, x):
     if (isinstance(x.func, ast.Name) and x.func.id == 'getattr') and \
        2 <= len(x.args) < 4:
         if len(x.args) == 2:
-            res = JSSubscript(x.args[0], x.args[1])
+            res = q[ast_literal[x.args[0]][ast_literal[x.args[1]]]]
         else:
-            res = JSBinOp(
-                JSSubscript(x.args[0], x.args[1]),
-                JSOpOr(),
-                x.args[2]
-            )
+            res = q[ast_literal[x.args[0]][ast_literal[x.args[1]]] or
+                    ast_literal[x.args[2]]]
         return res
 
 
@@ -281,12 +279,9 @@ def Call_setattr(t, x):
     """Translate ``setattr(foo, bar, value)`` to ``foo[bar] = value``."""
     if (isinstance(x.func, ast.Name) and x.func.id == 'setattr') and \
        len(x.args) == 3:
-        return JSExpressionStatement(
-            JSAssignmentExpression(
-                JSSubscript(x.args[0], x.args[1]),
-                x.args[2]
-            )
-        )
+        with q as res:
+            ast_literal[x.args[0]][ast_literal[x.args[1]]] = ast_literal[x.args[2]]
+        return res[0]  # res is a list of the body stmts
 
 
 def Call_JS(t, x):
@@ -300,17 +295,21 @@ def Call_int(t, x):
     # maybe this needs a special keywords mangling for optional "base" param
     if isinstance(x.func, ast.Name) and x.func.id == 'int':
         if t.enable_es6:
-            return JSCall(JSAttribute('Number', 'parseInt'), x.args)
+            res = q[Number.parseInt()]  # noqa: F821
         else:
-            return JSCall(JSName('parseInt'), x.args)
+            res = q[parseInt()]  # noqa: F821
+        res.args = x.args
+        return res
 
 
 def Call_float(t, x):
     if isinstance(x.func, ast.Name) and x.func.id == 'float':
         if t.enable_es6:
-            return JSCall(JSAttribute('Number', 'parseFloat'), x.args)
+            res = q[Number.parseFloat()]  # noqa: F821
         else:
-            return JSCall(JSName('parseFloat'), x.args)
+            res = q[parseFloat()]  # noqa: F821
+        res.args = x.args
+        return res
 
 
 Call = [Call_typeof, Call_callable, Call_isinstance, Call_print, Call_len,
@@ -481,19 +480,34 @@ def ImportFrom(t, x):
 
 
 def Compare_in(t, x):
+    """Convert expressions like ``foo in bar`` and ``foo not in bar``
+    to runtime calls executing the ``_in()`` and ``in_es6()`` snippet
+    functions that will test the type of ``bar`` and execute the most
+    appropriate expression for that kind of object. Final ast is like::
+
+      Call(args=[Name(ctx=Load(),
+                      id='foo'),
+                Name(ctx=Load(),
+                     id='bar')],
+           func=Attribute(attr='_in',
+                          ctx=Load(),
+                          value=Name(ctx=Load(),
+                                     id='_pj')),
+           keywords=[])
+    """
     if not isinstance(x.ops[0], (ast.NotIn, ast.In)):
         return
     if t.enable_snippets:
         from ..snippets import _in, in_es6
+        result = q[_pj.in_es6()]  # noqa: F821
+        result.args = [x.left, x.comparators[0]]
         if t.enable_es6:
             t.add_snippet(in_es6)
-            sname = 'in_es6'
         else:
             t.add_snippet(_in)
-            sname = '_in'
-        result = JSCall(JSAttribute('_pj', sname), [x.left, x.comparators[0]])
+            result.func.attr = '_in'
         if isinstance(x.ops[0], ast.NotIn):
-            result = JSUnaryOp(JSOpNot(), result)
+            result = q[not ast_literal[result]]
         return result
 
 
@@ -501,7 +515,8 @@ Compare = [Compare_in, Compare_default]
 
 
 def Subscript_slice(t, x):
-
+    """Convert slices like ``foo[1:5]`` into ``foo.slice(1, 5)``. Slice
+    steps aren't supported."""
     if isinstance(x.slice, ast.Slice):
         slice = x.slice
         t.unsupported(x, slice.step and slice.step != 1,
@@ -510,11 +525,13 @@ def Subscript_slice(t, x):
         if slice.lower:
             args.append(slice.lower)
         else:
-            args.append(JSNum(0))
+            args.append(0)
         if slice.upper:
             args.append(slice.upper)
 
-        return JSCall(JSAttribute(x.value, 'slice'), args)
+        res = q[ast_literal[x.value].slice()]
+        res.args = args
+        return res
 
 
 Subscript = [Subscript_slice, Subscript_super, Subscript_default]
@@ -523,18 +540,18 @@ Subscript = [Subscript_slice, Subscript_super, Subscript_default]
 def Attribute_list_append(t, x):
     """Convert ``list(foo).append(bar)`` to ``foo.push(bar)``.
 
-    AST dump::
+    An AST dump of the initial expression::
 
-      Expr(value=Call(args=[Name(ctx=Load(),
-                                 id='bar')],
-                      func=Attribute(attr='append',
-                                     ctx=Load(),
-                                     value=Call(args=[Name(ctx=Load(),
-                                                           id='foo')],
-                                                func=Name(ctx=Load(),
-                                                          id='list'),
-                                                keywords=[])),
-                      keywords=[]))
+      Call(args=[Name(ctx=Load(),
+                      id='bar')],
+           func=Attribute(attr='append',
+                          ctx=Load(),
+                          value=Call(args=[Name(ctx=Load(),
+                                                id='foo')],
+                                     func=Name(ctx=Load(),
+                                               id='list'),
+                                     keywords=[])),
+           keywords=[])
     """
     if x.attr == 'append' and isinstance(x.value, ast.Call) and \
        isinstance(x.value.func, ast.Name) and x.value.func.id == 'list' and \
@@ -546,12 +563,27 @@ Attribute = [Attribute_super, Attribute_list_append, Attribute_default]
 
 
 def Assert(t, x):
-    """Convert ``assert`` statement to just a snippet function call."""
+    """Convert ``assert`` statement to just a snippet function call. The
+    AST for an expression like ``assert foo is bar`` becomes::
+
+      Call(args=[Compare(comparators=[Name(ctx=Load(),
+                                           id='bar')],
+                         left=Name(ctx=Load(),
+                                   id='foo'),
+                         ops=[Is()]),
+                 NameConstant(value=None)],
+           func=Attribute(attr='_assert',
+                          ctx=Load(),
+                          value=Name(ctx=Load(),
+                                     id='_pj')),
+           keywords=[])
+    """
     if t.enable_snippets:
         from ..snippets import _assert
         t.add_snippet(_assert)
-        return JSCall(JSAttribute('_pj', '_assert'),
-                      [x.test, x.msg or JSNull()])
+        return q[_pj._assert(  # noqa: F821
+            ast_literal[x.test],
+            u[x.msg.s if isinstance(x.msg, ast.Str) else None])]
 
 
 def Assign_default_(t, x):
