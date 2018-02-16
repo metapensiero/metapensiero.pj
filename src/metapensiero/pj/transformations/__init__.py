@@ -31,6 +31,7 @@ def _normalize_name(n):
         n = n[:-1]
     return n
 
+
 def _normalize_dict_keys(transformer, keys):
     res = []
     for key in keys:
@@ -49,7 +50,8 @@ def _normalize_dict_keys(transformer, keys):
                 else:
                     raise ValueError('Value of type %r cannot '
                                      'be use as key' % type(key))
-                transformer.unsupported(py_node, True, 'Value of type %r cannot '
+                transformer.unsupported(py_node, True,
+                                        'Value of type %r cannot '
                                         'be use as key' % type(key))
         res.append(key)
     return res
