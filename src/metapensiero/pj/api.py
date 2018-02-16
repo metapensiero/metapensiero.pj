@@ -18,7 +18,7 @@ import dukpy
 from .processor.transforming import Transformer
 from .processor.util import Block
 from .js_ast import JSStatements
-from . import transformations
+from . import _get_transforms_pkg
 
 log = logging.getLogger(__name__)
 
@@ -141,7 +141,7 @@ def translates(src_text, dedent=True, src_filename=None, src_offset=None,
             scol_offset += (len(src_text) - len(dedented)) // src_line_num
     else:
         dedented = src_text
-    t = Transformer(transformations, JSStatements, es6=enable_es6,
+    t = Transformer(_get_transforms_pkg(), JSStatements, es6=enable_es6,
                     stage3=enable_stage3)
     pyast = ast.parse(dedented)
     if body_only and hasattr(pyast, 'body') and len(pyast.body) == 1 \

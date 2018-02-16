@@ -9,7 +9,7 @@ import ast
 import inspect
 import textwrap
 
-from . import transformations
+from . import _get_transforms_pkg
 from .js_ast import JSStatements
 from .processor.transforming import Transformer
 
@@ -39,7 +39,7 @@ def ast_object_to_js(obj, es6=False):
     """
     src = inspect.getsource(obj)
     node = ast.parse(textwrap.dedent(src))
-    t = Transformer(transformations, JSStatements, es6=es6)
+    t = Transformer(_get_transforms_pkg(), JSStatements, es6=es6)
     return t.transform_code(node)
 
 

@@ -8,11 +8,16 @@
 import ast
 import logging
 
-import macropy.activate
 
-from ..js_ast import JSKeySubscript, JSStr, TargetNode
+from ..js_ast import JSKeySubscript, JSStr, TargetNode  # noqa: E402
 
 logger = logging.getLogger(__name__)
+
+if 'compiled' not in __package__:
+    import macropy.activate  # noqa
+    logger.info('Enabled macros expansion.')
+else:
+    logger.info('Using compiled transforms.')
 
 
 def _normalize_name(n):
