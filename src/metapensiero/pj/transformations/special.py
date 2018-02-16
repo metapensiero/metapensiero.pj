@@ -12,7 +12,7 @@ import re
 
 from macropy.core.quotes import macros, q, u, ast_literal  # noqa: F401
 
-from ..js_ast import (
+from ..js_ast import (  # noqa: E402
     JSAttribute,
     JSBinOp,
     JSCommentBlock,
@@ -35,7 +35,7 @@ from ..js_ast import (
     JSUnaryOp,
 )
 
-from .classes import (
+from .classes import (   # noqa: E402
     Attribute_super,
     Call_isinstance,
     Call_issubclass,
@@ -43,7 +43,7 @@ from .classes import (
     Subscript_super,
 )
 
-from .obvious import (
+from .obvious import (  # noqa: E402
     Assign_all,
     Assign_default,
     Attribute_default,
@@ -55,7 +55,7 @@ from .obvious import (
     Subscript_default,
 )
 
-from . import _normalize_name
+from . import _normalize_name  # noqa: E402
 
 
 def Expr_docstring(t, x):
