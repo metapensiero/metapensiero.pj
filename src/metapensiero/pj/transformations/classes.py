@@ -15,24 +15,17 @@ from macropy.experimental.pattern import (macros, _matching, switch,
 from ..processor.util import controlled_ast_walk
 from ..js_ast import (
     JSAttribute,
-    JSBinOp,
     JSCall,
     JSClass,
     JSDict,
     JSExpressionStatement,
     JSList,
-    JSMultipleArgsOp,
     JSName,
-    JSOpInstanceof,
-    JSOpOr,
-    JSOpStrongEq,
-    JSOpTypeof,
     JSSubscript,
     JSStatements,
     JSStr,
     JSSuper,
     JSThis,
-    JSUnaryOp,
 )
 
 from .common import _build_call_isinstance
