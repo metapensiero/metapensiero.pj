@@ -8,9 +8,9 @@
 
 import ast
 
-from macropy.core.quotes import macros, ast_literal, ast_list, name, q
-from macropy.experimental.pattern import (macros, _matching, switch,
-    ClassMatcher, LiteralMatcher, ListMatcher)
+from macropy.core.quotes import macros, ast_literal, ast_list, q
+from macropy.experimental.pattern import macros, switch  # noqa: F811,F401
+
 
 from ..processor.util import controlled_ast_walk
 from ..js_ast import (
