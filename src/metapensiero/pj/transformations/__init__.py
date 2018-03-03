@@ -6,10 +6,12 @@
 #
 
 import ast
+from functools import wraps
 import logging
 
 
 from ..js_ast import JSKeySubscript, JSStr, TargetNode  # noqa: E402
+
 
 logger = logging.getLogger(__name__)
 
@@ -55,3 +57,32 @@ def _normalize_dict_keys(transformer, keys):
                                         'be use as key' % type(key))
         res.append(key)
     return res
+
+
+class Matcher:
+
+    def __init__(self, match_func):
+        self.match_func = match_func
+        self.wrapper = None
+
+    def wrap(self, func):
+        from macropy.experimental.pattern import PatternMatchException
+        matcher = self
+
+        @wraps(func)
+        def wrapper(t, x, **kw):
+            try:
+                vars = {k: v for k, v in matcher.match_func(x)}
+                return func(t, x, **vars)
+            except PatternMatchException:
+                pass
+        self.wrapper = wrapper
+        return self
+
+    def __call__(self, *args, **kw):
+        if self.wrapper is None:
+            return self.wrap(*args, **kw)
+        return self.wrapper(*args, **kw)
+
+
+match = Matcher
