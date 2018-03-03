@@ -70,8 +70,12 @@ class JSKeySubscript(JSNode):
 
 
 class JSBinOp(JSNode):
-    def emit(self, left, op, right):
-        yield self.part('(', left, ' ', op, ' ', right, ')')
+    def emit(self, left, op, right, more=None):
+        parts = [left, ' ', op, ' ', right]
+        if more:
+            for el in more:
+                parts += [' ', op, ' ', el]
+        yield self.part('(', *parts, ')')
 
 
 class JSMultipleArgsOp(JSNode):

@@ -211,9 +211,7 @@ def BinOp_default(t, x):
 
 
 def BoolOp(t, x):
-    return reduce(
-                lambda left, right: JSBinOp(left, x.op, right),
-                x.values)
+    return JSBinOp(x.values[0], x.op, x.values[1], x.values[2:])
 
 
 def Compare_default(t, x):

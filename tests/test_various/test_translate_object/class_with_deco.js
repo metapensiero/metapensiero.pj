@@ -10,7 +10,7 @@ function _pj_snippets(container) {
                     return deco(val, cls, p);
                 }
                 deco = decos.reduce(reducer, cls.prototype[p]);
-                if ((((! ((deco instanceof Function) || (deco instanceof Map) || (deco instanceof WeakMap))) && (deco instanceof Object)) && (("value" in deco) || ("get" in deco)))) {
+                if (((! ((deco instanceof Function) || (deco instanceof Map) || (deco instanceof WeakMap))) && (deco instanceof Object) && (("value" in deco) || ("get" in deco)))) {
                     delete cls.prototype[p];
                     Object.defineProperty(cls.prototype, p, deco);
                 } else {
