@@ -8,7 +8,7 @@
 
 import ast
 
-from macropy.core.quotes import macros, ast_literal, ast_list, q
+from macropy.core.quotes import macros, ast_literal, ast_list, q, name
 from macropy.experimental.pattern import macros, switch  # noqa: F811,F401
 
 
@@ -29,8 +29,9 @@ from ..js_ast import (
 )
 
 from .common import _build_call_isinstance
+from .matching import macros, m, value
 
-from . import _normalize_name, _normalize_dict_keys
+from . import _normalize_name, _normalize_dict_keys, match
 
 EXC_TEMPLATE = """\
 class %(name)s(Error):
@@ -355,7 +356,8 @@ def Subscript_super(t, x):
             return result
 
 
-def Call_isinstance(t, x):
+@match(m[isinstance(value[target], value[classes])])
+def Call_isinstance(t, x, target, classes):
     """Translate ``isinstance(foo, Bar)`` to ``foo instanceof Bar`` and
     ``isinstance(Foo, (Bar, Zoo))`` to ``foo instanceof Bar || foo instanceof
     Zoo``.
@@ -374,26 +376,24 @@ def Call_isinstance(t, x):
            keywords=[])
 
     """
-    if (isinstance(x.func, ast.Name) and x.func.id == 'isinstance'):
-        assert len(x.args) == 2
-        return _build_call_isinstance(x.args[0], x.args[1])
+    assert len(x.args) == 2
+    return _build_call_isinstance(target, classes)
 
 
-def Call_issubclass(t, x):
+@match(m[issubclass(value[target], value[classes])])  # noqa: F821
+def Call_issubclass(t, x, target, classes):
     """Translate ``issubclass(Foo, Bar)`` to ``Foo.prototype instanceof Bar``.
     """
-    with switch(x):
-        if ast.Call(func=ast.Name(id='issubclass'), args=[target, classes]):
-            tproto = q[ast_literal[target].prototype]
-            if isinstance(classes, (ast.Tuple, ast.List, ast.Set)):
-                classes = classes.elts
-            else:
-                classes = [classes]
-            prev = None
-            for c in classes:
-                cur = q[ast_literal[c].prototype.isPrototypeOf(
-                    ast_literal[tproto])]
-                if prev is not None:
-                    cur = q[ast_literal[prev] or ast_literal[cur]]
-                prev = cur
-            return JSExpressionStatement(cur)
+    tproto = q[ast_literal[target].prototype]
+    if isinstance(classes, (ast.Tuple, ast.List, ast.Set)):
+        classes = classes.elts
+    else:
+        classes = [classes]
+    prev = None
+    for c in classes:
+        cur = q[ast_literal[c].prototype.isPrototypeOf(
+            ast_literal[tproto])]
+        if prev is not None:
+            cur = q[ast_literal[prev] or ast_literal[cur]]
+        prev = cur
+    return cur
