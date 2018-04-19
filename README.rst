@@ -1274,14 +1274,19 @@ External contributions
 * `BrainBacon`__ has made a `JavaScripthon loader`__ for WebPack;
 
 * `icarito`__ has contributed support for JavaScripthon to the
-  `python-webpack-loader`__ for WebPack;
+  `python-webpack-loader`__ for WebPack (Every valid JS package has at
+  least two implementations! ROTFL);
 
-(Every valid JS package has at least two implementations! ROTFL)
+* `chfw`__ has integrated `JavaScripthon into pyecharts`__ to allow
+  Python function translation
+
 
 __ https://github.com/BrainBacon
 __ https://github.com/Beg-in/javascripthon-loader
 __ https://github.com/icarito
 __ https://github.com/martim00/python-webpack-loader
+__ https://github.com/chfw
+__ https://github.com/pyecharts/pyecharts
 
 Todo
 ----
