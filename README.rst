@@ -1273,18 +1273,21 @@ External contributions
 
 * `BrainBacon`__ has made a `JavaScripthon loader`__ for WebPack;
 
-* `icarito`__ has contributed support for JavaScripthon to the
+* `icarito`_ has contributed support for JavaScripthon to the
   `python-webpack-loader`__ for WebPack (Every valid JS package has at
   least two implementations! ROTFL);
 
+* `icarito`_ has also `integrated JavaScripthon with Nuxt.js and
+  Vue.js`__;
+
 * `chfw`__ has integrated `JavaScripthon into pyecharts`__ to allow
-  Python function translation
+  Python function translation.
 
-
+.. _icarito: https://github.com/icarito
 __ https://github.com/BrainBacon
 __ https://github.com/Beg-in/javascripthon-loader
-__ https://github.com/icarito
 __ https://github.com/martim00/python-webpack-loader
+__ https://nuxt-python.surge.sh/
 __ https://github.com/chfw
 __ https://github.com/pyecharts/pyecharts
 
