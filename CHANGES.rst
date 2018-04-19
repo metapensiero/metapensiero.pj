@@ -3,14 +3,16 @@
 Changes
 -------
 
-0.9 (unrelased)
-~~~~~~~~~~~~~~~
+0.9 (2018-04-19)
+~~~~~~~~~~~~~~~~
 
 - add a ``--source-name`` options to be used together with
   ``--inline-map`` when using ``-s``;
 - move main repository to gitlab.com/metapensiero;
 - add support for default export and import;
 - add documentation for the ``JS()`` marker function;
+- refactor of the JS AST nodes;
+- fix path splitting and joining on Windows (thanks to Roman Yakubuk);
 
 0.8 (2017-11-16)
 ~~~~~~~~~~~~~~~~
