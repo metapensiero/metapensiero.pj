@@ -4,7 +4,7 @@ Changes
 -------
 
 0.10 (2018-05-12)
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 - use Macropy3 version 1.1.0b2 to avoid issues with Django
 
