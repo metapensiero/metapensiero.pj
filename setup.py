@@ -47,7 +47,7 @@ setup(
     install_requires=[
         'setuptools',
         'dukpy',
-        'macropy3==1.0.4.dev2'
+        'macropy3==1.1.0b2'
     ],
     extras_require={
         'dev': [
