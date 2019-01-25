@@ -252,7 +252,7 @@ def main(args=None, fout=None, ferr=None):
                     rep.print_err("An error occurred while compiling source "
                                   "file '%s'" % src_fname)
                 else:
-                    rep.print_err("An error occured during processing.")
+                    rep.print_err("An error occurred during processing.")
                 rep.print_err(error)
             result = 1
     sys.exit(result)

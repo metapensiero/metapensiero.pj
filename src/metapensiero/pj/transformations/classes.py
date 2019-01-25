@@ -12,7 +12,7 @@ from macropy.core.quotes import macros, ast_literal, ast_list, name, q
 from macropy.experimental.pattern import (macros, _matching, switch,
     ClassMatcher, LiteralMatcher, ListMatcher)
 
-from ..processor.util import controlled_ast_walk
+from ..processor.util import controlled_ast_walk, get_assign_targets
 from ..js_ast import (
     JSAttribute,
     JSBinOp,
@@ -72,7 +72,8 @@ def _class_guards(t, x):
     for node in body:
         t.unsupported(x, not (isinstance(node, (ast.FunctionDef,
                                                 ast.AsyncFunctionDef,
-                                                ast.Assign)) or \
+                                                ast.Assign,
+                                                ast.AnnAssign)) or \
                               _isdoc(node) or isinstance(node, ast.Pass)),
                       "Class' body members must be functions or assignments")
         t.unsupported(x, isinstance(node, ast.Assign) and len(node.targets) > 1,
@@ -123,7 +124,7 @@ def ClassDef_exception(t, x):
                                                  ast.AsyncFunctionDef))]
 
     # all the other kind of members which are assigned stuff
-    assigns = [e for e in body if isinstance(e, ast.Assign)]
+    assigns = [e for e in body if isinstance(e, (ast.Assign, ast.AnnAssign))]
 
     # is this a simple definition of a subclass of Exception?
     if len(fn_body) > 0 or len(assigns) > 0 or super_name not in \
@@ -152,7 +153,7 @@ def ClassDef_default(t, x):
                                                  ast.AsyncFunctionDef))]
 
     # all the other kind of members which are assigned stuff
-    assigns = [e for e in body if isinstance(e, ast.Assign)]
+    assigns = [e for e in body if isinstance(e, (ast.Assign, ast.AnnAssign))]
 
     # Each FunctionDef must have self as its first arg
     # silly check for methods
@@ -202,7 +203,7 @@ def ClassDef_default(t, x):
 
     # prepare assignments mapping as js ast
     def _from_assign_to_dict_item(e):
-        key = e.targets[0]
+        key = get_assign_targets(e)[0]
         value = e.value
         if isinstance(key, ast.Name):
             rendered_key = ast.Str(_normalize_name(key.id))

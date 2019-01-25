@@ -77,6 +77,9 @@ def Assign_default(t, x):
         y = JSAssignmentExpression(x.targets[-(2 + i)], y)
     return JSExpressionStatement(y)
 
+# Python 3 typehints are accepted and ignored
+def AnnAssign(t, x):
+    return JSExpressionStatement(JSAssignmentExpression(x.target, x.value))
 
 def Assign_all(t, x):
     if len(x.targets) == 1 and isinstance(x.targets[0], ast.Name) and \

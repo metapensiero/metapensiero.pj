@@ -109,6 +109,17 @@ def body_local_names(body):
     return names
 
 
+def get_assign_targets(py_node):
+    if isinstance(py_node, ast.Assign):
+        return py_node.targets
+    elif isinstance(py_node, ast.AnnAssign):
+        return [py_node.target]
+    else:
+        raise TypeError('Unsupported get_assign_targets type: {}'.format(
+            py_node.__class__.__name__
+        ))
+
+
 def node_names(py_node):
     """Extract 'names' from a Python node. Names are all those interesting
     for the enclosing scope.
@@ -125,8 +136,8 @@ def node_names(py_node):
 
     """
     names = set()
-    if isinstance(py_node, ast.Assign):
-        for el in py_node.targets:
+    if isinstance(py_node, (ast.Assign, ast.AnnAssign)):
+        for el in get_assign_targets(py_node):
             if isinstance(el, ast.Name) and el.id not in \
                IGNORED_NAMES:
                 names.add(el.id)
