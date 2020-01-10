@@ -278,6 +278,9 @@ def NameConstant(t, x):
     return cls()
 
 
+Constant = NameConstant
+
+
 def Yield(t, x):
     return JSYield(x.value)
 
