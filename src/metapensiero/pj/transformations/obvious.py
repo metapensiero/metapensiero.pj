@@ -281,9 +281,9 @@ def NameConstant(t, x):
 # Take care of Python 3.8's deprecations:
 # https://docs.python.org/3/library/ast.html#node-classes
 def Constant(t, x):
-    if isinstance(x, (float, complex)):
+    if isinstance(x.value, (int, float, complex)):
         return Num(t, x)
-    elif isinstance(x, str):
+    elif isinstance(x.value, str):
         return Str(t, x)
     else:
         return NameConstant(t, x)
