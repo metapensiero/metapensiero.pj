@@ -5,20 +5,34 @@ stages:
 
 before_script:
   - pip install -r requirements.txt
-  - pip install .
+  - pip install .[test]
 
 test:3.5:
   stage: test
   image: python:3.5
   script:
-    - python setup.py test
+    - python -m pytest
 
 test:3.6:
   stage: test
   image: python:3.6
   script:
-    - python setup.py test
+    - python -m pytest
   coverage: '/\d+\%\s*$/'
+
+test:3.7:
+  stage: test
+  image: python:3.7
+  script:
+    - python -m pytest
+
+test:3.8:
+  stage: test
+  image: python:3.8
+  script:
+    - python -m pytest
+  coverage: '/\d+\%\s*$/'
+
 
 wheel:
   before_script:
