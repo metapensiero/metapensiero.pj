@@ -277,6 +277,7 @@ def NameConstant(t, x):
     }[x.value]
     return cls()
 
+
 # Take care of Python 3.8's deprecations:
 # https://docs.python.org/3/library/ast.html#node-classes
 def Constant(t, x):
@@ -287,6 +288,9 @@ def Constant(t, x):
     elif isinstance(x.value, str):
         return Str(t, x)
     else:
+        # Should constant collections (tuple and frozensets
+        # containing constant elements) be handled here as well?
+        # See https://greentreesnakes.readthedocs.io/en/latest/nodes.html#Constant
         raise ValueError('Unknown data type received.')
 
 
