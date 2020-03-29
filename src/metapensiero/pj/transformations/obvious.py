@@ -277,6 +277,18 @@ def NameConstant(t, x):
     }[x.value]
     return cls()
 
+# Take care of Python 3.8's deprecations:
+# https://docs.python.org/3/library/ast.html#node-classes
+def Constant(t, x):
+    if isinstance(x.value, bool) or x.value is None:
+        return NameConstant(t, x)
+    elif isinstance(x.value, (int, float, complex)):
+        return Num(t, x)
+    elif isinstance(x.value, str):
+        return Str(t, x)
+    else:
+        raise ValueError('Unknown data type received.')
+
 
 def Yield(t, x):
     return JSYield(x.value)
