@@ -40,9 +40,9 @@ setup(
         "License :: OSI Approved :: GNU General Public License (GPL)",
         ],
     keywords='JavaScript EcmaScript compilation translation transpiling babel',
-    packages=['metapensiero.' + pkg
-              for pkg in find_packages('src/metapensiero')],
+    packages=['metapensiero.pj'],
     package_dir={'': 'src'},
+    zip_safe=False,
     namespace_packages=['metapensiero',],
     install_requires=[
         'setuptools',
