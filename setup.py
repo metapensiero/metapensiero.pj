@@ -60,12 +60,6 @@ setup(
             'meta'
         ],
     },
-    setup_requires=[
-        'pytest-runner'
-    ],
-    tests_require=[
-        'javascripthon[test]'
-    ],
     entry_points={
         'console_scripts': ['pj=metapensiero.pj.__main__:main'],
     },
