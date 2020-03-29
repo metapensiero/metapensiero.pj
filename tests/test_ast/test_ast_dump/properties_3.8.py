@@ -1,4 +1,4 @@
-## requires: python_version < (3,8)
+## requires: python_version >= (3,8)
 class Foo:
 
     @property

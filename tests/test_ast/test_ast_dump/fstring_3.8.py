@@ -1,4 +1,4 @@
-## requires: (3,6) <= python_version < (3,8)
+## requires: python_version >= (3,8)
 
 def func():
     a = 'foo'

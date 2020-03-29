@@ -1,4 +1,4 @@
-## requires: python_version < (3,8)
+## requires: python_version >= (3,8)
 ## first_stmt_only: True
 
 def func():
