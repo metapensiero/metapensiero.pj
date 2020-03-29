@@ -42,7 +42,7 @@ def load_python_code(filename):
                 if line.startswith('##'):
                     try:
                         option, expr = line.strip().lstrip('# ').split(':', 1)
-                    except:
+                    except Exception:
                         raise ValueError('Bad header, expected "## value:'
                                          ' expression",'
                                          ' got: %s' % line.rstrip())
@@ -70,8 +70,9 @@ def load_tests_from_directory(dir, ext=None):
     for pyfile in sorted(glob(join(dir, '*.py'))):
         py_code, py_src, options = load_python_code(pyfile)
         if py_code is None:
-            yield pytest.mark.skip((split(pyfile)[1],
-                                    None, None, None, None))(reason=options)
+            name = split(pyfile)[1]
+            yield pytest.param(name, None, None, None, None, id=name,
+                               marks=pytest.mark.skip)
             continue
 
         cmpfile = splitext(pyfile)[0] + ext
@@ -94,7 +95,14 @@ def pytest_generate_tests(metafunc):
         moddir = splitext(metafunc.module.__file__)[0]
         testdir = join(moddir, metafunc.function.__name__)
         argvalues = list(load_tests_from_directory(testdir, ext))
+        ids = []
+        for v in argvalues:
+            if isinstance(v, tuple) and not type(v) is tuple:
+                ids.append(v.id)
+            elif isinstance(v, tuple):
+                ids.append(v[0])
+            else:
+                raise ValueError("Wrong param value")
         metafunc.parametrize(
             ('name', 'py_code', 'py_src', 'options', 'expected'), argvalues,
-            ids=[v[0] if isinstance(v, tuple)
-                 else v.args[0][0] for v in argvalues])
+            ids=ids)
