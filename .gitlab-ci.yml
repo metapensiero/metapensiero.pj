@@ -1,7 +1,6 @@
 ---
 stages:
   - test
-  - wheels
 
 before_script:
   - pip install -r requirements.txt
@@ -32,14 +31,3 @@ test:3.8:
   script:
     - python -m pytest
   coverage: '/\d+\%\s*$/'
-
-
-wheel:
-  before_script:
-  stage: wheels
-  image: python:3.6
-  script:
-    - python setup.py bdist_wheel
-  artifacts:
-    paths:
-      - dist/*.whl
