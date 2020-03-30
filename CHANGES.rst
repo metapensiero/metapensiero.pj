@@ -3,6 +3,14 @@
 Changes
 -------
 
+0.11 (2020-03-30)
+~~~~~~~~~~~~~~~~~
+
+- update test infrastructure to work with latest ``pytest``;
+- add support for Python 3.7 and 3.8 (thanks to Richard Höchenberger).
+- do not crash when translating source with assignment typehints (
+  with the help of Sirenfal)
+
 0.10 (2018-05-12)
 ~~~~~~~~~~~~~~~~~
 
