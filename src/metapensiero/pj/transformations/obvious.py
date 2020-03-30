@@ -78,6 +78,10 @@ def Assign_default(t, x):
     return JSExpressionStatement(y)
 
 
+# Python 3.6+ typehints are accepted and ignored
+def AnnAssign(t, x):
+    return JSExpressionStatement(JSAssignmentExpression(x.target, x.value))
+
 def Assign_all(t, x):
     if len(x.targets) == 1 and isinstance(x.targets[0], ast.Name) and \
        x.targets[0].id == '__all__':
