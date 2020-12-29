@@ -55,7 +55,7 @@ tries to emit code which is simple to read and check. It does so by switching
 to ES6 construct when possible/required. This allows to simplify the needs of
 polyfills for many of the expected Python behaviors.
 
-It is designed to be the first step in a pipeline that translates your Pyhton
+It is designed to be the first step in a pipeline that translates your Python
 code into something that a browser can understand. Usually it is used with
 tools like `BabelJS`__ and `Webpack`__ to prepare the final bundle that will
 be served to the browser. The steps from the source code to the bundle are the
