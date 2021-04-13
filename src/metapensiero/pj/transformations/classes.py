@@ -8,7 +8,7 @@
 
 import ast
 
-from ..compat import assign_types
+from ..compat import assign_types, is_py39
 from ..processor.util import controlled_ast_walk, get_assign_targets
 from ..js_ast import (
     JSAssignmentExpression,
@@ -344,6 +344,8 @@ def Subscript_super(t, x):
     AST is::
 
          Subscript(ctx=Load(),
+                   # in py3.9:
+                   # slice=Constant(value=Name(ctx=Load(),
                    slice=Index(value=Name(ctx=Load(),
                                           id='foo')),
                    value=Call(args=[],
@@ -363,7 +365,12 @@ def Subscript_super(t, x):
                 t.unsupported(x, True, "'super()[expr]' cannot be used in "
                               "constructors")
             else:
-                sup_method = x.slice.value
+                if is_py39:
+                    assert isinstance(x.slice, (ast.Name))
+                    sup_method = x.slice.id
+                else:
+                    assert isinstance(x.slice, (ast.Index))
+                    sup_method = x.slice.value.id
                 # this becomes super[expr]
                 result = JSSubscript(JSSuper(), _normalize_name(sup_method))
             return result

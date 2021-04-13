@@ -10,6 +10,7 @@
 import ast
 from functools import reduce
 
+from ..compat import is_py39
 from . import _normalize_name, _normalize_dict_keys
 
 from ..js_ast import (
@@ -196,8 +197,12 @@ def Attribute_default(t, x):
 
 
 def Subscript_default(t, x):
-    assert isinstance(x.slice, ast.Index)
-    v = x.slice.value
+    if is_py39:
+        assert isinstance(x.slice, (ast.Constant, ast.Name))
+        v = x.slice
+    else:
+        v = x.slice.value
+        assert isinstance(x.slice, ast.Index)
     if isinstance(v, ast.UnaryOp) and isinstance(v.op, ast.USub):
         return JSSubscript(
             JSCall(JSAttribute(x.value, 'slice'), [v]),

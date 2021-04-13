@@ -11,6 +11,8 @@ import sys
 
 is_py36 = sys.version_info >= (3, 6)
 
+is_py39 = sys.version_info >= (3, 9)
+
 if is_py36:
     assign_types = (ast.Assign, ast.AnnAssign)
 else:

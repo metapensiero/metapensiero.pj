@@ -150,9 +150,6 @@ def Call_new(t, x):
             return x.id
         elif isinstance(x, ast.Attribute):
             return str(x.attr)
-        elif isinstance(x, ast.Subscript):
-            if isinstance(x.slice, ast.Index):
-                return str(x.slice.value)
 
     NAME_STRING = getNameString(x.func)
 
