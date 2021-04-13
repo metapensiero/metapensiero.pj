@@ -31,3 +31,10 @@ test:3.8:
   script:
     - python -m pytest
   coverage: '/\d+\%\s*$/'
+
+test:3.9:
+  stage: test
+  image: python:3.9
+  script:
+    - python -m pytest
+  coverage: '/\d+\%\s*$/'
