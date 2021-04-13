@@ -8,8 +8,6 @@
 import ast
 import logging
 
-import macropy.activate
-
 from ..js_ast import JSKeySubscript, JSStr, TargetNode
 
 logger = logging.getLogger(__name__)

@@ -46,11 +46,10 @@ setup(
               for pkg in find_packages('src/metapensiero')],
     package_dir={'': 'src'},
     zip_safe=False,
-    namespace_packages=['metapensiero',],
+    namespace_packages=['metapensiero'],
     install_requires=[
         'setuptools',
         'dukpy',
-        'macropy3==1.1.0b2'
     ],
     extras_require={
         'dev': [

@@ -8,13 +8,10 @@
 
 import ast
 
-from macropy.core.quotes import macros, ast_literal, ast_list, name, q
-from macropy.experimental.pattern import (macros, _matching, switch,
-    ClassMatcher, LiteralMatcher, ListMatcher)
-
 from ..compat import assign_types
 from ..processor.util import controlled_ast_walk, get_assign_targets
 from ..js_ast import (
+    JSAssignmentExpression,
     JSAttribute,
     JSBinOp,
     JSCall,
@@ -73,10 +70,11 @@ def _class_guards(t, x):
     for node in body:
         t.unsupported(x, not (isinstance(node,
                                          (ast.FunctionDef, ast.AsyncFunctionDef)
-                                         + assign_types) or \
+                                         + assign_types) or
                               _isdoc(node) or isinstance(node, ast.Pass)),
                       "Class' body members must be functions or assignments")
-        t.unsupported(x, isinstance(node, ast.Assign) and len(node.targets) > 1,
+        t.unsupported(x, (isinstance(node, ast.Assign) and
+                          len(node.targets) > 1),
                       "Assignments must have only one target")
     if len(x.bases) > 0:
         assert len(x.bases) == 1
@@ -252,11 +250,20 @@ def ClassDef_default(t, x):
     if x.decorator_list:
         from ..snippets import set_class_decorators
         t.add_snippet(set_class_decorators)
-        with q as cls_decos:
-            name[name] = _pj.set_class_decorators(
-                name[name], ast_list[x.decorator_list])
 
-        stmts.append(JSExpressionStatement(cls_decos[0]))
+        cls_decos = JSExpressionStatement(
+            JSExpressionStatement(
+                JSAssignmentExpression(
+                    JSName(name),
+                    JSCall(
+                        JSAttribute(JSName('_pj'), 'set_class_decorators'),
+                        (JSName(name),
+                         JSList(x.decorator_list)),
+                    )
+                )
+            )
+        )
+        stmts.append(cls_decos)
     return JSStatements(*stmts)
 
 
@@ -264,10 +271,9 @@ ClassDef = [ClassDef_exception, ClassDef_default]
 
 
 def Call_super(t, x):
-    if isinstance(x.func, ast.Attribute) and isinstance(x.func.value, ast.Call) \
-         and isinstance(x.func.value.func, ast.Name) and \
-         x.func.value.func.id == 'super':
-        sup_args = x.func.value.args
+    if (isinstance(x.func, ast.Attribute) and isinstance(x.func.value, ast.Call)
+        and isinstance(x.func.value.func, ast.Name) and x.func.value.func.id == 'super'):
+        sup_args = x.func.  value.args
         # Are we in a FuncDef and is it a method and super() has no args?
         method = t.find_parent(x, ast.FunctionDef, ast.AsyncFunctionDef)
         if method and isinstance(t.parent_of(method), ast.ClassDef) and \
@@ -288,12 +294,12 @@ def Call_super(t, x):
                         JSAttribute(
                             JSAttribute(
                                 JSAttribute(JSName(sup_cls),
-                                                   'prototype'),
+                                            'prototype'),
                                 _normalize_name(sup_method)),
                             'call'),
                         [JSThis()] + x.args)
                 else:
-                # this becomes super.method(x, y)
+                    # this becomes super.method(x, y)
                     result = JSCall(
                         JSAttribute(JSSuper(), _normalize_name(sup_method)),
                         x.args
@@ -302,8 +308,8 @@ def Call_super(t, x):
 
 
 def Attribute_super(t, x):
-    """Translate ``super().foo`` into ``super.foo` if the method isn't a constructor,
-    where it's invalid.
+    """Translate ``super().foo`` into ``super.foo` if the method isn't a
+    constructor, where it's invalid.
 
     AST is::
 
@@ -388,20 +394,22 @@ def Call_isinstance(t, x):
 
 
 def Call_issubclass(t, x):
-    """Translate ``issubclass(Foo, Bar)`` to ``Foo.prototype instanceof Bar``.
+    """Translate ``issubclass(Foo, Bar)`` to
+    ``Bar.prototype.isPrototypeOf(Foo.prototype)``.
     """
-    with switch(x):
-        if ast.Call(func=ast.Name(id='issubclass'), args=[target, classes]):
-            tproto = q[ast_literal[target].prototype]
-            if isinstance(classes, (ast.Tuple, ast.List, ast.Set)):
-                classes = classes.elts
-            else:
-                classes = [classes]
-            prev = None
-            for c in classes:
-                cur = q[ast_literal[c].prototype.isPrototypeOf(
-                    ast_literal[tproto])]
-                if prev is not None:
-                    cur = q[ast_literal[prev] or ast_literal[cur]]
-                prev = cur
-            return JSExpressionStatement(cur)
+    if (isinstance(x, ast.Call) and isinstance(x.func, ast.Name) and
+        x.func.id == 'issubclass'):
+        target, classes = x.args
+        tproto = JSAttribute(JSName(target), 'prototype')
+        if isinstance(classes, (ast.Tuple, ast.List, ast.Set)):
+            classes = classes.elts
+        else:
+            classes = [classes]
+        prev = None
+        for c in classes:
+            cur = JSCall(JSAttribute(JSAttribute(
+                JSName(c), 'prototype'), 'isPrototypeOf'), [tproto])
+            if prev is not None:
+                cur = JSBinOp(prev, JSOpOr(), cur)
+            prev = cur
+        return JSExpressionStatement(cur)
