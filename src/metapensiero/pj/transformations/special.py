@@ -362,7 +362,7 @@ _shortcuts = {
 def _notable_replacer_gen():
     """This is used together with 'GEN_PREFIX_RE' to replace unicode
     symbol names in module prefixes. Some names are shortcut using the
-    ``_shortcuts`` map. It's designed to replace matches olny if they
+    ``_shortcuts`` map. It's designed to replace matches only if they
     are located at the beginning of the string and if they are
     subsequent to one another. It returns a function to be used with a
     regular expression object ``sub()`` method.

@@ -53,7 +53,7 @@ def ListComp(t, x):
     __i = t.new_name()
     __bound = t.new_name()
 
-    # Let's contruct the result from the inside out:
+    # Let's construct the result from the inside out:
     #<pre>__new.push(EXPR);</pre>
     push = JSExpressionStatement(
             JSCall(
