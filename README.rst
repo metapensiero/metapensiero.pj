@@ -103,7 +103,7 @@ Brief list of the supported Python semantics
 The fact that JavaScripthon doesn't *reinvent the wheel* by reimplementing in
 Python many of the features available with JavaScript translators/transpilers
 allows it to be lean while implementing quite a decent set of the core Python
-semanticts. These are, briefly:
+semantics. These are, briefly:
 
 * Misc
 
@@ -130,7 +130,7 @@ semanticts. These are, briefly:
   - ``__instancecheck__`` to ``[Symbol.hasInstance]``;
   - ``int`` to ``parseInt``;
   - ``float`` to ``parseFloat``;
-  - dictionary keys are unanbiguous when ES6 translation is
+  - dictionary keys are unambiguous when ES6 translation is
     enabled. For example the following code gets translated correctly:
 
     .. code:: python
@@ -986,7 +986,7 @@ implemented yet.
             }
         }
 
-Only direct descendants of ``Exception`` are threated especially, but
+Only direct descendants of ``Exception`` are treated especially, but
 just for them to be meaningful in JS land and to be detectable with
 ``instanceof`` in catch statements.
 
@@ -1388,6 +1388,6 @@ __ https://news.ycombinator.com/item?id=11203183
 
 __ http://kangax.github.io/compat-table/es6/
 
-* `A story`__ about ES6 crazyest stuff... symbols
+* `A story`__ about ES6 craziest stuff... symbols
 
 __ http://blog.keithcirkel.co.uk/metaprogramming-in-es6-symbols/

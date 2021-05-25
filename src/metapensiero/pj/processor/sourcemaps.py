@@ -230,7 +230,7 @@ class SourceMap:
         if isinstance(source, dict):
             smap = source
         else:
-            # According to the spec a souce map may be prepended with
+            # According to the spec a source map may be prepended with
             # ")]}'" to cause a JavaScript error. In that case ignore the
             # entire first line.
             if source[:4] == ")]}'":

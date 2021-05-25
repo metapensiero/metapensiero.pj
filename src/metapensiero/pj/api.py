@@ -316,7 +316,7 @@ BABEL_JS_CTX = None
 
 
 def babel_compile(source, reuse_js_ctx=True, **kwargs):
-    """Compile the given `source` from ES6 to ES5 usin Babeljs."""
+    """Compile the given `source` from ES6 to ES5 using Babeljs."""
     global BABEL_JS_CTX
     presets = kwargs.get('presets')
     if not presets:
