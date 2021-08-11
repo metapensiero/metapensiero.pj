@@ -300,6 +300,14 @@ You can even try more fancy ES6 features, like destructuring assignment:
    $ pj -s "a, b, c = (2, 3, 5) \na+b+c" -e
    10
 
+You can use metapensiero.pj in python code as well.
+
+.. code:: python
+
+    from metapensiero.pj.__main__ import transform_string
+
+    transform_string("print()")
+
 Reporting Bugs
 --------------
 
