@@ -3,10 +3,13 @@
 Changes
 -------
 
-0.12 unreleased
----------------
+0.12 (2022-07-19)
+-----------------
 
 - remove macropy
+- fix evaluation from commandline
+- deprecate Python 3.5 and 3.6
+- tested on Python 3.10
 
 
 0.11 (2020-03-30)
