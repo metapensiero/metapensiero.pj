@@ -1,0 +1,96 @@
+{
+  "nodes": {
+    "dukpy": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1591740523,
+        "narHash": "sha256-bbOa/pg95XSfI2zYn/mMkftyg2ytsv4+PU77vK/x+JI=",
+        "owner": "amol-",
+        "repo": "dukpy",
+        "rev": "bde1d080871936f2cec6f7e830c25cddc0ba2bee",
+        "type": "github"
+      },
+      "original": {
+        "owner": "amol-",
+        "ref": "0.2.3",
+        "repo": "dukpy",
+        "type": "github"
+      }
+    },
+    "flake-utils": {
+      "locked": {
+        "lastModified": 1656928814,
+        "narHash": "sha256-RIFfgBuKz6Hp89yRr7+NR5tzIAbn52h8vT6vXkYjZoM=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "7e2a3b3dfd9af950a856d66b0a7d01e3c18aa249",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "gitignore": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1657706534,
+        "narHash": "sha256-5jIzNHKtDu06mA325K/5CshUVb5r7sSmnRiula6Gr7o=",
+        "owner": "hercules-ci",
+        "repo": "gitignore.nix",
+        "rev": "f840a659d57e53fa751a9248b17149fd0cf2a221",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "gitignore.nix",
+        "type": "github"
+      }
+    },
+    "meta": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1342543218,
+        "narHash": "sha256-QXe+xnh+Lc1bZ5hC/rTgiU3EtxW4jhncWm4B+LctB/0=",
+        "owner": "srossross",
+        "repo": "Meta",
+        "rev": "d08deb2bd6a5a744e6060e2f907749e5956f380f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "srossross",
+        "ref": "0.4.1",
+        "repo": "Meta",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 0,
+        "narHash": "sha256-rFJNM0X/dxekT6EESSh80mlBGqztfN/XOF/oRL6in68=",
+        "path": "/nix/store/ia11pz7v8wag5gh54bbnl5c87qc9cjm7-source",
+        "type": "path"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "type": "indirect"
+      }
+    },
+    "root": {
+      "inputs": {
+        "dukpy": "dukpy",
+        "flake-utils": "flake-utils",
+        "gitignore": "gitignore",
+        "meta": "meta",
+        "nixpkgs": "nixpkgs"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
