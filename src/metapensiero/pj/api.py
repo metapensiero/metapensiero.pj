@@ -215,7 +215,7 @@ def transpile_pys(src_text, dedent=True, src_filename=None, src_offset=None,
     es6_text, es6_sourcemap = translates(src_text, dedent, src_filename,
                                          src_offset, body_only, enable_es6=True,
                                          enable_stage3=enable_stage3)
-    return transpile_es6s(es6_text, es6_filename, es6_sourcemap,
+    return transpile_es6s(es6_text, es6_filename, es6_sourcemap.encode(),
                           enable_stage3=enable_stage3, **kw)
 
 
