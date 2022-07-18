@@ -106,7 +106,7 @@
           meta = {
             homepage = "https://github.com/azazel75/metapensiero.pj";
             description = "JavaScripthon: a Python 3 to ES6 JavaScript translator";
-            license = pkgs.licenses.gpl3;
+            license = pkgs.lib.licenses.gpl3;
             mainProgram = "pj";
           };
         };
