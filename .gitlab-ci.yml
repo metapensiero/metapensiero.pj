@@ -6,4 +6,4 @@ test:
   stage: test
   image: nixos/nix
   script:
-    - nix --experimental-features "nix-command flakes" check
+    - nix --experimental-features "nix-command flakes" flake check
