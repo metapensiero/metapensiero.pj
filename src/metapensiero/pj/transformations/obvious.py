@@ -198,7 +198,7 @@ def Attribute_default(t, x):
 
 def Subscript_default(t, x):
     if is_py39:
-        assert isinstance(x.slice, (ast.Constant, ast.Name))
+        assert isinstance(x.slice, (ast.Constant, ast.Name, ast.Subscript))
         v = x.slice
     else:
         v = x.slice.value
