@@ -5,6 +5,7 @@
 # :License:  GNU General Public License version 3 or later
 #
 
+from enum import Enum
 
 def _in(left, right):
     from __globals__ import Array, typeof
@@ -54,7 +55,15 @@ def set_properties(cls, props):
 
     for p in dict(props):
         value = props[p]
-        if not isinstance(value, (Map, WeakMap)) and isinstance(value, Object) \
+        if Object.getPrototypeOf(cls) == Enum:
+            desc = {
+                'value': { 'name': p, 'value': value },
+                'enumerable': False,
+                'configurable': True,
+                'writable': True
+            }
+            Object.defineProperty(cls, p, desc)
+        elif not isinstance(value, (Map, WeakMap)) and isinstance(value, Object) \
            and 'get' in value and isinstance(value.get, Function):
             # the following condition raises a TypeError in dukpy, why?
             # ('set' in value and isinstance(value.set, Function)):
