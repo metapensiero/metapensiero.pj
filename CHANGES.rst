@@ -3,6 +3,13 @@
 Changes
 -------
 
+0.13 (2024-07-04)
+-----------------
+
+- allow attributes to be used as indices (i.e. ``a[b.c]``) (thanks to Todd Parsons);
+- allow unaryop as indices ( i.e. negative integers ) (thanks to Todd Parsons);
+- allow subscripts as indices (i.e. ``a[b[0]]``) (thanks to Todd Parsons);
+
 0.12 (2022-07-19)
 -----------------
 
@@ -10,7 +17,6 @@ Changes
 - fix evaluation from commandline
 - deprecate Python 3.5 and 3.6
 - tested on Python 3.10
-
 
 0.11 (2020-03-30)
 ~~~~~~~~~~~~~~~~~
