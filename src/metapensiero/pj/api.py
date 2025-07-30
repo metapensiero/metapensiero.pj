@@ -266,7 +266,7 @@ def evaljs(js_text, load_es6_polyfill=False, **kwargs):
         list(js_text)
     if load_es6_polyfill:
         with open(BABEL_POLYFILL, 'r', encoding='utf-8') as babel_poly:
-            js_text = (['global = this; this.console = {log: print};\n'] +
+            js_text = (['global = this;\n'] +
                        [babel_poly.read()] + js_text)
     return dukpy.evaljs(js_text, **kwargs)
 
