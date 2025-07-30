@@ -49,7 +49,7 @@ setup(
     namespace_packages=['metapensiero'],
     install_requires=[
         'setuptools',
-        'dukpy<=0.2.3',
+        'dukpy',
     ],
     extras_require={
         'dev': [
